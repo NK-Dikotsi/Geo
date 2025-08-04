@@ -806,14 +806,193 @@
             font-size: 0.9rem;
         }
     }
+
+    .browse-make-section {
+        padding: 5rem 5%;
+        background-color: white;
+    }
+    
+    .browse-make-section .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .browse-make-section .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .browse-make-section .section-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .brands-carousel-container {
+        position: relative;
+        margin: 0 auto 3rem;
+        max-width: 100%;
+        overflow: hidden;
+    }
+    
+    .brands-carousel {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        animation: scroll 60s linear infinite;
+        width: max-content;
+    }
+    
+    .brand-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: var(--transition);
+        border: 1px solid rgba(0,0,0,0.05);
+        width: 180px; /* Fixed width */
+        height: 180px; /* Fixed height */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    
+    .brand-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .brand-logo {
+        height: 70px;
+        width: 100%;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .brand-logo img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    
+    .brand-card h3 {
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        margin-top: auto;
+    }
+    
+    .carousel-controls {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        transform: translateY(-50%);
+        pointer-events: none;
+        z-index: 2;
+    }
+    
+    .control-btn {
+        pointer-events: all;
+        background: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .control-btn:hover {
+        background: var(--primary-blue);
+        color: white;
+    }
+    
+    .explore-btn-container {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    
+    .explore-btn {
+        display: inline-block;
+        background-color: var(--primary-blue);
+        color: white;
+        padding: 0.8rem 2.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+        box-shadow: 0 4px 15px rgba(41, 98, 255, 0.3);
+    }
+    
+    .explore-btn:hover {
+        background-color: #1a4fd8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(41, 98, 255, 0.4);
+    }
+    
+    @keyframes scroll {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(calc(-180px * 10 - 1.5rem * 10));
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .browse-make-section .section-title {
+            font-size: 2rem;
+        }
+        
+        .brand-card {
+            width: 150px;
+            height: 150px;
+            padding: 1rem;
+        }
+        
+        .brand-logo {
+            height: 60px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .browse-make-section .section-title {
+            font-size: 1.8rem;
+        }
+        
+        .browse-make-section .section-subtitle {
+            font-size: 1rem;
+        }
+        
+        .brand-card {
+            width: 130px;
+            height: 130px;
+        }
+        
+        .brand-card h3 {
+            font-size: 0.9rem;
+        }
+    }
         
     </style>
 </head>
 <body>
     <!-- Overlay -->
-    <div class="overlay">
-        <img src="videos/geooverlay.gif" alt="Loading" class="overlay-gif">
-    </div>
 
     <!-- Navbar -->
     <nav class="navbar">
@@ -830,6 +1009,7 @@
         <div class="nav-links" id="navLinks">
             <a href="#" class="auth-button">Log In</a>
             <a href="#" class="auth-button">Sign Up</a>
+            <a href="#" class="auth-button">Insurance</a>
             <a href="#" class="host-button">Become a Host</a>
         </div>
     </nav>
@@ -883,6 +1063,132 @@
                         GO
                     </button>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="browse-make-section">
+        <div class="container">
+            <h2 class="section-title">Browse by Make</h2>
+            <p class="section-subtitle">Discover our wide selection of popular car brands</p>
+            
+            <div class="brands-carousel-container">
+                <div class="brands-carousel">
+                    <!-- Brand 1 - Toyota -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/toyota.png" alt="Toyota">
+                        </div>
+                        <h3>Toyota</h3>
+                    </div>
+                    
+                    <!-- Brand 2 - Volkswagen -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/polo.webp" alt="Volkswagen">
+                        </div>
+                        <h3>Volkswagen</h3>
+                    </div>
+                    
+                    <!-- Brand 3 - Hyundai -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/hyundai.png" alt="Hyundai">
+                        </div>
+                        <h3>Hyundai</h3>
+                    </div>
+                    
+                    <!-- Brand 4 - Ford -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/ford.png" alt="Ford">
+                        </div>
+                        <h3>Ford</h3>
+                    </div>
+                    
+                    <!-- Brand 5 - Nissan -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/nissan.jpg" alt="Nissan">
+                        </div>
+                        <h3>Nissan</h3>
+                    </div>
+                    
+                    <!-- Brand 6 - BMW -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/bmw.jpg" alt="BMW">
+                        </div>
+                        <h3>BMW</h3>
+                    </div>
+                    
+                    <!-- Brand 7 - Mercedes-Benz -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/mercedezbenz.png" alt="Mercedes-Benz">
+                        </div>
+                        <h3>Mercedes-Benz</h3>
+                    </div>
+                    
+                    <!-- Brand 8 - Kia -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/kia.png" alt="Kia">
+                        </div>
+                        <h3>Kia</h3>
+                    </div>
+                    
+                    <!-- Brand 9 - Suzuki -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/suzuki.webp" alt="Suzuki">
+                        </div>
+                        <h3>Suzuki</h3>
+                    </div>
+                    
+                    <!-- Brand 10 - Isuzu -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/isuzu.webp" alt="Isuzu">
+                        </div>
+                        <h3>Isuzu</h3>
+                    </div>
+                    
+                    <!-- Duplicate items for seamless looping -->
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/toyota.png" alt="Toyota">
+                        </div>
+                        <h3>Toyota</h3>
+                    </div>
+                    
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/polo.webp" alt="Volkswagen">
+                        </div>
+                        <h3>Volkswagen</h3>
+                    </div>
+                    
+                    <div class="brand-card">
+                        <div class="brand-logo">
+                            <img src="images/hyundai.png" alt="Hyundai">
+                        </div>
+                        <h3>Hyundai</h3>
+                    </div>
+                </div>
+                
+                <div class="carousel-controls">
+                    <button class="control-btn prev-btn" aria-label="Previous brands">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="control-btn next-btn" aria-label="Next brands">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="explore-btn-container">
+                <a href="#" class="explore-btn">Explore Cars</a>
             </div>
         </div>
     </section>
@@ -963,6 +1269,7 @@
                     <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
                 </div>
             </div>
             
@@ -1069,6 +1376,52 @@
                 video.play().catch(e => console.log('Visibility play failed:', e));
             }
         });
+
+        // Pause animation on hover and control with buttons
+        document.addEventListener('DOMContentLoaded', function() {
+        const carousel = document.querySelector('.brands-carousel');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        const carouselItems = document.querySelectorAll('.brand-card');
+        const itemWidth = carouselItems[0].offsetWidth + 24; // width + margin
+        
+        // Clone first few items and append to end for seamless looping
+        const firstItems = Array.from(carouselItems).slice(0, 3);
+        firstItems.forEach(item => {
+            carousel.appendChild(item.cloneNode(true));
+        });
+        
+        // Pause animation on hover
+        carousel.addEventListener('mouseenter', () => {
+            carousel.style.animationPlayState = 'paused';
+        });
+        
+        carousel.addEventListener('mouseleave', () => {
+            carousel.style.animationPlayState = 'running';
+        });
+        
+        // Manual controls
+        let scrollPosition = 0;
+        const scrollStep = itemWidth * 3;
+        
+        nextBtn.addEventListener('click', () => {
+            scrollPosition += scrollStep;
+            carousel.style.transform = `translateX(-${scrollPosition}px)`;
+            carousel.style.animation = 'none';
+        });
+        
+        prevBtn.addEventListener('click', () => {
+            scrollPosition = Math.max(0, scrollPosition - scrollStep);
+            carousel.style.transform = `translateX(-${scrollPosition}px)`;
+            carousel.style.animation = 'none';
+        });
+        
+        // Reset position when animation completes
+        carousel.addEventListener('animationiteration', () => {
+            scrollPosition = 0;
+            carousel.style.transform = 'translateX(0)';
+        });
+    });
     </script>
 </body>
 </html>
