@@ -843,20 +843,20 @@
         display: flex;
         gap: 1.5rem;
         padding: 1rem 0;
-        animation: scroll 60s linear infinite;
+        animation: scroll 40s linear infinite;
         width: max-content;
     }
     
     .brand-card {
         background: white;
         border-radius: var(--border-radius);
-        padding: 1.5rem;
+        padding: 1.8rem;
         text-align: center;
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         transition: var(--transition);
         border: 1px solid rgba(0,0,0,0.05);
-        width: 180px; /* Fixed width */
-        height: 180px; /* Fixed height */
+        width: 220px; /* Increased width */
+        height: 220px; /* Increased height */
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -870,9 +870,9 @@
     }
     
     .brand-logo {
-        height: 70px;
+        height: 90px; /* Increased logo size */
         width: 100%;
-        margin-bottom: 1rem;
+        margin-bottom: 1.2rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -885,7 +885,7 @@
     }
     
     .brand-card h3 {
-        font-size: 1.1rem;
+        font-size: 1.2rem; /* Slightly larger text */
         color: var(--text-dark);
         margin-top: auto;
     }
@@ -950,7 +950,7 @@
             transform: translateX(0);
         }
         100% {
-            transform: translateX(calc(-180px * 10 - 1.5rem * 10));
+            transform: translateX(calc(-220px * 10 - 1.5rem * 10));
         }
     }
     
@@ -960,13 +960,31 @@
         }
         
         .brand-card {
-            width: 150px;
-            height: 150px;
-            padding: 1rem;
+            width: 180px;
+            height: 180px;
+            padding: 1.5rem;
         }
         
         .brand-logo {
-            height: 60px;
+            height: 80px;
+        }
+        
+        /* Hide controls on mobile */
+        .carousel-controls {
+            display: none;
+        }
+        
+        /* Enable touch scrolling */
+        .brands-carousel-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+        
+        .brands-carousel {
+            animation: none;
+            padding-bottom: 1rem; /* Space for scrollbar */
         }
     }
     
@@ -980,15 +998,15 @@
         }
         
         .brand-card {
-            width: 130px;
-            height: 130px;
+            width: 160px;
+            height: 160px;
+            scroll-snap-align: start;
         }
         
         .brand-card h3 {
-            font-size: 0.9rem;
+            font-size: 1.1rem;
         }
     }
-        
     </style>
 </head>
 <body>
@@ -1377,50 +1395,58 @@
             }
         });
 
-        // Pause animation on hover and control with buttons
-        document.addEventListener('DOMContentLoaded', function() {
+        // Updated Carousel Script
+    document.addEventListener('DOMContentLoaded', function() {
         const carousel = document.querySelector('.brands-carousel');
         const prevBtn = document.querySelector('.prev-btn');
         const nextBtn = document.querySelector('.next-btn');
+        const carouselContainer = document.querySelector('.brands-carousel-container');
         const carouselItems = document.querySelectorAll('.brand-card');
-        const itemWidth = carouselItems[0].offsetWidth + 24; // width + margin
         
-        // Clone first few items and append to end for seamless looping
-        const firstItems = Array.from(carouselItems).slice(0, 3);
-        firstItems.forEach(item => {
-            carousel.appendChild(item.cloneNode(true));
-        });
-        
-        // Pause animation on hover
-        carousel.addEventListener('mouseenter', () => {
-            carousel.style.animationPlayState = 'paused';
-        });
-        
-        carousel.addEventListener('mouseleave', () => {
-            carousel.style.animationPlayState = 'running';
-        });
-        
-        // Manual controls
-        let scrollPosition = 0;
-        const scrollStep = itemWidth * 3;
-        
-        nextBtn.addEventListener('click', () => {
-            scrollPosition += scrollStep;
-            carousel.style.transform = `translateX(-${scrollPosition}px)`;
+        // Only enable these features on desktop
+        if (window.innerWidth > 768) {
+            const itemWidth = carouselItems[0].offsetWidth + 24; // width + margin
+            
+            // Clone first few items and append to end for seamless looping
+            const firstItems = Array.from(carouselItems).slice(0, 3);
+            firstItems.forEach(item => {
+                carousel.appendChild(item.cloneNode(true));
+            });
+            
+            // Pause animation on hover
+            carousel.addEventListener('mouseenter', () => {
+                carousel.style.animationPlayState = 'paused';
+            });
+            
+            carousel.addEventListener('mouseleave', () => {
+                carousel.style.animationPlayState = 'running';
+            });
+            
+            // Manual controls
+            let scrollPosition = 0;
+            const scrollStep = itemWidth * 3;
+            
+            nextBtn.addEventListener('click', () => {
+                scrollPosition += scrollStep;
+                carousel.style.transform = `translateX(-${scrollPosition}px)`;
+                carousel.style.animation = 'none';
+            });
+            
+            prevBtn.addEventListener('click', () => {
+                scrollPosition = Math.max(0, scrollPosition - scrollStep);
+                carousel.style.transform = `translateX(-${scrollPosition}px)`;
+                carousel.style.animation = 'none';
+            });
+            
+            // Reset position when animation completes
+            carousel.addEventListener('animationiteration', () => {
+                scrollPosition = 0;
+                carousel.style.transform = 'translateX(0)';
+            });
+        } else {
+            // On mobile, remove the animation and let users scroll naturally
             carousel.style.animation = 'none';
-        });
-        
-        prevBtn.addEventListener('click', () => {
-            scrollPosition = Math.max(0, scrollPosition - scrollStep);
-            carousel.style.transform = `translateX(-${scrollPosition}px)`;
-            carousel.style.animation = 'none';
-        });
-        
-        // Reset position when animation completes
-        carousel.addEventListener('animationiteration', () => {
-            scrollPosition = 0;
-            carousel.style.transform = 'translateX(0)';
-        });
+        }
     });
     </script>
 </body>
