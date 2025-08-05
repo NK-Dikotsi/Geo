@@ -1010,6 +1010,197 @@
             font-size: 1.1rem;
         }
     }
+
+
+    .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .auth-modal-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        
+        .auth-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            text-align: center;
+        }
+        
+        .auth-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .auth-form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .auth-form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .auth-form-group input:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(41, 98, 255, 0.2);
+        }
+        
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .auth-divider::before {
+            margin-right: 1rem;
+        }
+        
+        .auth-divider::after {
+            margin-left: 1rem;
+        }
+        
+        .auth-provider-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .auth-provider-btn:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .auth-provider-btn i {
+            margin-right: 0.8rem;
+            font-size: 1.2rem;
+        }
+        
+        .auth-primary-btn {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-blue);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .auth-primary-btn:hover {
+            background-color: #1a4fd8;
+        }
+        
+        .auth-switch-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .auth-switch-text a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-switch-text a:hover {
+            text-decoration: underline;
+        }
+        
+        .auth-checkbox {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .auth-checkbox input {
+            margin-right: 0.8rem;
+            margin-top: 0.2rem;
+        }
+        
+        .auth-checkbox label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+        
+        .country-code-selector {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+        
+        .country-code-selector i {
+            margin-left: auto;
+            color: var(--text-light);
+        }
     </style>
 </head>
 <body>
@@ -1276,6 +1467,155 @@
     </div>
 </section>
    
+
+
+<!-- Sign Up Options Modal -->
+<div class="auth-modal" id="signupOptionsModal">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeModal('signupOptionsModal')">&times;</button>
+        <h2 class="auth-title">Sign up</h2>
+        <p class="auth-subtitle">Join Geo to rent unique vehicles near you</p>
+        
+        <button class="auth-provider-btn" onclick="showSignupForm()">
+            <i class="fas fa-envelope"></i> Continue with Email
+        </button>
+        
+        <button class="auth-provider-btn">
+            <i class="fab fa-google"></i> Continue with Google
+        </button>
+        
+        <button class="auth-provider-btn">
+            <i class="fab fa-apple"></i> Continue with Apple
+        </button>
+        
+        <div class="auth-divider">or</div>
+        
+        <p class="auth-switch-text">
+            Already have an account? <a href="#" onclick="showLoginModal()">Log in</a>
+        </p>
+    </div>
+</div>
+
+<!-- Email Sign Up Form Modal -->
+<div class="auth-modal" id="signupFormModal">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeModal('signupFormModal')">&times;</button>
+        <h2 class="auth-title">Sign up</h2>
+        
+        <form id="signupForm">
+            <div class="auth-form-group">
+                <label for="firstName">First name</label>
+                <input type="text" id="firstName" required>
+            </div>
+            
+            <div class="auth-form-group">
+                <label for="lastName">Last name</label>
+                <input type="text" id="lastName" required>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 1.5rem;">
+                Enter your name as it appears on your driver's license
+            </p>
+            
+            <div class="auth-form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            
+            <div class="auth-form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            
+            <div class="auth-checkbox">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">I agree to the terms of service and privacy policy</label>
+            </div>
+            
+            <div class="auth-checkbox">
+                <input type="checkbox" id="promotions">
+                <label for="promotions">Send me promotions and announcements via email</label>
+            </div>
+            
+            <button type="submit" class="auth-primary-btn">Sign up</button>
+        </form>
+        
+        <p class="auth-switch-text">
+            Already have an account? <a href="#" onclick="showLoginModal()">Log in</a>
+        </p>
+    </div>
+</div>
+
+<!-- Login Modal -->
+<div class="auth-modal" id="loginModal">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeModal('loginModal')">&times;</button>
+        <h2 class="auth-title">Log in</h2>
+        
+        <div class="auth-form-group">
+            <label>Country code</label>
+            <div class="country-code-selector" onclick="showCountryCodeSelector()">
+                <span id="selectedCountry">+44 United Kingdom</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+        
+        <div class="auth-form-group">
+            <label for="phoneNumber">Phone number</label>
+            <input type="tel" id="phoneNumber" placeholder="Phone number" required>
+            <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">
+                We'll text you a code to confirm your number.
+            </p>
+        </div>
+        
+        <button class="auth-primary-btn" onclick="sendLoginCode()">Continue</button>
+        
+        <div class="auth-divider">or</div>
+        
+        <button class="auth-provider-btn" onclick="showLoginWithEmail()">
+            <i class="fas fa-envelope"></i> Continue with Email
+        </button>
+        
+        <button class="auth-provider-btn">
+            <i class="fab fa-apple"></i> Continue with Apple
+        </button>
+        
+        <button class="auth-provider-btn">
+            <i class="fab fa-google"></i> Continue with Google
+        </button>
+        
+        <p class="auth-switch-text">
+            Don't have an account? <a href="#" onclick="showSignupOptions()">Sign up</a>
+        </p>
+    </div>
+</div>
+
+<!-- Login with Email Modal -->
+<div class="auth-modal" id="loginEmailModal">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeModal('loginEmailModal')">&times;</button>
+        <h2 class="auth-title">Log in with Email</h2>
+        
+        <form id="loginEmailForm">
+            <div class="auth-form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" required>
+            </div>
+            
+            <div class="auth-form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            
+            <button type="submit" class="auth-primary-btn">Log in</button>
+        </form>
+        
+        <p class="auth-switch-text">
+            Don't have an account? <a href="#" onclick="showSignupOptions()">Sign up</a>
+        </p>
+    </div>
+</div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
@@ -1332,11 +1672,11 @@
         // Mobile menu toggle
         const menuToggle = document.getElementById('menuToggle');
         const navLinks = document.getElementById('navLinks');
-
+    
         menuToggle.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
-
+    
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
@@ -1345,9 +1685,84 @@
                 }
             }
         });
-
-        // Enhanced video loading for better cross-device compatibility
+    
+        // Modal functions
+        function showSignupOptions() {
+            closeAllModals();
+            document.getElementById('signupOptionsModal').style.display = 'flex';
+        }
+        
+        function showSignupForm() {
+            closeAllModals();
+            document.getElementById('signupFormModal').style.display = 'flex';
+        }
+        
+        function showLoginModal() {
+            closeAllModals();
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+        
+        function showLoginWithEmail() {
+            closeAllModals();
+            document.getElementById('loginEmailModal').style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        function closeAllModals() {
+            const modals = document.querySelectorAll('.auth-modal');
+            modals.forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+        
+        function sendLoginCode() {
+            // In a real app, you would send the verification code here
+            alert('Verification code sent to your phone');
+            closeModal('loginModal');
+        }
+        
+        function showCountryCodeSelector() {
+            // In a real app, you would show a proper country code selector
+            alert('Country code selector would open here');
+        }
+        
+        // Form submissions
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Handle sign up form submission
+            alert('Sign up form submitted');
+            closeModal('signupFormModal');
+        });
+        
+        document.getElementById('loginEmailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Handle login form submission
+            alert('Login form submitted');
+            closeModal('loginEmailModal');
+        });
+        
+        // Connect navbar buttons to modals
         document.addEventListener('DOMContentLoaded', function() {
+            // Get all auth buttons
+            const authButtons = document.querySelectorAll('.nav-links .auth-button');
+            
+            authButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Check which button was clicked
+                    if (button.textContent.trim() === 'Sign Up') {
+                        showSignupOptions();
+                    } else if (button.textContent.trim() === 'Log In') {
+                        showLoginModal();
+                    }
+                });
+            });
+    
+            // Initialize video
             const video = document.querySelector('.video-hero video');
             if (video) {
                 // Set video attributes for better mobile compatibility
@@ -1366,7 +1781,6 @@
                     if (playPromise !== undefined) {
                         playPromise.catch(error => {
                             console.log('Video play prevented:', error);
-                            // Show a play button overlay if needed
                         });
                     }
                 };
@@ -1382,14 +1796,85 @@
                 
                 // iOS specific handling
                 if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                    // iOS sometimes needs this
                     video.addEventListener('loadedmetadata', function() {
                         video.play().catch(e => console.log('iOS play failed:', e));
                     });
                 }
             }
+    
+            // Initialize carousel
+            const carousel = document.querySelector('.brands-carousel');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const carouselContainer = document.querySelector('.brands-carousel-container');
+            const carouselItems = document.querySelectorAll('.brand-card');
+            
+            if (carousel && carouselItems.length > 0) {
+                // Clone first few items and append to end for seamless looping
+                const firstItems = Array.from(carouselItems).slice(0, 3);
+                firstItems.forEach(item => {
+                    carousel.appendChild(item.cloneNode(true));
+                });
+                
+                // Only enable manual controls on desktop
+                if (window.innerWidth > 768) {
+                    const itemWidth = carouselItems[0].offsetWidth + 24; // width + margin
+                    
+                    // Pause animation on hover
+                    carousel.addEventListener('mouseenter', () => {
+                        carousel.style.animationPlayState = 'paused';
+                    });
+                    
+                    carousel.addEventListener('mouseleave', () => {
+                        carousel.style.animationPlayState = 'running';
+                    });
+                    
+                    // Manual controls
+                    let scrollPosition = 0;
+                    const scrollStep = itemWidth * 3;
+                    
+                    if (nextBtn) {
+                        nextBtn.addEventListener('click', () => {
+                            scrollPosition += scrollStep;
+                            carousel.style.transform = `translateX(-${scrollPosition}px)`;
+                            carousel.style.animation = 'none';
+                        });
+                    }
+                    
+                    if (prevBtn) {
+                        prevBtn.addEventListener('click', () => {
+                            scrollPosition = Math.max(0, scrollPosition - scrollStep);
+                            carousel.style.transform = `translateX(-${scrollPosition}px)`;
+                            carousel.style.animation = 'none';
+                        });
+                    }
+                    
+                    // Reset position when animation completes
+                    carousel.addEventListener('animationiteration', () => {
+                        scrollPosition = 0;
+                        carousel.style.transform = 'translateX(0)';
+                    });
+                } else {
+                    // On mobile, ensure the animation continues to work
+                    carousel.style.animation = 'scroll 40s linear infinite';
+                    
+                    // Pause animation on touch start
+                    if (carouselContainer) {
+                        carouselContainer.addEventListener('touchstart', () => {
+                            carousel.style.animationPlayState = 'paused';
+                        });
+                        
+                        // Resume animation after a brief delay when touch ends
+                        carouselContainer.addEventListener('touchend', () => {
+                            setTimeout(() => {
+                                carousel.style.animationPlayState = 'running';
+                            }, 2000);
+                        });
+                    }
+                }
+            }
         });
-
+    
         // Page visibility API to restart video when tab becomes visible
         document.addEventListener('visibilitychange', () => {
             const video = document.querySelector('.video-hero video');
@@ -1397,83 +1882,18 @@
                 video.play().catch(e => console.log('Visibility play failed:', e));
             }
         });
-
-        // Updated Carousel Script
-
-        // Updated Carousel Script
-document.addEventListener('DOMContentLoaded', function() {
-    const carousel = document.querySelector('.brands-carousel');
-    const prevBtn = document.querySelector('.prev-btn');
-    const nextBtn = document.querySelector('.next-btn');
-    const carouselContainer = document.querySelector('.brands-carousel-container');
-    const carouselItems = document.querySelectorAll('.brand-card');
     
-    // Clone first few items and append to end for seamless looping
-    const firstItems = Array.from(carouselItems).slice(0, 3);
-    firstItems.forEach(item => {
-        carousel.appendChild(item.cloneNode(true));
-    });
-    
-    // Only enable manual controls on desktop
-    if (window.innerWidth > 768) {
-        const itemWidth = carouselItems[0].offsetWidth + 24; // width + margin
-        
-        // Pause animation on hover
-        carousel.addEventListener('mouseenter', () => {
-            carousel.style.animationPlayState = 'paused';
+        // Handle window resize for carousel
+        window.addEventListener('resize', function() {
+            const carousel = document.querySelector('.brands-carousel');
+            if (carousel) {
+                if (window.innerWidth <= 768) {
+                    carousel.style.animation = 'scroll 40s linear infinite';
+                } else {
+                    carousel.style.animation = 'scroll 40s linear infinite';
+                }
+            }
         });
-        
-        carousel.addEventListener('mouseleave', () => {
-            carousel.style.animationPlayState = 'running';
-        });
-        
-        // Manual controls
-        let scrollPosition = 0;
-        const scrollStep = itemWidth * 3;
-        
-        nextBtn.addEventListener('click', () => {
-            scrollPosition += scrollStep;
-            carousel.style.transform = `translateX(-${scrollPosition}px)`;
-            carousel.style.animation = 'none';
-        });
-        
-        prevBtn.addEventListener('click', () => {
-            scrollPosition = Math.max(0, scrollPosition - scrollStep);
-            carousel.style.transform = `translateX(-${scrollPosition}px)`;
-            carousel.style.animation = 'none';
-        });
-        
-        // Reset position when animation completes
-        carousel.addEventListener('animationiteration', () => {
-            scrollPosition = 0;
-            carousel.style.transform = 'translateX(0)';
-        });
-    } else {
-        // On mobile, ensure the animation continues to work
-        carousel.style.animation = 'scroll 40s linear infinite';
-        
-        // Pause animation on touch start
-        carouselContainer.addEventListener('touchstart', () => {
-            carousel.style.animationPlayState = 'paused';
-        });
-        
-        // Resume animation after a brief delay when touch ends
-        carouselContainer.addEventListener('touchend', () => {
-            setTimeout(() => {
-                carousel.style.animationPlayState = 'running';
-            }, 2000);
-        });
-    }
-    
-    // Handle window resize
-    window.addEventListener('resize', function() {
-        if (window.innerWidth <= 768) {
-            carousel.style.animation = 'scroll 40s linear infinite';
-        } else {
-            carousel.style.animation = 'scroll 40s linear infinite';
-        }
-    });
-});
     </script>
 </body>
 </html>
