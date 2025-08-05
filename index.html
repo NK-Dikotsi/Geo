@@ -983,9 +983,12 @@
         }
         
         .brands-carousel {
-            animation: none;
+            animation: scroll 40s linear infinite;
             padding-bottom: 1rem; /* Space for scrollbar */
         }
+        .brand-card {
+        scroll-snap-align: start;
+    }
     }
     
     @media (max-width: 480px) {
@@ -1396,58 +1399,81 @@
         });
 
         // Updated Carousel Script
-    document.addEventListener('DOMContentLoaded', function() {
-        const carousel = document.querySelector('.brands-carousel');
-        const prevBtn = document.querySelector('.prev-btn');
-        const nextBtn = document.querySelector('.next-btn');
-        const carouselContainer = document.querySelector('.brands-carousel-container');
-        const carouselItems = document.querySelectorAll('.brand-card');
+
+        // Updated Carousel Script
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.querySelector('.brands-carousel');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    const carouselContainer = document.querySelector('.brands-carousel-container');
+    const carouselItems = document.querySelectorAll('.brand-card');
+    
+    // Clone first few items and append to end for seamless looping
+    const firstItems = Array.from(carouselItems).slice(0, 3);
+    firstItems.forEach(item => {
+        carousel.appendChild(item.cloneNode(true));
+    });
+    
+    // Only enable manual controls on desktop
+    if (window.innerWidth > 768) {
+        const itemWidth = carouselItems[0].offsetWidth + 24; // width + margin
         
-        // Only enable these features on desktop
-        if (window.innerWidth > 768) {
-            const itemWidth = carouselItems[0].offsetWidth + 24; // width + margin
-            
-            // Clone first few items and append to end for seamless looping
-            const firstItems = Array.from(carouselItems).slice(0, 3);
-            firstItems.forEach(item => {
-                carousel.appendChild(item.cloneNode(true));
-            });
-            
-            // Pause animation on hover
-            carousel.addEventListener('mouseenter', () => {
-                carousel.style.animationPlayState = 'paused';
-            });
-            
-            carousel.addEventListener('mouseleave', () => {
-                carousel.style.animationPlayState = 'running';
-            });
-            
-            // Manual controls
-            let scrollPosition = 0;
-            const scrollStep = itemWidth * 3;
-            
-            nextBtn.addEventListener('click', () => {
-                scrollPosition += scrollStep;
-                carousel.style.transform = `translateX(-${scrollPosition}px)`;
-                carousel.style.animation = 'none';
-            });
-            
-            prevBtn.addEventListener('click', () => {
-                scrollPosition = Math.max(0, scrollPosition - scrollStep);
-                carousel.style.transform = `translateX(-${scrollPosition}px)`;
-                carousel.style.animation = 'none';
-            });
-            
-            // Reset position when animation completes
-            carousel.addEventListener('animationiteration', () => {
-                scrollPosition = 0;
-                carousel.style.transform = 'translateX(0)';
-            });
-        } else {
-            // On mobile, remove the animation and let users scroll naturally
+        // Pause animation on hover
+        carousel.addEventListener('mouseenter', () => {
+            carousel.style.animationPlayState = 'paused';
+        });
+        
+        carousel.addEventListener('mouseleave', () => {
+            carousel.style.animationPlayState = 'running';
+        });
+        
+        // Manual controls
+        let scrollPosition = 0;
+        const scrollStep = itemWidth * 3;
+        
+        nextBtn.addEventListener('click', () => {
+            scrollPosition += scrollStep;
+            carousel.style.transform = `translateX(-${scrollPosition}px)`;
             carousel.style.animation = 'none';
+        });
+        
+        prevBtn.addEventListener('click', () => {
+            scrollPosition = Math.max(0, scrollPosition - scrollStep);
+            carousel.style.transform = `translateX(-${scrollPosition}px)`;
+            carousel.style.animation = 'none';
+        });
+        
+        // Reset position when animation completes
+        carousel.addEventListener('animationiteration', () => {
+            scrollPosition = 0;
+            carousel.style.transform = 'translateX(0)';
+        });
+    } else {
+        // On mobile, ensure the animation continues to work
+        carousel.style.animation = 'scroll 40s linear infinite';
+        
+        // Pause animation on touch start
+        carouselContainer.addEventListener('touchstart', () => {
+            carousel.style.animationPlayState = 'paused';
+        });
+        
+        // Resume animation after a brief delay when touch ends
+        carouselContainer.addEventListener('touchend', () => {
+            setTimeout(() => {
+                carousel.style.animationPlayState = 'running';
+            }, 2000);
+        });
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth <= 768) {
+            carousel.style.animation = 'scroll 40s linear infinite';
+        } else {
+            carousel.style.animation = 'scroll 40s linear infinite';
         }
     });
+});
     </script>
 </body>
 </html>
