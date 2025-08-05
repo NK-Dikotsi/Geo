@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GeoCarRental - Rent Cars Near You</title>
+
+    <!-- Favicon (Browser Tab Icon) -->
+    <link rel="icon" href="images/logoblack1.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1201,6 +1204,19 @@
             margin-left: auto;
             color: var(--text-light);
         }
+
+        .modal-gif-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .modal-gif {
+        width: 120px;
+        height: 120px;
+        object-fit: contain;
+        display: block;
+    }
     </style>
 </head>
 <body>
@@ -1470,9 +1486,13 @@
 
 
 <!-- Sign Up Options Modal -->
+<!-- Sign Up Options Modal -->
 <div class="auth-modal" id="signupOptionsModal">
     <div class="auth-modal-content">
         <button class="close-modal" onclick="closeModal('signupOptionsModal')">&times;</button>
+        <div class="modal-gif-container">
+            <img src="videos/geooverlay.gif" class="modal-gif" onload="this.onload=null; this.src=this.src;">
+        </div>
         <h2 class="auth-title">Sign up</h2>
         <p class="auth-subtitle">Join Geo to rent unique vehicles near you</p>
         
@@ -1480,7 +1500,7 @@
             <i class="fas fa-envelope"></i> Continue with Email
         </button>
         
-        <button class="auth-provider-btn">
+        <button class="auth-provider-btn google"  onclick="signInWithGoogle()">
             <i class="fab fa-google"></i> Continue with Google
         </button>
         
@@ -1500,6 +1520,9 @@
 <div class="auth-modal" id="signupFormModal">
     <div class="auth-modal-content">
         <button class="close-modal" onclick="closeModal('signupFormModal')">&times;</button>
+        <div class="modal-gif-container">
+            <img src="videos/geooverlay.gif" class="modal-gif" onload="this.onload=null; this.src=this.src;">
+        </div>
         <h2 class="auth-title">Sign up</h2>
         
         <form id="signupForm">
@@ -1550,25 +1573,10 @@
 <div class="auth-modal" id="loginModal">
     <div class="auth-modal-content">
         <button class="close-modal" onclick="closeModal('loginModal')">&times;</button>
+        <div class="modal-gif-container">
+            <img src="videos/geooverlay.gif" class="modal-gif" onload="this.onload=null; this.src=this.src;">
+        </div>
         <h2 class="auth-title">Log in</h2>
-        
-        <div class="auth-form-group">
-            <label>Country code</label>
-            <div class="country-code-selector" onclick="showCountryCodeSelector()">
-                <span id="selectedCountry">+44 United Kingdom</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-        </div>
-        
-        <div class="auth-form-group">
-            <label for="phoneNumber">Phone number</label>
-            <input type="tel" id="phoneNumber" placeholder="Phone number" required>
-            <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">
-                We'll text you a code to confirm your number.
-            </p>
-        </div>
-        
-        <button class="auth-primary-btn" onclick="sendLoginCode()">Continue</button>
         
         <div class="auth-divider">or</div>
         
@@ -1580,7 +1588,7 @@
             <i class="fab fa-apple"></i> Continue with Apple
         </button>
         
-        <button class="auth-provider-btn">
+        <button class="auth-provider-btn google" onclick="signInWithGoogle()">
             <i class="fab fa-google"></i> Continue with Google
         </button>
         
@@ -1594,6 +1602,9 @@
 <div class="auth-modal" id="loginEmailModal">
     <div class="auth-modal-content">
         <button class="close-modal" onclick="closeModal('loginEmailModal')">&times;</button>
+        <div class="modal-gif-container">
+            <img src="videos/geooverlay.gif" class="modal-gif" onload="this.onload=null; this.src=this.src;">
+        </div>
         <h2 class="auth-title">Log in with Email</h2>
         
         <form id="loginEmailForm">
@@ -1615,13 +1626,12 @@
         </p>
     </div>
 </div>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-col">
                 <div class="footer-logo-container">
-                    <img src="images/logowhite.png" alt="GeoCarRental Logo" class="footer-logo">
+                    <img src="images/logoblack1.png" alt="GeoCarRental Logo" class="footer-logo">
                 </div>
                 <p style="color: white; font-size: 0.9rem; margin-bottom: 1.5rem;">
                     Rent unique vehicles from local hosts or earn money by sharing your car.
@@ -1668,232 +1678,448 @@
         </div>
     </footer>
 
-    <script>
-        // Mobile menu toggle
-        const menuToggle = document.getElementById('menuToggle');
-        const navLinks = document.getElementById('navLinks');
+<script>
+// Modal control functions
+function showSignupOptions() {
+  closeAllModals();
+  document.getElementById('signupOptionsModal').style.display = 'flex';
+}
+
+function showSignupForm() {
+  closeAllModals();
+  document.getElementById('signupFormModal').style.display = 'flex';
+}
+
+function showLoginModal() {
+  closeAllModals();
+  document.getElementById('loginModal').style.display = 'flex';
+}
+
+function showLoginWithEmail() {
+  closeAllModals();
+  document.getElementById('loginEmailModal').style.display = 'flex';
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).style.display = 'none';
+}
+
+function closeAllModals() {
+  const modals = document.querySelectorAll('.auth-modal');
+  modals.forEach(modal => {
+    modal.style.display = 'none';
+  });
+}
+
+// Mobile menu and basic UI interactions
+document.addEventListener('DOMContentLoaded', function() {
+  // Mobile menu toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+        if (window.innerWidth <= 768) {
+          navLinks.classList.remove('active');
+        }
+      }
+    });
+  }
+
+  // Connect navbar auth buttons
+  document.querySelectorAll('.nav-links .auth-button').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      if (button.textContent.trim() === 'Sign Up') {
+        showSignupOptions();
+      } else if (button.textContent.trim() === 'Log In') {
+        showLoginModal();
+      }
+    });
+  });
+
+  // Close modals when clicking outside
+  document.querySelectorAll('.auth-modal').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        closeModal(modal.id);
+      }
+    });
+  });
+
+  // Video initialization
+  const video = document.querySelector('.video-hero video');
+  if (video) {
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('muted', '');
+    video.setAttribute('autoplay', '');
+    video.load();
     
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
+    const playVideo = () => {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log('Video play prevented:', error);
         });
+      }
+    };
     
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
-                if (window.innerWidth <= 768) {
-                    navLinks.classList.remove('active');
-                }
-            }
-        });
+    playVideo();
     
-        // Modal functions
-        function showSignupOptions() {
-            closeAllModals();
-            document.getElementById('signupOptionsModal').style.display = 'flex';
-        }
-        
-        function showSignupForm() {
-            closeAllModals();
-            document.getElementById('signupFormModal').style.display = 'flex';
-        }
-        
-        function showLoginModal() {
-            closeAllModals();
-            document.getElementById('loginModal').style.display = 'flex';
-        }
-        
-        function showLoginWithEmail() {
-            closeAllModals();
-            document.getElementById('loginEmailModal').style.display = 'flex';
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        function closeAllModals() {
-            const modals = document.querySelectorAll('.auth-modal');
-            modals.forEach(modal => {
-                modal.style.display = 'none';
-            });
-        }
-        
-        function sendLoginCode() {
-            // In a real app, you would send the verification code here
-            alert('Verification code sent to your phone');
-            closeModal('loginModal');
-        }
-        
-        function showCountryCodeSelector() {
-            // In a real app, you would show a proper country code selector
-            alert('Country code selector would open here');
-        }
-        
-        // Form submissions
-        document.getElementById('signupForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Handle sign up form submission
-            alert('Sign up form submitted');
-            closeModal('signupFormModal');
+    document.addEventListener('click', function firstInteraction() {
+      playVideo();
+      document.removeEventListener('click', firstInteraction);
+    }, { once: true });
+    
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      video.addEventListener('loadedmetadata', function() {
+        video.play().catch(e => console.log('iOS play failed:', e));
+      });
+    }
+  }
+
+  // Carousel initialization
+  const carousel = document.querySelector('.brands-carousel');
+  const prevBtn = document.querySelector('.prev-btn');
+  const nextBtn = document.querySelector('.next-btn');
+  const carouselContainer = document.querySelector('.brands-carousel-container');
+  const carouselItems = document.querySelectorAll('.brand-card');
+  
+  if (carousel && carouselItems.length > 0) {
+    const firstItems = Array.from(carouselItems).slice(0, 3);
+    firstItems.forEach(item => {
+      carousel.appendChild(item.cloneNode(true));
+    });
+    
+    if (window.innerWidth > 768) {
+      const itemWidth = carouselItems[0].offsetWidth + 24;
+      
+      carousel.addEventListener('mouseenter', () => {
+        carousel.style.animationPlayState = 'paused';
+      });
+      
+      carousel.addEventListener('mouseleave', () => {
+        carousel.style.animationPlayState = 'running';
+      });
+      
+      let scrollPosition = 0;
+      const scrollStep = itemWidth * 3;
+      
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          scrollPosition += scrollStep;
+          carousel.style.transform = `translateX(-${scrollPosition}px)`;
+          carousel.style.animation = 'none';
+        });
+      }
+      
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          scrollPosition = Math.max(0, scrollPosition - scrollStep);
+          carousel.style.transform = `translateX(-${scrollPosition}px)`;
+          carousel.style.animation = 'none';
+        });
+      }
+      
+      carousel.addEventListener('animationiteration', () => {
+        scrollPosition = 0;
+        carousel.style.transform = 'translateX(0)';
+      });
+    } else {
+      carousel.style.animation = 'scroll 40s linear infinite';
+      
+      if (carouselContainer) {
+        carouselContainer.addEventListener('touchstart', () => {
+          carousel.style.animationPlayState = 'paused';
         });
         
-        document.getElementById('loginEmailForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Handle login form submission
-            alert('Login form submitted');
-            closeModal('loginEmailModal');
+        carouselContainer.addEventListener('touchend', () => {
+          setTimeout(() => {
+            carousel.style.animationPlayState = 'running';
+          }, 2000);
         });
-        
-        // Connect navbar buttons to modals
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get all auth buttons
-            const authButtons = document.querySelectorAll('.nav-links .auth-button');
-            
-            authButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
+      }
+    }
+  }
+});
+
+// Page visibility handling
+document.addEventListener('visibilitychange', () => {
+  const video = document.querySelector('.video-hero video');
+  if (!document.hidden && video && video.paused) {
+    video.play().catch(e => console.log('Visibility play failed:', e));
+  }
+});
+
+// Window resize handling
+window.addEventListener('resize', function() {
+  const carousel = document.querySelector('.brands-carousel');
+  if (carousel) {
+    if (window.innerWidth <= 768) {
+      carousel.style.animation = 'scroll 40s linear infinite';
+    } else {
+      carousel.style.animation = 'scroll 40s linear infinite';
+    }
+  }
+});
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  getDoc,
+  serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAMU2y175sXjHkxAv6SF88-E9FCjaR2kJc",
+  authDomain: "geocarrental-9a4de.firebaseapp.com",
+  projectId: "geocarrental-9a4de",
+  storageBucket: "geocarrental-9a4de.firebasestorage.app",
+  messagingSenderId: "951760186950",
+  appId: "1:951760186950:web:7e8cc25aacdd251f152447",
+  measurementId: "G-LJEF344295"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
+
+// Notification system
+function showNotification(message, isSuccess = true) {
+  const notification = document.createElement('div');
+  notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
+  notification.innerHTML = `
+    <span>${message}</span>
+    <button class="close-notification">&times;</button>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  const timer = setTimeout(() => {
+    notification.classList.add('fade-out');
+    setTimeout(() => notification.remove(), 300);
+  }, 2000);
+  
+  notification.querySelector('.close-notification').addEventListener('click', () => {
+    clearTimeout(timer);
+    notification.classList.add('fade-out');
+    setTimeout(() => notification.remove(), 300);
+  });
+}
+
+// Add notification styles
+const style = document.createElement('style');
+style.textContent = `
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 350px;
+    z-index: 9999;
+    transform: translateX(0);
+    transition: all 0.3s ease;
+  }
+  .notification.success {
+    background-color: #4CAF50;
+  }
+  .notification.error {
+    background-color: #F44336;
+  }
+  .notification.fade-out {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  .close-notification {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 15px;
+    padding: 0;
+  }
+`;
+document.head.appendChild(style);
+
+// Google sign-in function
+async function signInWithGoogle() {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    
+    if (!userDoc.exists()) {
+      await setDoc(doc(db, "users", user.uid), {
+        userId: user.uid,
+        email: user.email,
+        name: user.displayName || '',
+        phone: user.phoneNumber || '',
+        role: 'renter',
+        profilePic: user.photoURL || '',
+        licenseVerified: false,
+        ownerApproved: false,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      
+      showNotification('Account created with Google successfully!');
+    } else {
+      showNotification('Logged in with Google successfully!');
+    }
+    
+    closeAllModals();
+    updateAuthUI(user);
+    
+  } catch (error) {
+    console.error('Error with Google sign-in:', error);
+    
+    let errorMessage = 'Google sign-in failed. Please try again.';
+    if (error.code === 'auth/popup-closed-by-user') {
+      errorMessage = 'Sign-in popup was closed. Please try again.';
+    } else if (error.code === 'auth/cancelled-popup-request') {
+      errorMessage = 'Sign-in process was cancelled.';
+    }
+    
+    showNotification(errorMessage, false);
+  }
+}
+
+// Update UI based on auth state
+function updateAuthUI(user) {
+    const authButtons = document.querySelectorAll('.nav-links .auth-button');
+    
+    if (user) {
+        // User is logged in, redirect to user.html
+        window.location.href = "user.html";
+    } else {
+        // User is not logged in, show login/signup buttons
+        authButtons.forEach(button => {
+            if (button.textContent.trim() === 'My Account') {
+                button.textContent = 'Log In';
+                button.onclick = function(e) {
                     e.preventDefault();
-                    
-                    // Check which button was clicked
-                    if (button.textContent.trim() === 'Sign Up') {
-                        showSignupOptions();
-                    } else if (button.textContent.trim() === 'Log In') {
-                        showLoginModal();
-                    }
-                });
-            });
-    
-            // Initialize video
-            const video = document.querySelector('.video-hero video');
-            if (video) {
-                // Set video attributes for better mobile compatibility
-                video.setAttribute('playsinline', '');
-                video.setAttribute('webkit-playsinline', '');
-                video.setAttribute('muted', '');
-                video.setAttribute('autoplay', '');
-                
-                // Force video to load
-                video.load();
-                
-                // Try to play video with error handling
-                const playVideo = () => {
-                    const playPromise = video.play();
-                    
-                    if (playPromise !== undefined) {
-                        playPromise.catch(error => {
-                            console.log('Video play prevented:', error);
-                        });
-                    }
+                    showLoginModal();
                 };
-                
-                // Try to play immediately
-                playVideo();
-                
-                // Fallback for when autoplay is blocked
-                document.addEventListener('click', function firstInteraction() {
-                    playVideo();
-                    document.removeEventListener('click', firstInteraction);
-                }, { once: true });
-                
-                // iOS specific handling
-                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                    video.addEventListener('loadedmetadata', function() {
-                        video.play().catch(e => console.log('iOS play failed:', e));
-                    });
-                }
-            }
-    
-            // Initialize carousel
-            const carousel = document.querySelector('.brands-carousel');
-            const prevBtn = document.querySelector('.prev-btn');
-            const nextBtn = document.querySelector('.next-btn');
-            const carouselContainer = document.querySelector('.brands-carousel-container');
-            const carouselItems = document.querySelectorAll('.brand-card');
-            
-            if (carousel && carouselItems.length > 0) {
-                // Clone first few items and append to end for seamless looping
-                const firstItems = Array.from(carouselItems).slice(0, 3);
-                firstItems.forEach(item => {
-                    carousel.appendChild(item.cloneNode(true));
-                });
-                
-                // Only enable manual controls on desktop
-                if (window.innerWidth > 768) {
-                    const itemWidth = carouselItems[0].offsetWidth + 24; // width + margin
-                    
-                    // Pause animation on hover
-                    carousel.addEventListener('mouseenter', () => {
-                        carousel.style.animationPlayState = 'paused';
-                    });
-                    
-                    carousel.addEventListener('mouseleave', () => {
-                        carousel.style.animationPlayState = 'running';
-                    });
-                    
-                    // Manual controls
-                    let scrollPosition = 0;
-                    const scrollStep = itemWidth * 3;
-                    
-                    if (nextBtn) {
-                        nextBtn.addEventListener('click', () => {
-                            scrollPosition += scrollStep;
-                            carousel.style.transform = `translateX(-${scrollPosition}px)`;
-                            carousel.style.animation = 'none';
-                        });
-                    }
-                    
-                    if (prevBtn) {
-                        prevBtn.addEventListener('click', () => {
-                            scrollPosition = Math.max(0, scrollPosition - scrollStep);
-                            carousel.style.transform = `translateX(-${scrollPosition}px)`;
-                            carousel.style.animation = 'none';
-                        });
-                    }
-                    
-                    // Reset position when animation completes
-                    carousel.addEventListener('animationiteration', () => {
-                        scrollPosition = 0;
-                        carousel.style.transform = 'translateX(0)';
-                    });
-                } else {
-                    // On mobile, ensure the animation continues to work
-                    carousel.style.animation = 'scroll 40s linear infinite';
-                    
-                    // Pause animation on touch start
-                    if (carouselContainer) {
-                        carouselContainer.addEventListener('touchstart', () => {
-                            carousel.style.animationPlayState = 'paused';
-                        });
-                        
-                        // Resume animation after a brief delay when touch ends
-                        carouselContainer.addEventListener('touchend', () => {
-                            setTimeout(() => {
-                                carousel.style.animationPlayState = 'running';
-                            }, 2000);
-                        });
-                    }
-                }
             }
         });
+    }
+}
+// Email/password signup
+document.getElementById('signupForm')?.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const firstName = document.getElementById('firstName').value;
+  const lastName = document.getElementById('lastName').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
     
-        // Page visibility API to restart video when tab becomes visible
-        document.addEventListener('visibilitychange', () => {
-            const video = document.querySelector('.video-hero video');
-            if (!document.hidden && video && video.paused) {
-                video.play().catch(e => console.log('Visibility play failed:', e));
-            }
-        });
+    await setDoc(doc(db, "users", user.uid), {
+      userId: user.uid,
+      email: email,
+      name: `${firstName} ${lastName}`,
+      phone: '',
+      role: 'renter',
+      profilePic: '',
+      licenseVerified: false,
+      ownerApproved: false,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
     
-        // Handle window resize for carousel
-        window.addEventListener('resize', function() {
-            const carousel = document.querySelector('.brands-carousel');
-            if (carousel) {
-                if (window.innerWidth <= 768) {
-                    carousel.style.animation = 'scroll 40s linear infinite';
-                } else {
-                    carousel.style.animation = 'scroll 40s linear infinite';
-                }
-            }
-        });
-    </script>
+    showNotification('Account created successfully!');
+    closeModal('signupFormModal');
+    setTimeout(() => showLoginModal(), 500);
+  } catch (error) {
+    console.error('Error signing up:', error);
+    let errorMessage = 'Registration failed. Please try again.';
+    
+    if (error.code === 'auth/email-already-in-use') {
+      errorMessage = 'This email is already registered. Please log in.';
+    } else if (error.code === 'auth/weak-password') {
+      errorMessage = 'Password should be at least 6 characters.';
+    } else if (error.code === 'auth/invalid-email') {
+      errorMessage = 'Please enter a valid email address.';
+    }
+    
+    showNotification(errorMessage, false);
+  }
+});
+
+// Email/password login
+document.getElementById('loginEmailForm')?.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    showNotification('Logged in successfully!');
+    closeModal('loginEmailModal');
+  } catch (error) {
+    console.error('Error logging in:', error);
+    let errorMessage = 'Login failed. Please try again.';
+    
+    if (error.code === 'auth/user-not-found') {
+      errorMessage = 'No account found with this email.';
+    } else if (error.code === 'auth/wrong-password') {
+      errorMessage = 'Incorrect password. Please try again.';
+    } else if (error.code === 'auth/too-many-requests') {
+      errorMessage = 'Too many attempts. Please try again later.';
+    }
+    
+    showNotification(errorMessage, false);
+  }
+});
+
+// Connect Google sign-in buttons
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.auth-provider-btn.google').forEach(btn => {
+    btn.addEventListener('click', signInWithGoogle);
+  });
+});
+
+// Auth state listener
+onAuthStateChanged(auth, (user) => {
+  updateAuthUI(user);
+});
+</script>
 </body>
 </html>
