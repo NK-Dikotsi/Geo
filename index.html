@@ -1976,27 +1976,34 @@ document.head.appendChild(style);
 // Google sign-in function
 async function signInWithGoogle() {
   try {
+    console.log("Starting Google sign-in...");
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
-    
-    const userDoc = await getDoc(doc(db, "users", user.uid));
+    console.log("Google auth successful, UID:", user.uid);
+
+    const userDocRef = doc(db, "users", user.uid);
+    console.log("Checking for existing user doc...");
+    const userDoc = await getDoc(userDocRef);
     
     if (!userDoc.exists()) {
-      await setDoc(doc(db, "users", user.uid), {
+      console.log("Creating new user document...");
+      await setDoc(userDocRef, {
         userId: user.uid,
         email: user.email,
         name: user.displayName || '',
         phone: user.phoneNumber || '',
         role: 'renter',
         profilePic: user.photoURL || '',
+        address: '',
         licenseVerified: false,
         ownerApproved: false,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
-      
+      console.log("User document created");
       showNotification('Account created with Google successfully!');
     } else {
+      console.log("Existing user document found");
       showNotification('Logged in with Google successfully!');
     }
     
@@ -2004,20 +2011,12 @@ async function signInWithGoogle() {
     updateAuthUI(user);
     
   } catch (error) {
-    console.error('Error with Google sign-in:', error);
-    
-    let errorMessage = 'Google sign-in failed. Please try again.';
-    if (error.code === 'auth/popup-closed-by-user') {
-      errorMessage = 'Sign-in popup was closed. Please try again.';
-    } else if (error.code === 'auth/cancelled-popup-request') {
-      errorMessage = 'Sign-in process was cancelled.';
-    }
-    
-    showNotification(errorMessage, false);
+    console.error("Google sign-in error:", error);
+    showNotification('Google sign-in failed. Please try again.', false);
   }
 }
 
-// Update UI based on auth state
+
 function updateAuthUI(user) {
     const authButtons = document.querySelectorAll('.nav-links .auth-button');
     
@@ -2047,42 +2046,57 @@ document.getElementById('signupForm')?.addEventListener('submit', async function
   const password = document.getElementById('password').value;
   
   try {
+    console.log("Creating auth user...");
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
+    console.log("Auth user created:", user.uid);
+
+    console.log("Creating Firestore document...");
+    const userDocRef = doc(db, "users", user.uid);
     
-    await setDoc(doc(db, "users", user.uid), {
+    await setDoc(userDocRef, {
       userId: user.uid,
       email: email,
       name: `${firstName} ${lastName}`,
       phone: '',
       role: 'renter',
       profilePic: '',
+      address: '',
       licenseVerified: false,
       ownerApproved: false,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
     
-    showNotification('Account created successfully!');
-    closeModal('signupFormModal');
-    setTimeout(() => showLoginModal(), 500);
-  } catch (error) {
-    console.error('Error signing up:', error);
-    let errorMessage = 'Registration failed. Please try again.';
+    console.log("Verifying document creation...");
+    const docSnapshot = await getDoc(userDocRef);
     
-    if (error.code === 'auth/email-already-in-use') {
-      errorMessage = 'This email is already registered. Please log in.';
-    } else if (error.code === 'auth/weak-password') {
-      errorMessage = 'Password should be at least 6 characters.';
-    } else if (error.code === 'auth/invalid-email') {
-      errorMessage = 'Please enter a valid email address.';
+    if (!docSnapshot.exists()) {
+      throw new Error("Firestore document not created");
     }
     
-    showNotification(errorMessage, false);
+    console.log("User document verified:", docSnapshot.data());
+    showNotification('Account created successfully!');
+    closeModal('signupFormModal');
+
+  } catch (error) {
+    console.error("Full error:", error);
+    
+    // Clean up auth user if Firestore failed
+    if (auth.currentUser) {
+      try {
+        await auth.currentUser.delete();
+        console.log("Cleaned up auth user after failure");
+      } catch (deleteError) {
+        console.error("Failed to delete auth user:", deleteError);
+      }
+    }
+    
+    showNotification('Registration failed. Please try again.', false);
   }
 });
 
-// Email/password login
+
 document.getElementById('loginEmailForm')?.addEventListener('submit', async function(e) {
   e.preventDefault();
   
