@@ -896,10 +896,7 @@
             <h2>Cars Around You</h2>
             <div class="cars-container" id="carsContainer">
                 <div class="no-cars">
-                    <video autoplay loop muted playsinline class="no-cars-video">
-                        <source src="videos/nocars.gif" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+                    <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
                     <p>We're finding cars near you...</p>
                     <a href="#" class="explore-btn">Explore All Cars</a>
                 </div>
@@ -1097,69 +1094,48 @@
     
         // Show cars around user's location
         async function showCarsNearYou(location) {
-            try {
-                // Clear any existing content
-                carsContainer.innerHTML = '';
-                
-                // Create the no-cars container
-                const noCarsDiv = document.createElement('div');
-                noCarsDiv.className = 'no-cars';
-                
-                // Add the video
-                const video = document.createElement('video');
-                video.autoplay = true;
-                video.loop = true;
-                video.muted = true;
-                video.playsInline = true;
-                video.className = 'no-cars-video';
-                
-                const source = document.createElement('source');
-                source.src = 'videos/nocars.gif';
-                source.type = 'video/mp4';
-                video.appendChild(source);
-                
-                // Add the message with location if available
-                const message = document.createElement('p');
-                message.textContent = location 
-                    ? `No cars available near ${location}`
-                    : 'We cannot determine your current location';
-                
-                // Add the explore button
-                const exploreBtn = document.createElement('a');
-                exploreBtn.href = '#';
-                exploreBtn.className = 'explore-btn';
-                exploreBtn.textContent = 'Explore All Cars';
-                
-                // Add location display if available
-                if (location) {
-                    const locationDisplay = document.createElement('p');
-                    locationDisplay.className = 'location-display';
-                    locationDisplay.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${location}`;
-                    noCarsDiv.appendChild(locationDisplay);
-                }
-                
-                // Put it all together
-                noCarsDiv.appendChild(video);
-                noCarsDiv.appendChild(message);
-                noCarsDiv.appendChild(exploreBtn);
-                
-                carsContainer.appendChild(noCarsDiv);
-                
-            } catch (error) {
-                console.error("Error loading cars:", error);
-                carsContainer.innerHTML = `
-                    <div class="no-cars">
-                        <video autoplay loop muted playsinline class="no-cars-video">
-                            <source src="videos/nocars.gif" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        <p>Error loading cars. Please try again later.</p>
-                        <a href="#" class="explore-btn">Explore All Cars</a>
-                    </div>
-                `;
-            }
+    try {
+        carsContainer.innerHTML = '';
+        const noCarsDiv = document.createElement('div');
+        noCarsDiv.className = 'no-cars';
+        
+        const image = document.createElement('img');
+        image.src = 'videos/nocars.gif';
+        image.alt = 'No cars available';
+        image.className = 'no-cars-video';
+        
+        const message = document.createElement('p');
+        message.textContent = location 
+            ? `No cars available near ${location}`
+            : 'We cannot determine your current location';
+        
+        const exploreBtn = document.createElement('a');
+        exploreBtn.href = '#';
+        exploreBtn.className = 'explore-btn';
+        exploreBtn.textContent = 'Explore All Cars';
+        
+        if (location) {
+            const locationDisplay = document.createElement('p');
+            locationDisplay.className = 'location-display';
+            locationDisplay.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${location}`;
+            noCarsDiv.appendChild(locationDisplay);
         }
-    
+        
+        noCarsDiv.appendChild(image);
+        noCarsDiv.appendChild(message);
+        noCarsDiv.appendChild(exploreBtn);
+        carsContainer.appendChild(noCarsDiv);
+    } catch (error) {
+        console.error("Error loading cars:", error);
+        carsContainer.innerHTML = `
+            <div class="no-cars">
+                <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
+                <p>Error loading cars. Please try again later.</p>
+                <a href="#" class="explore-btn">Explore All Cars</a>
+            </div>
+        `;
+    }
+}
         // Check auth state and load user data
         onAuthStateChanged(auth, async (user) => {
             if (user) {
