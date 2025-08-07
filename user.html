@@ -737,13 +737,6 @@
             </div>
         </div>
         
-        <!-- Current Rental Section -->
-        <div class="account-section">
-            <h2>Your Current Rental</h2>
-            <div class="current-rental" id="currentRentalContainer">
-                <p class="no-rentals">You don't have any active rentals.</p>
-            </div>
-        </div>
         
         <!-- Personal Info Section -->
         <div class="account-section">
@@ -928,9 +921,7 @@
             getDoc, 
             setDoc,
             updateDoc,
-            serverTimestamp,
-            collection,
-            getDocs
+            serverTimestamp
         } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
         import { 
             getStorage,
@@ -968,6 +959,7 @@
         const displayLocation = document.getElementById('displayLocation');
         const updateLocation = document.getElementById('updateLocation');
         const locationStatus = document.getElementById('locationStatus');
+        const carsContainer = document.getElementById('carsContainer');
         
         // Profile edit elements
         const avatarEdit = document.getElementById('avatarEdit');
@@ -996,10 +988,6 @@
         const paymentForm = document.getElementById('paymentForm');
         const savePayment = document.getElementById('savePayment');
         const cancelPayment = document.getElementById('cancelPayment');
-        
-        // Cars container
-        const carsContainer = document.getElementById('carsContainer');
-        const currentRentalContainer = document.getElementById('currentRentalContainer');
     
         // Notification system
         function showNotification(message, isSuccess = true) {
@@ -1050,7 +1038,7 @@
             return regex.test(phone);
         }
     
-        // Get device location using free API
+        // Get device location using browser's Geolocation API
         async function getDeviceLocation() {
             return new Promise((resolve, reject) => {
                 if (!navigator.geolocation) {
@@ -1103,52 +1091,23 @@
             });
         }
     
-        // Load nearby cars from Firestore
-        async function loadNearbyCars() {
+        // Show cars around user's location (or fallback if no cars available)
+        async function showCarsNearYou(location) {
             try {
-                const user = auth.currentUser;
-                if (!user) return;
-    
-                const carsCollection = collection(db, "cars");
-                const querySnapshot = await getDocs(carsCollection);
+                // In a real app, you would query Firestore for cars near the user's location
+                // For now, we'll just show the no cars message with the location
                 
-                if (querySnapshot.empty) {
-                    // Show no cars video
-                    carsContainer.innerHTML = `
-                        <div class="no-cars">
-                            <video autoplay loop muted playsinline class="no-cars-video">
-                                <source src="nocars.mp4" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                            <p>No cars available in your area at the moment.</p>
-                            <a href="#" class="explore-btn">Explore All Cars</a>
-                        </div>
-                    `;
-                    return;
-                }
-    
-                // Clear container
-                carsContainer.innerHTML = '';
-                
-                // Add cars to container
-                querySnapshot.forEach((doc) => {
-                    const car = doc.data();
-                    const carCard = document.createElement('div');
-                    carCard.className = 'car-card';
-                    carCard.innerHTML = `
-                        <img src="${car.imageUrl || 'images/default-car.jpg'}" alt="${car.make} ${car.model}" class="car-image">
-                        <div class="car-details">
-                            <h3 class="car-title">${car.make} ${car.model} ${car.year || ''}</h3>
-                            <p class="car-price">$${car.pricePerDay || '0'} / day</p>
-                            <div class="car-features">
-                                <span class="car-feature"><i class="fas fa-car"></i> ${car.type || 'Sedan'}</span>
-                                <span class="car-feature"><i class="fas fa-gas-pump"></i> ${car.fuelType || 'Gasoline'}</span>
-                            </div>
-                            <p class="car-location"><i class="fas fa-map-marker-alt"></i> ${car.location || 'Unknown location'}</p>
-                        </div>
-                    `;
-                    carsContainer.appendChild(carCard);
-                });
+                carsContainer.innerHTML = `
+                    <div class="no-cars">
+                        <video autoplay loop muted playsinline class="no-cars-video">
+                            <source src="nocars.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <p>No cars available near ${location || 'your current location'}</p>
+                        <p class="location-display"><i class="fas fa-map-marker-alt"></i> ${location || 'Location not available'}</p>
+                        <a href="#" class="explore-btn">Explore All Cars</a>
+                    </div>
+                `;
             } catch (error) {
                 console.error("Error loading cars:", error);
                 carsContainer.innerHTML = `
@@ -1161,58 +1120,6 @@
                         <a href="#" class="explore-btn">Explore All Cars</a>
                     </div>
                 `;
-            }
-        }
-    
-        // Load current rentals
-        async function loadCurrentRentals() {
-            try {
-                const user = auth.currentUser;
-                if (!user) return;
-    
-                const rentalsCollection = collection(db, "rentals");
-                const querySnapshot = await getDocs(rentalsCollection);
-                
-                if (querySnapshot.empty) {
-                    currentRentalContainer.innerHTML = '<p class="no-rentals">You don\'t have any active rentals.</p>';
-                    return;
-                }
-    
-                // Clear container
-                currentRentalContainer.innerHTML = '';
-                
-                // Add rentals to container
-                querySnapshot.forEach((doc) => {
-                    const rental = doc.data();
-                    if (rental.userId === user.uid) {
-                        const rentalCard = document.createElement('div');
-                        rentalCard.className = 'rental-card';
-                        rentalCard.innerHTML = `
-                            <img src="${rental.carImage || 'images/default-car.jpg'}" alt="Rental Car" class="rental-image">
-                            <div class="rental-details">
-                                <div class="rental-header">
-                                    <h3 class="rental-title">${rental.carMake} ${rental.carModel}</h3>
-                                    <span class="rental-status status-active">Active</span>
-                                </div>
-                                <div class="rental-dates">
-                                    <div class="date-group">
-                                        <i class="far fa-calendar-alt"></i>
-                                        <span>${rental.startDate || 'N/A'} to ${rental.endDate || 'N/A'}</span>
-                                    </div>
-                                </div>
-                                <p class="rental-price">Total: $${rental.totalPrice || '0'}</p>
-                                <div class="rental-actions">
-                                    <button class="action-btn primary-btn">Extend Rental</button>
-                                    <button class="action-btn secondary-btn">View Details</button>
-                                </div>
-                            </div>
-                        `;
-                        currentRentalContainer.appendChild(rentalCard);
-                    }
-                });
-            } catch (error) {
-                console.error("Error loading rentals:", error);
-                currentRentalContainer.innerHTML = '<p class="no-rentals">Error loading rental information.</p>';
             }
         }
     
@@ -1245,13 +1152,18 @@
                         
                         if (userData.location) {
                             displayLocation.textContent = userData.location;
+                            displayLocation.classList.remove('empty-value');
+                            // Show cars near this location
+                            showCarsNearYou(userData.location);
                         } else {
                             displayLocation.textContent = 'Location not set';
                             displayLocation.classList.add('empty-value');
+                            showCarsNearYou();
                         }
                         
                         if (userData.profilePic) {
-                            profileAvatar.src = userData.profilePic;
+                            // Add cache busting to ensure fresh image
+                            profileAvatar.src = `${userData.profilePic}?${Date.now()}`;
                         } else {
                             // Default avatar if no profile picture
                             profileAvatar.src = "images/default-avatar.png";
@@ -1280,10 +1192,6 @@
                         editName.value = userData.name || '';
                         editPhone.value = userData.phone || '';
                         
-                        // Load additional data
-                        loadNearbyCars();
-                        loadCurrentRentals();
-                        
                     } else {
                         // Create user document if it doesn't exist
                         await setDoc(userDocRef, {
@@ -1299,15 +1207,13 @@
                             updatedAt: serverTimestamp()
                         });
                         
-                        // Load default data
-                        loadNearbyCars();
-                        loadCurrentRentals();
-                        
                         showNotification('Profile created successfully!');
+                        showCarsNearYou();
                     }
                 } catch (error) {
                     console.error("Error getting user data:", error);
                     showNotification('Error loading profile data. Please try again.', false);
+                    showCarsNearYou();
                 }
             } else {
                 // No user is signed in, redirect to index.html
@@ -1350,7 +1256,7 @@
             }
         });
     
-        // Profile photo upload
+        // Profile photo upload - optimized for faster updates
         avatarEdit.addEventListener('click', () => {
             profilePhotoInput.click();
         });
@@ -1363,11 +1269,15 @@
                 const user = auth.currentUser;
                 if (!user) throw new Error('User not logged in');
                 
-                // Show loading state
+                // Show loading state immediately
                 avatarEdit.innerHTML = '<div class="loading"></div>';
                 
-                // Upload to Firebase Storage
-                const storageRef = ref(storage, `profile_pictures/${user.uid}`);
+                // Create a preview URL for instant feedback
+                const previewUrl = URL.createObjectURL(file);
+                profileAvatar.src = previewUrl;
+                
+                // Upload to Firebase Storage in the background
+                const storageRef = ref(storage, `profile_pictures/${user.uid}_${Date.now()}`);
                 const snapshot = await uploadBytes(storageRef, file);
                 const downloadURL = await getDownloadURL(snapshot.ref);
                 
@@ -1376,15 +1286,15 @@
                     photoURL: downloadURL
                 });
                 
-                // Update profile picture in Firestore
+                // Update profile picture in Firestore with cache busting
                 const userDocRef = doc(db, "users", user.uid);
                 await updateDoc(userDocRef, {
-                    profilePic: downloadURL,
+                    profilePic: `${downloadURL}?${Date.now()}`,
                     updatedAt: serverTimestamp()
                 });
                 
-                // Update UI
-                profileAvatar.src = downloadURL;
+                // Update UI with final image
+                profileAvatar.src = `${downloadURL}?${Date.now()}`;
                 avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
                 showNotification('Profile picture updated successfully!');
                 
@@ -1430,6 +1340,9 @@
                 displayLocation.classList.remove('empty-value');
                 locationStatus.textContent = "Location updated successfully!";
                 
+                // Show cars near the new location
+                showCarsNearYou(locationData.address);
+                
                 // Recalculate profile completion
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists()) {
@@ -1466,6 +1379,10 @@
                 
                 const userDocRef = doc(db, "users", user.uid);
                 
+                // Show loading state
+                savePersonalInfo.disabled = true;
+                savePersonalInfo.innerHTML = '<div class="loading"></div> Saving...';
+                
                 // Update user data in Firestore
                 await updateDoc(userDocRef, {
                     name: name,
@@ -1501,6 +1418,9 @@
             } catch (error) {
                 console.error('Error updating profile:', error);
                 showNotification('Failed to update profile. Please try again.', false);
+            } finally {
+                savePersonalInfo.disabled = false;
+                savePersonalInfo.textContent = 'Save Changes';
             }
         });
     
