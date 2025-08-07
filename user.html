@@ -329,38 +329,247 @@
             display: none;
         }
         
-        /* Trips Section */
-        .trips-container {
+        /* Cars Around You Section */
+        .cars-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
         }
         
-        .no-trips {
+        .car-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+        
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .car-image {
+            height: 180px;
+            width: 100%;
+            object-fit: cover;
+        }
+        
+        .car-details {
+            padding: 1.2rem;
+        }
+        
+        .car-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .car-price {
+            color: var(--primary-blue);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .car-features {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .car-feature {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        
+        .car-feature i {
+            margin-right: 0.3rem;
+            font-size: 0.9rem;
+        }
+        
+        .car-location {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        
+        .car-location i {
+            margin-right: 0.5rem;
+            color: var(--primary-blue);
+        }
+        
+        .no-cars {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .no-cars-video {
+            max-width: 400px;
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+        }
+        
+        .no-cars p {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .explore-btn {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .explore-btn:hover {
+            background-color: #1a4fd8;
+        }
+        
+        /* Current Rental Section */
+        .current-rental {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .rental-card {
+            display: flex;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .rental-image {
+            width: 200px;
+            height: 160px;
+            object-fit: cover;
+        }
+        
+        .rental-details {
+            flex: 1;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .rental-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .rental-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .rental-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background-color: #e3f2fd;
+            color: var(--primary-blue);
+        }
+        
+        .status-upcoming {
+            background-color: #fff8e1;
+            color: #ff8f00;
+        }
+        
+        .rental-dates {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .date-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        .date-group i {
+            margin-right: 0.5rem;
+            color: var(--text-light);
+        }
+        
+        .rental-price {
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+        
+        .rental-actions {
+            margin-top: auto;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .action-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        
+        .primary-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+        }
+        
+        .primary-btn:hover {
+            background-color: #1a4fd8;
+        }
+        
+        .secondary-btn {
+            background: none;
+            border: 1px solid #ddd;
+        }
+        
+        .secondary-btn:hover {
+            background: #f5f5f5;
+        }
+        
+        .no-rentals {
             color: var(--text-light);
             font-style: italic;
             padding: 2rem 0;
             text-align: center;
         }
         
-        /* Logout Button */
-        .logout-btn {
+        /* Loading State */
+        .loading {
             display: inline-block;
-            background-color: #ff5252;
-            color: white;
-            padding: 0.8rem 1.8rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-            border: none;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
         }
         
-        .logout-btn:hover {
-            background-color: #ff3232;
-            transform: translateY(-2px);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         /* Notification */
@@ -447,6 +656,15 @@
             .section-content {
                 gap: 1.5rem;
             }
+            
+            .rental-card {
+                flex-direction: column;
+            }
+            
+            .rental-image {
+                width: 100%;
+                height: 180px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -461,6 +679,15 @@
             
             .account-section h2 {
                 font-size: 1.1rem;
+            }
+            
+            .rental-dates {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .rental-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -510,6 +737,14 @@
             </div>
         </div>
         
+        <!-- Current Rental Section -->
+        <div class="account-section">
+            <h2>Your Current Rental</h2>
+            <div class="current-rental" id="currentRentalContainer">
+                <p class="no-rentals">You don't have any active rentals.</p>
+            </div>
+        </div>
+        
         <!-- Personal Info Section -->
         <div class="account-section">
             <h2>
@@ -534,8 +769,8 @@
                 </div>
                 
                 <div class="info-group">
-                    <p class="info-label">Address</p>
-                    <p class="info-value" id="displayAddress">123 Main St, Anytown, USA</p>
+                    <p class="info-label">Location</p>
+                    <p class="info-value" id="displayLocation">Detecting your location...</p>
                 </div>
             </div>
             
@@ -552,8 +787,11 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="editAddress">Address</label>
-                    <textarea id="editAddress" rows="3"></textarea>
+                    <label>Location</label>
+                    <button type="button" class="save-btn" id="updateLocation" style="width: 100%;">
+                        <span id="locationBtnText">Update My Location</span>
+                    </button>
+                    <p id="locationStatus" style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-light);"></p>
                 </div>
                 
                 <div class="form-actions">
@@ -660,11 +898,18 @@
             </div>
         </div>
         
-        <!-- Your Trips Section -->
+        <!-- Cars Around You Section -->
         <div class="account-section">
-            <h2>Your Trips</h2>
-            <div class="trips-container" id="tripsContainer">
-                <p class="no-trips">You don't have any upcoming trips.</p>
+            <h2>Cars Around You</h2>
+            <div class="cars-container" id="carsContainer">
+                <div class="no-cars">
+                    <video autoplay loop muted playsinline class="no-cars-video">
+                        <source src="nocars.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p>We're finding cars near you...</p>
+                    <a href="#" class="explore-btn">Explore All Cars</a>
+                </div>
             </div>
         </div>
     </main>
@@ -683,7 +928,9 @@
             getDoc, 
             setDoc,
             updateDoc,
-            serverTimestamp
+            serverTimestamp,
+            collection,
+            getDocs
         } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
         import { 
             getStorage,
@@ -691,7 +938,7 @@
             uploadBytes,
             getDownloadURL
         } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
-
+    
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAMU2y175sXjHkxAv6SF88-E9FCjaR2kJc",
@@ -702,13 +949,13 @@
             appId: "1:951760186950:web:7e8cc25aacdd251f152447",
             measurementId: "G-LJEF344295"
         };
-
+    
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
-
+    
         // DOM elements
         const logoutBtn = document.getElementById('logoutBtn');
         const profileAvatar = document.getElementById('profileAvatar');
@@ -718,6 +965,9 @@
         const accountLink = document.getElementById('accountLink');
         const completionProgress = document.getElementById('completionProgress');
         const completionPercent = document.getElementById('completionPercent');
+        const displayLocation = document.getElementById('displayLocation');
+        const updateLocation = document.getElementById('updateLocation');
+        const locationStatus = document.getElementById('locationStatus');
         
         // Profile edit elements
         const avatarEdit = document.getElementById('avatarEdit');
@@ -731,10 +981,8 @@
         const displayName = document.getElementById('displayName');
         const displayEmail = document.getElementById('displayEmail');
         const displayPhone = document.getElementById('displayPhone');
-        const displayAddress = document.getElementById('displayAddress');
         const editName = document.getElementById('editName');
         const editPhone = document.getElementById('editPhone');
-        const editAddress = document.getElementById('editAddress');
         
         // License elements
         const editLicense = document.getElementById('editLicense');
@@ -749,6 +997,10 @@
         const savePayment = document.getElementById('savePayment');
         const cancelPayment = document.getElementById('cancelPayment');
         
+        // Cars container
+        const carsContainer = document.getElementById('carsContainer');
+        const currentRentalContainer = document.getElementById('currentRentalContainer');
+    
         // Notification system
         function showNotification(message, isSuccess = true) {
             const notification = document.createElement('div');
@@ -771,45 +1023,199 @@
                 setTimeout(() => notification.remove(), 300);
             });
         }
-
+    
         // Calculate profile completion percentage
         function calculateProfileCompletion(userData) {
             let completedFields = 0;
-            const totalFields = 5; // name, email, phone, address, license
+            const totalFields = 4; // name, email, phone, license
             
             if (userData.name) completedFields++;
             if (userData.email) completedFields++;
             if (userData.phone) completedFields++;
-            if (userData.address) completedFields++;
             if (userData.licenseVerified) completedFields++;
             
             const percentage = Math.round((completedFields / totalFields) * 100);
             return percentage;
         }
-
+    
         // Update profile completion UI
         function updateProfileCompletion(percentage) {
             completionProgress.style.width = `${percentage}%`;
             completionPercent.textContent = `${percentage}%`;
         }
-
+    
         // Validate phone number
         function validatePhoneNumber(phone) {
             const regex = /^\+?[\d\s\-\(\)]{8,}$/;
             return regex.test(phone);
         }
-
-        // Validate email
-        function validateEmail(email) {
-            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return regex.test(email);
+    
+        // Get device location using free API
+        async function getDeviceLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation is not supported by your browser'));
+                    return;
+                }
+    
+                locationStatus.textContent = "Detecting your location...";
+                updateLocation.disabled = true;
+                updateLocation.querySelector('#locationBtnText').textContent = "Detecting...";
+    
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        try {
+                            const { latitude, longitude } = position.coords;
+                            
+                            // Use OpenStreetMap Nominatim API for reverse geocoding (free)
+                            const response = await fetch(
+                                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+                            );
+                            
+                            if (!response.ok) {
+                                throw new Error('Failed to fetch location data');
+                            }
+                            
+                            const data = await response.json();
+                            const locationName = data.display_name || `${data.address?.city || data.address?.town || 'Unknown location'}`;
+                            
+                            resolve({
+                                coordinates: { latitude, longitude },
+                                address: locationName
+                            });
+                        } catch (error) {
+                            console.error("Error getting location:", error);
+                            reject(error);
+                        } finally {
+                            updateLocation.disabled = false;
+                            updateLocation.querySelector('#locationBtnText').textContent = "Update My Location";
+                        }
+                    },
+                    (error) => {
+                        console.error("Error getting position:", error);
+                        locationStatus.textContent = "Location access denied. Please enable location services.";
+                        updateLocation.disabled = false;
+                        updateLocation.querySelector('#locationBtnText').textContent = "Update My Location";
+                        reject(error);
+                    },
+                    { timeout: 10000 }
+                );
+            });
         }
-
-        // Validate name
-        function validateName(name) {
-            return name.trim().length >= 2;
+    
+        // Load nearby cars from Firestore
+        async function loadNearbyCars() {
+            try {
+                const user = auth.currentUser;
+                if (!user) return;
+    
+                const carsCollection = collection(db, "cars");
+                const querySnapshot = await getDocs(carsCollection);
+                
+                if (querySnapshot.empty) {
+                    // Show no cars video
+                    carsContainer.innerHTML = `
+                        <div class="no-cars">
+                            <video autoplay loop muted playsinline class="no-cars-video">
+                                <source src="nocars.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <p>No cars available in your area at the moment.</p>
+                            <a href="#" class="explore-btn">Explore All Cars</a>
+                        </div>
+                    `;
+                    return;
+                }
+    
+                // Clear container
+                carsContainer.innerHTML = '';
+                
+                // Add cars to container
+                querySnapshot.forEach((doc) => {
+                    const car = doc.data();
+                    const carCard = document.createElement('div');
+                    carCard.className = 'car-card';
+                    carCard.innerHTML = `
+                        <img src="${car.imageUrl || 'images/default-car.jpg'}" alt="${car.make} ${car.model}" class="car-image">
+                        <div class="car-details">
+                            <h3 class="car-title">${car.make} ${car.model} ${car.year || ''}</h3>
+                            <p class="car-price">$${car.pricePerDay || '0'} / day</p>
+                            <div class="car-features">
+                                <span class="car-feature"><i class="fas fa-car"></i> ${car.type || 'Sedan'}</span>
+                                <span class="car-feature"><i class="fas fa-gas-pump"></i> ${car.fuelType || 'Gasoline'}</span>
+                            </div>
+                            <p class="car-location"><i class="fas fa-map-marker-alt"></i> ${car.location || 'Unknown location'}</p>
+                        </div>
+                    `;
+                    carsContainer.appendChild(carCard);
+                });
+            } catch (error) {
+                console.error("Error loading cars:", error);
+                carsContainer.innerHTML = `
+                    <div class="no-cars">
+                        <video autoplay loop muted playsinline class="no-cars-video">
+                            <source src="nocars.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <p>Error loading cars. Please try again later.</p>
+                        <a href="#" class="explore-btn">Explore All Cars</a>
+                    </div>
+                `;
+            }
         }
-
+    
+        // Load current rentals
+        async function loadCurrentRentals() {
+            try {
+                const user = auth.currentUser;
+                if (!user) return;
+    
+                const rentalsCollection = collection(db, "rentals");
+                const querySnapshot = await getDocs(rentalsCollection);
+                
+                if (querySnapshot.empty) {
+                    currentRentalContainer.innerHTML = '<p class="no-rentals">You don\'t have any active rentals.</p>';
+                    return;
+                }
+    
+                // Clear container
+                currentRentalContainer.innerHTML = '';
+                
+                // Add rentals to container
+                querySnapshot.forEach((doc) => {
+                    const rental = doc.data();
+                    if (rental.userId === user.uid) {
+                        const rentalCard = document.createElement('div');
+                        rentalCard.className = 'rental-card';
+                        rentalCard.innerHTML = `
+                            <img src="${rental.carImage || 'images/default-car.jpg'}" alt="Rental Car" class="rental-image">
+                            <div class="rental-details">
+                                <div class="rental-header">
+                                    <h3 class="rental-title">${rental.carMake} ${rental.carModel}</h3>
+                                    <span class="rental-status status-active">Active</span>
+                                </div>
+                                <div class="rental-dates">
+                                    <div class="date-group">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <span>${rental.startDate || 'N/A'} to ${rental.endDate || 'N/A'}</span>
+                                    </div>
+                                </div>
+                                <p class="rental-price">Total: $${rental.totalPrice || '0'}</p>
+                                <div class="rental-actions">
+                                    <button class="action-btn primary-btn">Extend Rental</button>
+                                    <button class="action-btn secondary-btn">View Details</button>
+                                </div>
+                            </div>
+                        `;
+                        currentRentalContainer.appendChild(rentalCard);
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading rentals:", error);
+                currentRentalContainer.innerHTML = '<p class="no-rentals">Error loading rental information.</p>';
+            }
+        }
+    
         // Check auth state and load user data
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -837,11 +1243,11 @@
                             userPhone.classList.add('empty-value');
                         }
                         
-                        if (userData.address) {
-                            displayAddress.textContent = userData.address;
+                        if (userData.location) {
+                            displayLocation.textContent = userData.location;
                         } else {
-                            displayAddress.textContent = 'Not provided';
-                            displayAddress.classList.add('empty-value');
+                            displayLocation.textContent = 'Location not set';
+                            displayLocation.classList.add('empty-value');
                         }
                         
                         if (userData.profilePic) {
@@ -873,7 +1279,10 @@
                         // Pre-fill edit forms
                         editName.value = userData.name || '';
                         editPhone.value = userData.phone || '';
-                        editAddress.value = userData.address || '';
+                        
+                        // Load additional data
+                        loadNearbyCars();
+                        loadCurrentRentals();
                         
                     } else {
                         // Create user document if it doesn't exist
@@ -883,12 +1292,16 @@
                             name: user.displayName || '',
                             phone: '',
                             profilePic: user.photoURL || '',
-                            address: '',
+                            location: '',
                             licenseVerified: false,
                             licenseSubmitted: false,
                             createdAt: serverTimestamp(),
                             updatedAt: serverTimestamp()
                         });
+                        
+                        // Load default data
+                        loadNearbyCars();
+                        loadCurrentRentals();
                         
                         showNotification('Profile created successfully!');
                     }
@@ -901,33 +1314,32 @@
                 window.location.href = "index.html";
             }
         });
-
+    
         // Logout button
         logoutBtn.addEventListener('click', async () => {
             try {
                 await signOut(auth);
-                // Redirect happens automatically via the auth state listener
             } catch (error) {
                 console.error("Error signing out:", error);
                 showNotification('Error signing out. Please try again.', false);
             }
         });
-
+    
         // Account link - just prevent default and do nothing (we're already on account page)
         accountLink.addEventListener('click', (e) => {
             e.preventDefault();
         });
-
+    
         // Mobile menu toggle
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menuToggle');
             const navLinks = document.getElementById('navLinks');
-
+    
             if (menuToggle && navLinks) {
                 menuToggle.addEventListener('click', () => {
                     navLinks.classList.toggle('active');
                 });
-
+    
                 document.addEventListener('click', (e) => {
                     if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
                         if (window.innerWidth <= 768) {
@@ -937,12 +1349,12 @@
                 });
             }
         });
-
+    
         // Profile photo upload
         avatarEdit.addEventListener('click', () => {
             profilePhotoInput.click();
         });
-
+    
         profilePhotoInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -950,6 +1362,9 @@
             try {
                 const user = auth.currentUser;
                 if (!user) throw new Error('User not logged in');
+                
+                // Show loading state
+                avatarEdit.innerHTML = '<div class="loading"></div>';
                 
                 // Upload to Firebase Storage
                 const storageRef = ref(storage, `profile_pictures/${user.uid}`);
@@ -970,6 +1385,7 @@
                 
                 // Update UI
                 profileAvatar.src = downloadURL;
+                avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
                 showNotification('Profile picture updated successfully!');
                 
                 // Recalculate profile completion
@@ -981,23 +1397,57 @@
                 
             } catch (error) {
                 console.error('Error uploading profile picture:', error);
+                avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
                 showNotification('Failed to update profile picture. Please try again.', false);
             }
         });
-
+    
         // Personal Info Edit
         editPersonalInfo.addEventListener('click', () => {
             personalInfoForm.style.display = 'block';
         });
-
+    
         cancelPersonalInfo.addEventListener('click', () => {
             personalInfoForm.style.display = 'none';
         });
-
+    
+        // Update location button
+        updateLocation.addEventListener('click', async () => {
+            try {
+                const locationData = await getDeviceLocation();
+                const user = auth.currentUser;
+                if (!user) throw new Error('User not logged in');
+                
+                const userDocRef = doc(db, "users", user.uid);
+                await updateDoc(userDocRef, {
+                    location: locationData.address,
+                    coordinates: locationData.coordinates,
+                    updatedAt: serverTimestamp()
+                });
+                
+                // Update UI
+                displayLocation.textContent = locationData.address;
+                displayLocation.classList.remove('empty-value');
+                locationStatus.textContent = "Location updated successfully!";
+                
+                // Recalculate profile completion
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    const completionPercentage = calculateProfileCompletion(userDoc.data());
+                    updateProfileCompletion(completionPercentage);
+                }
+                
+                showNotification('Location updated successfully!');
+                
+            } catch (error) {
+                console.error('Error updating location:', error);
+                locationStatus.textContent = "Failed to update location. Please try again.";
+            }
+        });
+    
         savePersonalInfo.addEventListener('click', async () => {
             const name = editName.value.trim();
             const phone = editPhone.value.trim();
-            const address = editAddress.value.trim();
             
             // Validate inputs
             if (!validateName(name)) {
@@ -1020,7 +1470,6 @@
                 await updateDoc(userDocRef, {
                     name: name,
                     phone: phone || null,
-                    address: address || null,
                     updatedAt: serverTimestamp()
                 });
                 
@@ -1035,14 +1484,6 @@
                     displayPhone.textContent = 'Not provided';
                     userPhone.textContent = 'No phone number added';
                     userPhone.classList.add('empty-value');
-                }
-                
-                if (address) {
-                    displayAddress.textContent = address;
-                    displayAddress.classList.remove('empty-value');
-                } else {
-                    displayAddress.textContent = 'Not provided';
-                    displayAddress.classList.add('empty-value');
                 }
                 
                 // Hide form
@@ -1062,16 +1503,16 @@
                 showNotification('Failed to update profile. Please try again.', false);
             }
         });
-
+    
         // License Edit
         editLicense.addEventListener('click', () => {
             licenseForm.style.display = 'block';
         });
-
+    
         cancelLicense.addEventListener('click', () => {
             licenseForm.style.display = 'none';
         });
-
+    
         saveLicense.addEventListener('click', async () => {
             const licenseNumber = document.getElementById('licenseNumber').value.trim();
             const licenseState = document.getElementById('licenseState').value.trim();
@@ -1095,6 +1536,10 @@
                 if (!user) throw new Error('User not logged in');
                 
                 const userDocRef = doc(db, "users", user.uid);
+                
+                // Show loading state
+                saveLicense.disabled = true;
+                saveLicense.innerHTML = '<div class="loading"></div> Submitting...';
                 
                 // Upload license images to storage
                 const frontRef = ref(storage, `licenses/${user.uid}/front_${Date.now()}`);
@@ -1127,6 +1572,8 @@
                 licenseStatus.style.color = 'var(--accent-yellow)';
                 editLicense.textContent = 'View Details';
                 licenseForm.style.display = 'none';
+                saveLicense.disabled = false;
+                saveLicense.textContent = 'Submit for Verification';
                 
                 // Update profile completion
                 const userDoc = await getDoc(userDocRef);
@@ -1139,19 +1586,21 @@
                 
             } catch (error) {
                 console.error('Error submitting license:', error);
+                saveLicense.disabled = false;
+                saveLicense.textContent = 'Submit for Verification';
                 showNotification('Failed to submit license. Please try again.', false);
             }
         });
-
+    
         // Payment Edit
         editPayment.addEventListener('click', () => {
             paymentForm.style.display = 'block';
         });
-
+    
         cancelPayment.addEventListener('click', () => {
             paymentForm.style.display = 'none';
         });
-
+    
         savePayment.addEventListener('click', async () => {
             const cardNumber = document.getElementById('cardNumber').value.trim();
             const cardName = document.getElementById('cardName').value.trim();
@@ -1180,6 +1629,10 @@
                 
                 const userDocRef = doc(db, "users", user.uid);
                 
+                // Show loading state
+                savePayment.disabled = true;
+                savePayment.innerHTML = '<div class="loading"></div> Processing...';
+                
                 // In a real app, you would use a payment processor API here
                 // For demo purposes, we'll just store the last 4 digits
                 const last4 = cardNumber.slice(-4);
@@ -1196,10 +1649,14 @@
                 
                 // Update UI
                 paymentForm.style.display = 'none';
+                savePayment.disabled = false;
+                savePayment.textContent = 'Save Payment Method';
                 showNotification('Payment method added successfully!');
                 
             } catch (error) {
                 console.error('Error adding payment method:', error);
+                savePayment.disabled = false;
+                savePayment.textContent = 'Save Payment Method';
                 showNotification('Failed to add payment method. Please try again.', false);
             }
         });
