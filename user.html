@@ -934,7 +934,7 @@
             apiKey: "AIzaSyAMU2y175sXjHkxAv6SF88-E9FCjaR2kJc",
             authDomain: "geocarrental-9a4de.firebaseapp.com",
             projectId: "geocarrental-9a4de",
-            storageBucket: "geocarrental-9a4de.appspot.com", // Fixed storage bucket format
+            storageBucket: "geocarrental-9a4de.appspot.com",
             messagingSenderId: "951760186950",
             appId: "1:951760186950:web:7e8cc25aacdd251f152447",
             measurementId: "G-LJEF344295"
@@ -1171,6 +1171,26 @@
             }
         }
     
+        // Improved file upload function
+        const uploadFile = async (file, pathPrefix) => {
+            try {
+                const user = auth.currentUser;
+                if (!user) throw new Error('User not logged in');
+                
+                const timestamp = Date.now();
+                const fileExtension = file.name.split('.').pop();
+                const fileName = `${pathPrefix}_${user.uid}_${timestamp}.${fileExtension}`;
+                const storageRef = ref(storage, `${pathPrefix}/${fileName}`);
+                
+                // Upload the file
+                const snapshot = await uploadBytes(storageRef, file);
+                return await getDownloadURL(snapshot.ref);
+            } catch (error) {
+                console.error('Upload failed:', error);
+                throw error;
+            }
+        };
+    
         // Check auth state and load user data
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -1297,7 +1317,7 @@
             }
         });
     
-        // Profile photo upload - fixed version
+        // Profile photo upload - using the improved upload function
         avatarEdit.addEventListener('click', () => {
             profilePhotoInput.click();
         });
@@ -1317,15 +1337,8 @@
                 const previewUrl = URL.createObjectURL(file);
                 profileAvatar.src = previewUrl;
                 
-                // Generate a unique filename with timestamp
-                const timestamp = Date.now();
-                const fileExtension = file.name.split('.').pop();
-                const fileName = `profile_${user.uid}_${timestamp}.${fileExtension}`;
-                
-                // Upload to Firebase Storage
-                const storageRef = ref(storage, `profile_pictures/${fileName}`);
-                const snapshot = await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(snapshot.ref);
+                // Upload the file using our improved function
+                const downloadURL = await uploadFile(file, 'profile_pictures');
                 
                 // Update profile picture in Firebase Auth
                 await updateProfile(user, {
@@ -1335,12 +1348,12 @@
                 // Update profile picture in Firestore
                 const userDocRef = doc(db, "users", user.uid);
                 await updateDoc(userDocRef, {
-                    profilePic: downloadURL,  // Store the URL directly
+                    profilePic: downloadURL,
                     updatedAt: serverTimestamp()
                 });
                 
                 // Update UI with final image (add timestamp to prevent caching)
-                profileAvatar.src = `${downloadURL}?t=${timestamp}`;
+                profileAvatar.src = `${downloadURL}?t=${Date.now()}`;
                 avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
                 
                 showNotification('Profile picture updated successfully!');
@@ -1517,18 +1530,10 @@
                 saveLicense.disabled = true;
                 saveLicense.innerHTML = '<div class="loading"></div> Submitting...';
                 
-                // Upload license images to storage
-                const frontRef = ref(storage, `licenses/${user.uid}/front_${Date.now()}`);
-                const backRef = ref(storage, `licenses/${user.uid}/back_${Date.now()}`);
-                
-                const [frontSnapshot, backSnapshot] = await Promise.all([
-                    uploadBytes(frontRef, licenseFront),
-                    uploadBytes(backRef, licenseBack)
-                ]);
-                
+                // Upload license images using our improved function
                 const [frontURL, backURL] = await Promise.all([
-                    getDownloadURL(frontSnapshot.ref),
-                    getDownloadURL(backSnapshot.ref)
+                    uploadFile(licenseFront, 'licenses'),
+                    uploadFile(licenseBack, 'licenses')
                 ]);
                 
                 // Update user data in Firestore
