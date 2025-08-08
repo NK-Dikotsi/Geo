@@ -883,6 +883,12 @@
         updateDoc,
         serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+    import { 
+        getStorage,
+        ref,
+        uploadBytes,
+        getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -899,6 +905,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const storage = getStorage(app);
 
     // Geoapify API Key
     const GEOAPIFY_API_KEY = "2ca9e48dc90443978775d9ef8792b96e";
@@ -968,9 +975,9 @@
         });
     }
 
-    // Image compression function
-    function compressImage(file, maxWidth = 800, quality = 0.7) {
-        return new Promise((resolve) => {
+    // Image compression function with size limit
+    function compressImage(file, maxWidth = 800, quality = 0.7, maxSizeKB = 500) {
+        return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (event) => {
                 const img = new Image();
@@ -983,11 +990,39 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     
-                    canvas.toBlob((blob) => {
-                        const compressedReader = new FileReader();
-                        compressedReader.onload = () => resolve(compressedReader.result);
-                        compressedReader.readAsDataURL(blob);
-                    }, 'image/jpeg', quality);
+                    // Convert to Blob with quality adjustments
+                    let qualityLevel = quality;
+                    let blob;
+                    
+                    const attemptCompression = () => {
+                        canvas.toBlob((resultBlob) => {
+                            blob = resultBlob;
+                            if (!blob) {
+                                reject(new Error('Failed to compress image'));
+                                return;
+                            }
+                            
+                            const sizeKB = blob.size / 1024;
+                            
+                            if (sizeKB <= maxSizeKB || qualityLevel <= 0.1) {
+                                const compressedReader = new FileReader();
+                                compressedReader.onload = () => resolve({
+                                    dataURL: compressedReader.result,
+                                    blob: blob
+                                });
+                                compressedReader.readAsDataURL(blob);
+                            } else {
+                                // Reduce quality and try again
+                                qualityLevel = Math.max(qualityLevel - 0.1, 0.1);
+                                canvas.toBlob((newBlob) => {
+                                    blob = newBlob;
+                                    attemptCompression();
+                                }, 'image/jpeg', qualityLevel);
+                            }
+                        }, 'image/jpeg', qualityLevel);
+                    };
+                    
+                    attemptCompression();
                 };
                 img.src = event.target.result;
             };
@@ -995,24 +1030,17 @@
         });
     }
 
-    // File to Base64 conversion with compression
-    const fileToBase64 = async (file, compress = true) => {
+    // Upload file to Firebase Storage and return URL
+    async function uploadFileToStorage(file, path) {
         try {
-            if (compress && file.type.startsWith('image/')) {
-                return await compressImage(file);
-            }
-            
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = (error) => reject(error);
-                reader.readAsDataURL(file);
-            });
+            const storageRef = ref(storage, path);
+            await uploadBytes(storageRef, file);
+            return await getDownloadURL(storageRef);
         } catch (error) {
-            console.error('Error converting file to Base64:', error);
+            console.error('Error uploading file:', error);
             throw error;
         }
-    };
+    }
 
     // Calculate profile completion percentage
     function calculateProfileCompletion(userData) {
@@ -1328,7 +1356,7 @@
         }
     });
 
-    // Profile photo upload
+    // Profile photo upload with Firebase Storage
     avatarEdit.addEventListener('click', () => {
         profilePhotoInput.click();
     });
@@ -1348,23 +1376,27 @@
             const previewUrl = URL.createObjectURL(file);
             profileAvatar.src = previewUrl;
             
-            // Convert to compressed Base64
-            const base64Image = await fileToBase64(file);
+            // Compress image and get Blob
+            const { blob } = await compressImage(file);
+            
+            // Upload to Firebase Storage
+            const storagePath = `profile_pictures/${user.uid}/${Date.now()}_${file.name}`;
+            const downloadURL = await uploadFileToStorage(blob, storagePath);
             
             // Update profile picture in Firebase Auth
             await updateProfile(user, {
-                photoURL: base64Image
+                photoURL: downloadURL
             });
             
             // Update profile picture in Firestore
             const userDocRef = doc(db, "users", user.uid);
             await updateDoc(userDocRef, {
-                profilePic: base64Image,
+                profilePic: downloadURL,
                 updatedAt: serverTimestamp()
             });
             
             // Update UI with final image
-            profileAvatar.src = base64Image;
+            profileAvatar.src = downloadURL;
             avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
             
             showNotification('Profile picture updated successfully!');
@@ -1388,6 +1420,9 @@
             } else {
                 profileAvatar.src = "images/default-avatar.png";
             }
+        } finally {
+            // Clean up the preview URL
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
         }
     });
 
@@ -1504,7 +1539,7 @@
         }
     });
 
-    // License Edit
+    // License Edit with Firebase Storage for license images
     editLicense.addEventListener('click', () => {
         licenseForm.style.display = 'block';
     });
@@ -1541,10 +1576,16 @@
             saveLicense.disabled = true;
             saveLicense.innerHTML = '<div class="loading"></div> Submitting...';
             
-            // Convert license images to Base64
-            const [frontBase64, backBase64] = await Promise.all([
-                fileToBase64(licenseFront),
-                fileToBase64(licenseBack)
+            // Compress and upload license images
+            const timestamp = Date.now();
+            const [frontCompressed, backCompressed] = await Promise.all([
+                compressImage(licenseFront),
+                compressImage(licenseBack)
+            ]);
+            
+            const [frontUrl, backUrl] = await Promise.all([
+                uploadFileToStorage(frontCompressed.blob, `licenses/${user.uid}/${timestamp}_front.jpg`),
+                uploadFileToStorage(backCompressed.blob, `licenses/${user.uid}/${timestamp}_back.jpg`)
             ]);
             
             // Update user data in Firestore
@@ -1552,8 +1593,8 @@
                 licenseNumber: licenseNumber,
                 licenseState: licenseState,
                 licenseExpiry: licenseExpiry,
-                licenseFront: frontBase64,
-                licenseBack: backBase64,
+                licenseFront: frontUrl,
+                licenseBack: backUrl,
                 licenseSubmitted: true,
                 licenseVerified: false,
                 updatedAt: serverTimestamp()
