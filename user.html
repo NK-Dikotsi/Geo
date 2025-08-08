@@ -617,6 +617,7 @@
         @media (max-width: 768px) {
             .menu-toggle {
                 display: block;
+                z-index: 1001; 
             }
     
             .nav-links {
@@ -638,6 +639,20 @@
             .nav-links.active {
                 transform: translateY(0);
             }
+
+            .nav-links.active {
+        transform: translateY(0);
+            }
+
+            .auth-button, .host-button, .logout-btn {
+        width: 100%;
+        text-align: center;
+        padding: 0.8rem;
+                }
+
+         .host-button {
+        order: -1; /* Bring host button to top */
+         }
             
             .account-avatar {
                 width: 80px;
@@ -690,6 +705,21 @@
                 flex-direction: column;
             }
         }
+        .logout-btn {
+    background: none;
+    border: none;
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.logout-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
     </style>
 </head>
 <body>
@@ -706,7 +736,6 @@
         </button>
         
         <div class="nav-links" id="navLinks">
-            <a href="#" class="auth-button" id="accountLink">My Account</a>
             <a href="#" class="auth-button">Insurance</a>
             <a href="#" class="host-button">Become a Host</a>
             <button class="logout-btn" id="logoutBtn">Log Out</button>
@@ -1664,6 +1693,37 @@
                 showNotification('Failed to add payment method. Please try again.', false);
             }
         });
+        document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        if (menuToggle && navLinks) {
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                menuToggle.innerHTML = navLinks.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
+
+            // Close menu when clicking outside or on a link
+            document.addEventListener('click', (e) => {
+                if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+                    navLinks.classList.remove('active');
+                    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+            });
+
+            // Close menu when clicking on any nav link (for mobile)
+            navLinks.querySelectorAll('a, button').forEach(item => {
+                item.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        navLinks.classList.remove('active');
+                        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                    }
+                });
+            });
+        }
+    });
     </script>
 </body>
 </html>
