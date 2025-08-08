@@ -1217,6 +1217,15 @@
         object-fit: contain;
         display: block;
     }
+    .nav-links .auth-button.my-rides {
+    background-color: var(--primary-green);
+    color: white;
+    border: 1px solid var(--primary-green);
+}
+
+.nav-links .auth-button.my-rides:hover {
+    background-color: #00b34a;
+}
     </style>
 </head>
 <body>
@@ -1891,10 +1900,6 @@ import {
   serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-// Initialize Firebase Storage
-const storage = getStorage();
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAMU2y175sXjHkxAv6SF88-E9FCjaR2kJc",
@@ -2012,6 +2017,7 @@ async function signInWithGoogle() {
     }
     
     closeAllModals();
+    window.location.search = '?from_auth=true';  // Add this line
     updateAuthUI(user);
     
   } catch (error) {
@@ -2025,12 +2031,25 @@ function updateAuthUI(user) {
     const authButtons = document.querySelectorAll('.nav-links .auth-button');
     
     if (user) {
-        // User is logged in, redirect to user.html
-        window.location.href = "user.html";
-    } else {
-        // User is not logged in, show login/signup buttons
+        // User is logged in - change auth buttons to "My Rides"
         authButtons.forEach(button => {
-            if (button.textContent.trim() === 'My Account') {
+            if (button.textContent.trim() === 'Log In' || button.textContent.trim() === 'Sign Up') {
+                button.textContent = 'My Rides';
+                button.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = "user.html";
+                };
+            }
+        });
+        
+        // Only redirect if coming from auth flow (not when returning to index)
+        if (window.location.search.includes('from_auth=true')) {
+            window.location.href = "user.html";
+        }
+    } else {
+        // User is not logged in
+        authButtons.forEach(button => {
+            if (button.textContent.trim() === 'My Rides') {
                 button.textContent = 'Log In';
                 button.onclick = function(e) {
                     e.preventDefault();
@@ -2040,7 +2059,7 @@ function updateAuthUI(user) {
         });
     }
 }
-// Email/password signup
+
 document.getElementById('signupForm')?.addEventListener('submit', async function(e) {
   e.preventDefault();
   
@@ -2082,6 +2101,8 @@ document.getElementById('signupForm')?.addEventListener('submit', async function
     console.log("User document verified:", docSnapshot.data());
     showNotification('Account created successfully!');
     closeModal('signupFormModal');
+    window.location.search = '?from_auth=true';  // Add this line
+    updateAuthUI(user);
 
   } catch (error) {
     console.error("Full error:", error);
@@ -2111,6 +2132,8 @@ document.getElementById('loginEmailForm')?.addEventListener('submit', async func
     await signInWithEmailAndPassword(auth, email, password);
     showNotification('Logged in successfully!');
     closeModal('loginEmailModal');
+    window.location.search = '?from_auth=true';  // Add this line
+    updateAuthUI(user);
   } catch (error) {
     console.error('Error logging in:', error);
     let errorMessage = 'Login failed. Please try again.';
