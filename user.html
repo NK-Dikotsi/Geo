@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -411,108 +410,15 @@
         }
         
         /* Cars Around You Section */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-        
-        .view-all {
-            color: var(--primary-blue);
-            font-size: 0.95rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        
-        .view-all:hover {
-            text-decoration: underline;
-        }
-        
         .cars-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .car-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
             background: white;
-            border-radius: var(--border-radius);
-            overflow: hidden;
+            border-radius: var(--border-radius-lg);
             box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            border: 1px solid #eee;
-        }
-        
-        .car-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-blue);
-        }
-        
-        .car-image {
-            height: 180px;
-            width: 100%;
-            object-fit: cover;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .car-details {
-            padding: 1.5rem;
-        }
-        
-        .car-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-dark);
-        }
-        
-        .car-price {
-            color: var(--primary-blue);
-            font-weight: 700;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-        
-        .car-features {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
-        }
-        
-        .car-feature {
-            display: flex;
-            align-items: center;
-            font-size: 0.85rem;
-            color: var(--text-medium);
-        }
-        
-        .car-feature i {
-            margin-right: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--primary-blue);
-        }
-        
-        .car-location {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            margin-top: 1rem;
-        }
-        
-        .car-location i {
-            margin-right: 0.5rem;
-            color: var(--primary-blue);
         }
         
         .no-cars {
@@ -520,11 +426,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 3rem 2rem;
             text-align: center;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
         }
         
         .no-cars-video {
@@ -538,6 +440,7 @@
             margin-bottom: 1.5rem;
             max-width: 400px;
             line-height: 1.6;
+            font-size: 1rem;
         }
         
         .explore-btn {
@@ -558,144 +461,6 @@
             background-color: var(--primary-blue-dark);
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(41, 98, 255, 0.25);
-        }
-        
-        /* Current Rental Section */
-        .current-rental {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        
-        .rental-card {
-            display: flex;
-            background: white;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            border: 1px solid #eee;
-        }
-        
-        .rental-card:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary-blue);
-        }
-        
-        .rental-image {
-            width: 220px;
-            height: 160px;
-            object-fit: cover;
-            border-right: 1px solid #eee;
-        }
-        
-        .rental-details {
-            flex: 1;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .rental-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.75rem;
-            align-items: flex-start;
-        }
-        
-        .rental-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-        
-        .rental-status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .status-active {
-            background-color: #e3f2fd;
-            color: var(--primary-blue);
-        }
-        
-        .status-upcoming {
-            background-color: #fff8e1;
-            color: #ff8f00;
-        }
-        
-        .rental-dates {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 1rem;
-        }
-        
-        .date-group {
-            display: flex;
-            align-items: center;
-        }
-        
-        .date-group i {
-            margin-right: 0.5rem;
-            color: var(--text-light);
-        }
-        
-        .rental-price {
-            font-weight: 700;
-            color: var(--primary-blue);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-        
-        .rental-actions {
-            margin-top: auto;
-            display: flex;
-            gap: 1rem;
-        }
-        
-        .action-btn {
-            padding: 0.7rem 1.3rem;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.9rem;
-        }
-        
-        .primary-btn {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            box-shadow: 0 2px 4px rgba(41, 98, 255, 0.2);
-        }
-        
-        .primary-btn:hover {
-            background-color: var(--primary-blue-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(41, 98, 255, 0.25);
-        }
-        
-        .secondary-btn {
-            background: none;
-            border: 1px solid #ddd;
-            color: var(--text-medium);
-        }
-        
-        .secondary-btn:hover {
-            background: #f5f5f5;
-            border-color: #ccc;
-        }
-        
-        .no-rentals {
-            color: var(--text-light);
-            font-style: italic;
-            padding: 2rem 0;
-            text-align: center;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
         }
         
         /* Loading State */
@@ -798,19 +563,13 @@
                 gap: 1.5rem;
             }
             
-            .rental-card {
-                flex-direction: column;
+            .form-actions {
+                flex-direction: column-reverse;
+                gap: 0.75rem;
             }
             
-            .rental-image {
+            .save-btn, .cancel-btn {
                 width: 100%;
-                height: 180px;
-                border-right: none;
-                border-bottom: 1px solid #eee;
-            }
-            
-            .cars-container {
-                grid-template-columns: 1fr;
             }
         }
         
@@ -826,24 +585,6 @@
             
             .account-section h2 {
                 font-size: 1.1rem;
-            }
-            
-            .rental-dates {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .rental-actions {
-                flex-direction: column;
-            }
-            
-            .form-actions {
-                flex-direction: column-reverse;
-                gap: 0.75rem;
-            }
-            
-            .save-btn, .cancel-btn {
-                width: 100%;
             }
         }
     </style>
@@ -893,33 +634,13 @@
             </div>
         </div>
 
-        <!-- Current Rental Section -->
-        <div class="account-section">
-            <div class="section-header">
-                <h2 class="section-title">Current Rental</h2>
-                <a href="#" class="view-all">View Rental History</a>
-            </div>
-            
-            <div class="current-rental">
-                <div class="no-rentals">
-                    <p>You don't have any active rentals</p>
-                    <a href="index.html" class="explore-btn" style="margin-top: 1rem;">Find a Car</a>
-                </div>
-            </div>
-        </div>
-        
         <!-- Cars Around You Section -->
         <div class="account-section">
-            <div class="section-header">
-                <h2 class="section-title">Cars Around You</h2>
-                <a href="index.html" class="view-all">View All Cars</a>
-            </div>
-            
-            <div class="cars-container" id="carsContainer">
-                <!-- Car cards will be dynamically inserted here -->
+            <h2>Cars Around You</h2>
+            <div class="cars-container">
                 <div class="no-cars">
                     <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
-                    <p>We're finding cars near you...</p>
+                    <p>No cars available in your location</p>
                     <a href="index.html" class="explore-btn">Explore All Cars</a>
                 </div>
             </div>
