@@ -1140,12 +1140,6 @@
                 exploreBtn.className = 'explore-btn';
                 exploreBtn.textContent = 'Explore All Cars';
                 
-                if (location) {
-                    const locationDisplay = document.createElement('p');
-                    locationDisplay.className = 'location-display';
-                    locationDisplay.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${location}`;
-                    noCarsDiv.appendChild(locationDisplay);
-                }
                 
                 noCarsDiv.appendChild(image);
                 noCarsDiv.appendChild(message);

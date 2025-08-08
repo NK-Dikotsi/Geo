@@ -2033,13 +2033,22 @@ function updateAuthUI(user) {
     if (user) {
         // User is logged in - change auth buttons to "My Rides"
         authButtons.forEach(button => {
-            if (button.textContent.trim() === 'Log In' || button.textContent.trim() === 'Sign Up') {
+            if (button.textContent.trim() === 'Log In') {
                 button.textContent = 'My Rides';
                 button.onclick = function(e) {
                     e.preventDefault();
                     window.location.href = "user.html";
                 };
             }
+            if (button.textContent.trim() === 'Sign Up') {
+                button.textContent = 'My Profile';
+                button.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = "user.html";
+                };
+            }
+
+
         });
         
         // Only redirect if coming from auth flow (not when returning to index)
