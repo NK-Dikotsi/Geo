@@ -925,7 +925,7 @@
         import { 
             getStorage,
             ref,
-            uploadBytes,
+            uploadBytesResumable,
             getDownloadURL
         } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
     
@@ -1171,24 +1171,48 @@
             }
         }
     
-        // Improved file upload function
+        // Enhanced file upload function with progress tracking
         const uploadFile = async (file, pathPrefix) => {
-            try {
-                const user = auth.currentUser;
-                if (!user) throw new Error('User not logged in');
-                
-                const timestamp = Date.now();
-                const fileExtension = file.name.split('.').pop();
-                const fileName = `${pathPrefix}_${user.uid}_${timestamp}.${fileExtension}`;
-                const storageRef = ref(storage, `${pathPrefix}/${fileName}`);
-                
-                // Upload the file
-                const snapshot = await uploadBytes(storageRef, file);
-                return await getDownloadURL(snapshot.ref);
-            } catch (error) {
-                console.error('Upload failed:', error);
-                throw error;
-            }
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const user = auth.currentUser;
+                    if (!user) throw new Error('User not logged in');
+                    
+                    const timestamp = Date.now();
+                    const fileExtension = file.name.split('.').pop();
+                    const fileName = `${pathPrefix}_${user.uid}_${timestamp}.${fileExtension}`;
+                    const storageRef = ref(storage, `${pathPrefix}/${fileName}`);
+                    
+                    // Create upload task
+                    const uploadTask = uploadBytesResumable(storageRef, file);
+                    
+                    // Set up progress tracking
+                    uploadTask.on('state_changed',
+                        (snapshot) => {
+                            // Progress tracking can be implemented here if needed
+                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            console.log(`Upload is ${progress}% done`);
+                        },
+                        (error) => {
+                            console.error('Upload error:', error);
+                            reject(error);
+                        },
+                        async () => {
+                            // Upload completed successfully
+                            try {
+                                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                                resolve(downloadURL);
+                            } catch (error) {
+                                console.error('Error getting download URL:', error);
+                                reject(error);
+                            }
+                        }
+                    );
+                } catch (error) {
+                    console.error('Upload setup failed:', error);
+                    reject(error);
+                }
+            });
         };
     
         // Check auth state and load user data
@@ -1317,7 +1341,7 @@
             }
         });
     
-        // Profile photo upload - using the improved upload function
+        // Profile photo upload
         avatarEdit.addEventListener('click', () => {
             profilePhotoInput.click();
         });

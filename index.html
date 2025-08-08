@@ -1891,6 +1891,10 @@ import {
   serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+// Initialize Firebase Storage
+const storage = getStorage();
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAMU2y175sXjHkxAv6SF88-E9FCjaR2kJc",
