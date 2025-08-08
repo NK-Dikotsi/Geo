@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,15 +12,23 @@
     <style>
         :root {
             --primary-blue: #2962FF;
+            --primary-blue-dark: #1a4fd8;
             --primary-green: #00C853;
             --accent-yellow: #FFD600;
             --accent-orange: #FFAB40;
             --text-dark: #212121;
+            --text-medium: #424242;
             --text-light: #757575;
+            --text-lighter: #9E9E9E;
             --bg-white: #FFFFFF;
+            --bg-light: #f5f7fa;
             --bg-black: #121212;
             --border-radius: 8px;
+            --border-radius-lg: 12px;
             --transition: all 0.3s ease;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
         }
     
         * {
@@ -32,41 +41,46 @@
             font-family: 'Poppins', sans-serif;
             color: var(--text-dark);
             line-height: 1.6;
-            background-color: #fffbed;
+            background-color: var(--bg-light);
         }
     
         /* Navbar Styles */
         .navbar {
             background-color: var(--bg-white);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 1rem 5%;
+            box-shadow: var(--shadow-sm);
+            padding: 0 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 1000;
-            height: 80px;
+            height: 72px;
         }
     
         .navbar-logo-container {
-            height: 80px;
+            height: 72px;
             display: flex;
             align-items: center;
             margin-right: auto;
         }
     
         .navbar-logo {
-            height: 160px;
+            height: 140px;
             width: auto;
             max-height: 100%;
             object-fit: contain;
+            transition: var(--transition);
+        }
+        
+        .navbar-logo:hover {
+            opacity: 0.9;
         }
     
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1rem;
         }
     
         .auth-button {
@@ -74,7 +88,7 @@
             color: var(--text-dark);
             font-weight: 600;
             font-size: 0.95rem;
-            padding: 0.6rem 1.2rem;
+            padding: 0.55rem 1.1rem;
             border-radius: 50px;
             transition: var(--transition);
         }
@@ -82,22 +96,49 @@
         .auth-button:hover {
             background-color: rgba(0, 0, 0, 0.05);
         }
+        
+        .auth-button.my-rides {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 0.55rem 1.5rem;
+        }
+        
+        .auth-button.my-rides:hover {
+            background-color: var(--primary-blue-dark);
+        }
     
         .host-button {
             text-decoration: none;
             color: white;
-            background-color: #2962ff;
+            background-color: var(--primary-blue);
             font-weight: 600;
             font-size: 0.95rem;
-            padding: 0.6rem 1.2rem;
+            padding: 0.55rem 1.5rem;
             border-radius: 50px;
-            border: 1px solid #2962ff;
+            border: 1px solid var(--primary-blue);
             transition: var(--transition);
         }
     
         .host-button:hover {
-            background-color: #1a4fd8;
-            border-color: #1a4fd8;
+            background-color: var(--primary-blue-dark);
+            border-color: var(--primary-blue-dark);
+        }
+        
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.55rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .logout-btn:hover {
+            color: var(--text-dark);
+            background-color: rgba(0, 0, 0, 0.05);
         }
     
         /* Mobile Menu Toggle */
@@ -120,8 +161,12 @@
         .account-header {
             display: flex;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             flex-wrap: wrap;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
         }
         
         .account-avatar {
@@ -135,6 +180,7 @@
             margin-right: 1.5rem;
             overflow: hidden;
             position: relative;
+            box-shadow: var(--shadow-md);
         }
         
         .account-avatar img {
@@ -149,13 +195,19 @@
             right: 0;
             background: var(--primary-blue);
             color: white;
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .avatar-edit:hover {
+            background: var(--primary-blue-dark);
+            transform: scale(1.05);
         }
         
         .account-info {
@@ -166,22 +218,25 @@
         .account-info h1 {
             font-size: 1.8rem;
             margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 600;
         }
         
         .account-info p {
-            color: var(--text-light);
+            color: var(--text-medium);
             margin-bottom: 0.5rem;
+            font-size: 0.95rem;
         }
         
         .profile-completion {
             width: 100%;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
         
         .completion-bar {
-            height: 8px;
+            height: 6px;
             background: #e0e0e0;
-            border-radius: 4px;
+            border-radius: 3px;
             margin-bottom: 0.5rem;
             overflow: hidden;
         }
@@ -200,25 +255,32 @@
         
         .completion-text strong {
             color: var(--primary-blue);
+            font-weight: 600;
         }
         
         /* Account Sections */
         .account-section {
             background: white;
-            border-radius: var(--border-radius);
+            border-radius: var(--border-radius-lg);
             padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .account-section:hover {
+            box-shadow: var(--shadow-md);
         }
         
         .account-section h2 {
             font-size: 1.3rem;
             margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.75rem;
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            color: var(--text-dark);
         }
         
         .section-edit {
@@ -226,6 +288,12 @@
             color: var(--primary-blue);
             cursor: pointer;
             font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .section-edit:hover {
+            color: var(--primary-blue-dark);
+            text-decoration: underline;
         }
         
         .section-content {
@@ -236,21 +304,27 @@
         
         .info-group {
             min-width: 200px;
+            flex: 1;
         }
         
         .info-label {
             font-size: 0.85rem;
             color: var(--text-light);
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .info-value {
             font-weight: 500;
+            color: var(--text-dark);
+            font-size: 1rem;
         }
         
         .empty-value {
-            color: var(--text-light);
+            color: var(--text-lighter);
             font-style: italic;
+            font-size: 0.95rem;
         }
         
         /* Edit Forms */
@@ -270,6 +344,7 @@
             font-size: 0.9rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
+            color: var(--text-medium);
         }
         
         .form-group input, 
@@ -281,6 +356,7 @@
             border-radius: var(--border-radius);
             font-family: 'Poppins', sans-serif;
             font-size: 1rem;
+            transition: var(--transition);
         }
         
         .form-group input:focus, 
@@ -288,13 +364,14 @@
         .form-group textarea:focus {
             border-color: var(--primary-blue);
             outline: none;
-            box-shadow: 0 0 0 2px rgba(41, 98, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(41, 98, 255, 0.1);
         }
         
         .form-actions {
             display: flex;
             gap: 1rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
         }
         
         .save-btn, .cancel-btn {
@@ -303,6 +380,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
+            font-size: 0.95rem;
         }
         
         .save-btn {
@@ -312,16 +390,19 @@
         }
         
         .save-btn:hover {
-            background-color: #1a4fd8;
+            background-color: var(--primary-blue-dark);
+            transform: translateY(-1px);
         }
         
         .cancel-btn {
             background: none;
             border: 1px solid #ddd;
+            color: var(--text-medium);
         }
         
         .cancel-btn:hover {
             background: #f5f5f5;
+            border-color: #ccc;
         }
         
         /* Profile Photo Upload */
@@ -330,6 +411,31 @@
         }
         
         /* Cars Around You Section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+        
+        .view-all {
+            color: var(--primary-blue);
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .view-all:hover {
+            text-decoration: underline;
+        }
+        
         .cars-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -340,53 +446,60 @@
             background: white;
             border-radius: var(--border-radius);
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-sm);
             transition: var(--transition);
+            border: 1px solid #eee;
         }
         
         .car-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-blue);
         }
         
         .car-image {
             height: 180px;
             width: 100%;
             object-fit: cover;
+            border-bottom: 1px solid #eee;
         }
         
         .car-details {
-            padding: 1.2rem;
+            padding: 1.5rem;
         }
         
         .car-title {
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
+            color: var(--text-dark);
         }
         
         .car-price {
             color: var(--primary-blue);
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
         }
         
         .car-features {
             display: flex;
             gap: 1rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
         }
         
         .car-feature {
             display: flex;
             align-items: center;
-            font-size: 0.8rem;
-            color: var(--text-light);
+            font-size: 0.85rem;
+            color: var(--text-medium);
         }
         
         .car-feature i {
-            margin-right: 0.3rem;
+            margin-right: 0.5rem;
             font-size: 0.9rem;
+            color: var(--primary-blue);
         }
         
         .car-location {
@@ -394,7 +507,7 @@
             color: var(--text-light);
             display: flex;
             align-items: center;
-            margin-top: 0.5rem;
+            margin-top: 1rem;
         }
         
         .car-location i {
@@ -407,23 +520,28 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 3rem 2rem;
             text-align: center;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
         }
         
         .no-cars-video {
-            max-width: 400px;
-            margin-bottom: 1rem;
+            max-width: 300px;
+            margin-bottom: 1.5rem;
             border-radius: var(--border-radius);
         }
         
         .no-cars p {
             color: var(--text-light);
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            max-width: 400px;
+            line-height: 1.6;
         }
         
         .explore-btn {
-            padding: 0.8rem 1.5rem;
+            padding: 0.8rem 2rem;
             background-color: var(--primary-blue);
             color: white;
             border: none;
@@ -432,10 +550,14 @@
             cursor: pointer;
             text-decoration: none;
             transition: var(--transition);
+            font-size: 0.95rem;
+            box-shadow: 0 4px 6px rgba(41, 98, 255, 0.2);
         }
         
         .explore-btn:hover {
-            background-color: #1a4fd8;
+            background-color: var(--primary-blue-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(41, 98, 255, 0.25);
         }
         
         /* Current Rental Section */
@@ -450,13 +572,21 @@
             background: white;
             border-radius: var(--border-radius);
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid #eee;
+        }
+        
+        .rental-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-blue);
         }
         
         .rental-image {
-            width: 200px;
+            width: 220px;
             height: 160px;
             object-fit: cover;
+            border-right: 1px solid #eee;
         }
         
         .rental-details {
@@ -469,12 +599,14 @@
         .rental-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            align-items: flex-start;
         }
         
         .rental-title {
             font-size: 1.2rem;
             font-weight: 600;
+            color: var(--text-dark);
         }
         
         .rental-status {
@@ -497,7 +629,7 @@
         .rental-dates {
             display: flex;
             gap: 2rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
         }
         
         .date-group {
@@ -514,6 +646,7 @@
             font-weight: 700;
             color: var(--primary-blue);
             margin-bottom: 1rem;
+            font-size: 1.1rem;
         }
         
         .rental-actions {
@@ -523,7 +656,7 @@
         }
         
         .action-btn {
-            padding: 0.6rem 1.2rem;
+            padding: 0.7rem 1.3rem;
             border-radius: var(--border-radius);
             font-weight: 600;
             cursor: pointer;
@@ -535,19 +668,24 @@
             background-color: var(--primary-blue);
             color: white;
             border: none;
+            box-shadow: 0 2px 4px rgba(41, 98, 255, 0.2);
         }
         
         .primary-btn:hover {
-            background-color: #1a4fd8;
+            background-color: var(--primary-blue-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(41, 98, 255, 0.25);
         }
         
         .secondary-btn {
             background: none;
             border: 1px solid #ddd;
+            color: var(--text-medium);
         }
         
         .secondary-btn:hover {
             background: #f5f5f5;
+            border-color: #ccc;
         }
         
         .no-rentals {
@@ -555,6 +693,9 @@
             font-style: italic;
             padding: 2rem 0;
             text-align: center;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
         }
         
         /* Loading State */
@@ -578,9 +719,9 @@
             top: 20px;
             right: 20px;
             padding: 15px 20px;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-lg);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -591,7 +732,7 @@
         }
         
         .notification.success {
-            background-color: #4CAF50;
+            background-color: var(--primary-green);
         }
         
         .notification.error {
@@ -621,14 +762,14 @@
     
             .nav-links {
                 position: fixed;
-                top: 80px;
+                top: 72px;
                 left: 0;
                 width: 100%;
                 background-color: var(--bg-white);
                 flex-direction: column;
                 align-items: flex-start;
-                padding: 1rem 5%;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                padding: 1.5rem 5%;
+                box-shadow: var(--shadow-md);
                 gap: 1rem;
                 transform: translateY(-150%);
                 transition: var(--transition);
@@ -664,6 +805,12 @@
             .rental-image {
                 width: 100%;
                 height: 180px;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .cars-container {
+                grid-template-columns: 1fr;
             }
         }
         
@@ -689,6 +836,15 @@
             .rental-actions {
                 flex-direction: column;
             }
+            
+            .form-actions {
+                flex-direction: column-reverse;
+                gap: 0.75rem;
+            }
+            
+            .save-btn, .cancel-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -706,7 +862,7 @@
         </button>
         
         <div class="nav-links" id="navLinks">
-            <a href="#" class="auth-button" id="accountLink">My Account</a>
+            <a href="#" class="auth-button my-rides" id="accountLink">My Rides</a>
             <a href="#" class="auth-button">Insurance</a>
             <a href="#" class="host-button">Become a Host</a>
             <button class="logout-btn" id="logoutBtn">Log Out</button>
@@ -737,18 +893,37 @@
             </div>
         </div>
 
-         <!-- Cars Around You Section -->
-         <div class="account-section">
-            <h2>Cars Around You</h2>
-            <div class="cars-container" id="carsContainer">
-                <div class="no-cars">
-                    <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
-                    <p>We're finding cars near you...</p>
-                    <a href="#" class="explore-btn">Explore All Cars</a>
+        <!-- Current Rental Section -->
+        <div class="account-section">
+            <div class="section-header">
+                <h2 class="section-title">Current Rental</h2>
+                <a href="#" class="view-all">View Rental History</a>
+            </div>
+            
+            <div class="current-rental">
+                <div class="no-rentals">
+                    <p>You don't have any active rentals</p>
+                    <a href="index.html" class="explore-btn" style="margin-top: 1rem;">Find a Car</a>
                 </div>
             </div>
         </div>
         
+        <!-- Cars Around You Section -->
+        <div class="account-section">
+            <div class="section-header">
+                <h2 class="section-title">Cars Around You</h2>
+                <a href="index.html" class="view-all">View All Cars</a>
+            </div>
+            
+            <div class="cars-container" id="carsContainer">
+                <!-- Car cards will be dynamically inserted here -->
+                <div class="no-cars">
+                    <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
+                    <p>We're finding cars near you...</p>
+                    <a href="index.html" class="explore-btn">Explore All Cars</a>
+                </div>
+            </div>
+        </div>
         
         <!-- Personal Info Section -->
         <div class="account-section">
@@ -800,8 +975,8 @@
                 </div>
                 
                 <div class="form-actions">
-                    <button type="button" class="save-btn" id="savePersonalInfo">Save Changes</button>
                     <button type="button" class="cancel-btn" id="cancelPersonalInfo">Cancel</button>
+                    <button type="button" class="save-btn" id="savePersonalInfo">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -852,8 +1027,8 @@
                 </div>
                 
                 <div class="form-actions">
-                    <button type="button" class="save-btn" id="saveLicense">Submit for Verification</button>
                     <button type="button" class="cancel-btn" id="cancelLicense">Cancel</button>
+                    <button type="button" class="save-btn" id="saveLicense">Submit for Verification</button>
                 </div>
             </div>
         </div>
@@ -897,13 +1072,11 @@
                 </div>
                 
                 <div class="form-actions">
-                    <button type="button" class="save-btn" id="savePayment">Save Payment Method</button>
                     <button type="button" class="cancel-btn" id="cancelPayment">Cancel</button>
+                    <button type="button" class="save-btn" id="savePayment">Save Payment Method</button>
                 </div>
             </div>
         </div>
-        
-       
     </main>
 
     <script type="module">
@@ -1140,6 +1313,12 @@
                 exploreBtn.className = 'explore-btn';
                 exploreBtn.textContent = 'Explore All Cars';
                 
+                if (location) {
+                    const locationDisplay = document.createElement('p');
+                    locationDisplay.className = 'location-display';
+                    locationDisplay.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${location}`;
+                    noCarsDiv.appendChild(locationDisplay);
+                }
                 
                 noCarsDiv.appendChild(image);
                 noCarsDiv.appendChild(message);
