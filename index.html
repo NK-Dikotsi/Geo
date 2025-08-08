@@ -1764,55 +1764,36 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Video initialization
-document.addEventListener('DOMContentLoaded', function() {
   const video = document.querySelector('.video-hero video');
   if (video) {
-    // Ensure video attributes are set
     video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
     video.setAttribute('muted', '');
     video.setAttribute('autoplay', '');
-    video.setAttribute('loop', '');
-    video.setAttribute('preload', 'auto');
-
-    // Function to attempt video playback
+    video.load();
+    
     const playVideo = () => {
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(error => {
-          console.log('Autoplay prevented:', error);
-          // Retry playback after a short delay
-          setTimeout(() => {
-            video.play().catch(e => console.log('Retry play failed:', e));
-          }, 1000);
+          console.log('Video play prevented:', error);
         });
       }
     };
-
-    // Initial playback attempt
+    
     playVideo();
-
-    // Handle visibility changes (e.g., tab switching)
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && video.paused) {
-        playVideo();
-      }
-    });
-
-    // iOS-specific handling
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      video.addEventListener('loadedmetadata', () => {
-        playVideo();
-      }, { once: true });
-    }
-
-    // Fallback for user interaction (some browsers require it)
-    document.addEventListener('click', () => {
-      if (video.paused) {
-        playVideo();
-      }
+    
+    document.addEventListener('click', function firstInteraction() {
+      playVideo();
+      document.removeEventListener('click', firstInteraction);
     }, { once: true });
+    
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      video.addEventListener('loadedmetadata', function() {
+        video.play().catch(e => console.log('iOS play failed:', e));
+      });
+    }
   }
-});
 
   // Carousel initialization
   const carousel = document.querySelector('.brands-carousel');
