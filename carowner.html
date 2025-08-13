@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Account - GeoCarRental</title>
+    <title>Owner Dashboard - GeoCarRental</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -36,86 +36,82 @@
         }
     
         .navbar {
-    background-color: var(--bg-white);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 1rem 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    height: 80px;
-}
+            background-color: var(--bg-white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 80px;
+        }
 
-.navbar-logo-container {
-    height: 80px;
-    display: flex;
-    align-items: center;
-    margin-right: auto;
-}
+        .navbar-logo-container {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            margin-right: auto;
+        }
 
-.navbar-logo {
-    height: 160px;
-    width: auto;
-    max-height: 100%;
-    object-fit: contain;
-}
+        .navbar-logo {
+            height: 160px;
+            width: auto;
+            max-height: 100%;
+            object-fit: contain;
+        }
 
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
 
-.auth-button {
-    text-decoration: none;
-    color: var(--text-dark);
-    font-weight: 600;
-    font-size: 0.95rem;
-    padding: 0.6rem 1.2rem;
-    border-radius: 50px;
-    transition: var(--transition);
-}
+        .auth-button {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
 
-.auth-button:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
+        .auth-button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
 
-.auth-button.my-rides {
-    
-    color: #212121;
-   
-}
+        .auth-button.my-rides {
+            color: #212121;
+        }
 
+        .host-button {
+            text-decoration: none;
+            color: white;
+            background-color: #2962ff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            border: 1px solid #2962ff;
+            transition: var(--transition);
+        }
 
+        .host-button:hover {
+            background-color: #1a4fd8;
+            border-color: #1a4fd8;
+        }
 
-.host-button {
-    text-decoration: none;
-    color: white;
-    background-color: #2962ff;
-    font-weight: 600;
-    font-size: 0.95rem;
-    padding: 0.6rem 1.2rem;
-    border-radius: 50px;
-    border: 1px solid #2962ff;
-    transition: var(--transition);
-}
-
-.host-button:hover {
-    background-color: #1a4fd8;
-    border-color: #1a4fd8;
-}
-
-/* Mobile Menu Toggle */
-.menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--text-dark);
-}
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
     
         /* Account Container */
         .account-container {
@@ -206,16 +202,16 @@
         }
 
         .account-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    cursor: pointer;
-    transition: var(--transition);
-}
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: var(--transition);
+        }
 
-.account-avatar img:hover {
-    opacity: 0.9;
-}
+        .account-avatar img:hover {
+            opacity: 0.9;
+        }
         
         .completion-text strong {
             color: var(--primary-blue);
@@ -348,7 +344,7 @@
             display: none;
         }
         
-        /* Cars Around You Section */
+        /* Cars Section */
         .cars-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -361,6 +357,7 @@
             overflow: hidden;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
             transition: var(--transition);
+            position: relative;
         }
         
         .car-card:hover {
@@ -394,6 +391,7 @@
             display: flex;
             gap: 1rem;
             margin-bottom: 0.5rem;
+            flex-wrap: wrap;
         }
         
         .car-feature {
@@ -420,6 +418,31 @@
             margin-right: 0.5rem;
             color: var(--primary-blue);
         }
+
+        .car-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .car-status.available {
+            background-color: var(--primary-green);
+            color: white;
+        }
+
+        .car-status.unavailable {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .car-status.pending {
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+        }
         
         .no-cars {
             display: flex;
@@ -428,6 +451,7 @@
             justify-content: center;
             padding: 2rem;
             text-align: center;
+            grid-column: 1 / -1;
         }
         
         .no-cars-video {
@@ -456,51 +480,203 @@
         .explore-btn:hover {
             background-color: #1a4fd8;
         }
+
+        .add-car-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .add-car-btn:hover {
+            background-color: #00b247;
+        }
+
+        /* Add Car Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: var(--text-dark);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-blue);
+        }
+
+        .image-upload-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .image-upload-preview {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #ddd;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-upload-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-upload-preview .upload-icon {
+            font-size: 2rem;
+            color: var(--text-light);
+        }
+
+        .image-upload-preview input {
+            display: none;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(255, 0, 0, 0.7);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .features-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-tag {
+            display: flex;
+            align-items: center;
+            background-color: #f0f0f0;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .feature-tag .remove-feature {
+            margin-left: 0.3rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .feature-tag .remove-feature:hover {
+            color: var(--text-dark);
+        }
+
+        .availability-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .availability-container .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
         /* Image Modal */
-.image-modal {
-    display: none;
-    position: fixed;
-    z-index: 1001;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    overflow: auto;
-    animation: fadeIn 0.3s;
-}
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+            animation: fadeIn 0.3s;
+        }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-.modal-content {
-    display: block;
-    margin: auto;
-    max-width: 90%;
-    max-height: 90%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 4px;
-}
+        .modal-content-img {
+            display: block;
+            margin: auto;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 4px;
+        }
 
-.close-modal {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    color: white;
-    font-size: 35px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 1002;
-}
+        .close-img-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1002;
+        }
 
-.close-modal:hover {
-    color: #ccc;
-}
+        .close-img-modal:hover {
+            color: #ccc;
+        }
         
         /* Loading State */
         .loading {
@@ -559,61 +735,72 @@
         }
         
         @media (max-width: 768px) {
-    .menu-toggle {
-        display: block;
-    }
+            .menu-toggle {
+                display: block;
+            }
 
-    .nav-links {
-        position: fixed;
-        top: 80px;
-        left: 0;
-        width: 100%;
-        background-color: var(--bg-white);
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 1rem 5%;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        gap: 1rem;
-        transform: translateY(-150%);
-        transition: var(--transition);
-        z-index: 999;
-    }
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background-color: var(--bg-white);
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem 5%;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                gap: 1rem;
+                transform: translateY(-150%);
+                transition: var(--transition);
+                z-index: 999;
+            }
 
-    .nav-links.active {
-        transform: translateY(0);
-    }
+            .nav-links.active {
+                transform: translateY(0);
+            }
 
-    .host-button, .auth-button, .logout-btn {
-        border: none;
-        padding: 0.5rem 0;
-        width: 100%;
-        text-align: left;
-    }
+            .host-button, .auth-button, .logout-btn {
+                border: none;
+                padding: 0.5rem 0;
+                width: 100%;
+                text-align: left;
+            }
 
-    .host-button {
-        background-color: transparent;
-        color: var(--primary-blue);
-        border: none;
-    }
+            .host-button {
+                background-color: transparent;
+                color: var(--primary-blue);
+                border: none;
+            }
 
-    .account-avatar {
-        width: 80px;
-        height: 80px;
-        margin-right: 1rem;
-    }
-    
-    .account-info h1 {
-        font-size: 1.5rem;
-    }
-    
-    .account-section {
-        padding: 1.5rem;
-    }
-    
-    .section-content {
-        gap: 1.5rem;
-    }
-}
+            .account-avatar {
+                width: 80px;
+                height: 80px;
+                margin-right: 1rem;
+            }
+            
+            .account-info h1 {
+                font-size: 1.5rem;
+            }
+            
+            .account-section {
+                padding: 1.5rem;
+            }
+            
+            .section-content {
+                gap: 1.5rem;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .availability-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
         
         @media (max-width: 480px) {
             .account-avatar {
@@ -684,8 +871,8 @@
         </button>
         
         <div class="nav-links" id="navLinks">
-            <a href="#" class="auth-button">Insurance</a>
-            <a href="#" class="host-button">Become a Host</a>
+            <a href="#" class="auth-button">My Rides</a>
+            <a href="#" class="host-button">Owner Dashboard</a>
             <button class="logout-btn" id="logoutBtn">Log Out</button>
         </div>
     </nav>
@@ -717,18 +904,40 @@
             </div>
         </div>
 
-         <!-- Cars Around You Section -->
-         <div class="account-section">
-            <h2>Cars Around You</h2>
-            <div class="cars-container" id="carsContainer">
-                <div class="no-cars">
-                    <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
-                    <p>We're finding cars near you...</p>
-                    <a href="#" class="explore-btn">Explore All Cars</a>
+        <!-- Owner Approval Status -->
+        <div class="account-section" id="ownerApprovalSection">
+            <h2>Owner Status</h2>
+            <div class="section-content">
+                <div class="info-group">
+                    <p class="info-label">Approval Status</p>
+                    <p class="info-value" id="ownerApprovalStatus">Pending Approval</p>
+                </div>
+                <div class="info-group">
+                    <p class="info-label">Earnings</p>
+                    <p class="info-value" id="ownerEarnings">R0.00</p>
+                </div>
+                <div class="info-group">
+                    <p class="info-label">Listings</p>
+                    <p class="info-value" id="ownerListings">0 cars</p>
                 </div>
             </div>
         </div>
-        
+
+        <!-- My Cars Section -->
+        <div class="account-section">
+            <h2>
+                My Cars
+                <button class="add-car-btn" id="addCarBtn">
+                    <i class="fas fa-plus"></i> Add New Car
+                </button>
+            </h2>
+            <div class="cars-container" id="carsContainer">
+                <div class="no-cars">
+                    <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
+                    <p>You haven't listed any cars yet.</p>
+                </div>
+            </div>
+        </div>
         
         <!-- Personal Info Section -->
         <div class="account-section">
@@ -786,58 +995,6 @@
             </div>
         </div>
         
-        <!-- Driver's License Section -->
-        <div class="account-section">
-            <h2>
-                Driver's License
-                <span class="section-edit" id="editLicense">Add License</span>
-            </h2>
-            
-            <div class="section-content">
-                <div class="info-group">
-                    <p class="info-label">License Status</p>
-                    <p class="info-value" id="licenseStatus">Not verified</p>
-                </div>
-            </div>
-            
-            <!-- Edit License Form -->
-            <div class="edit-form" id="licenseForm">
-                <div class="form-group">
-                    <label for="licenseNumber">License Number</label>
-                    <input type="text" id="licenseNumber" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="licenseState">State/Province</label>
-                    <input type="text" id="licenseState" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="licenseExpiry">Expiration Date</label>
-                    <input type="date" id="licenseExpiry" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Upload Photos</label>
-                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-                        <div style="flex: 1;">
-                            <label for="licenseFront" style="display: block; margin-bottom: 0.5rem;">Front</label>
-                            <input type="file" id="licenseFront" accept="image/*">
-                        </div>
-                        <div style="flex: 1;">
-                            <label for="licenseBack" style="display: block; margin-bottom: 0.5rem;">Back</label>
-                            <input type="file" id="licenseBack" accept="image/*">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="save-btn" id="saveLicense">Submit for Verification</button>
-                    <button type="button" class="cancel-btn" id="cancelLicense">Cancel</button>
-                </div>
-            </div>
-        </div>
-        
         <!-- Payment Methods Section -->
         <div class="account-section">
             <h2>
@@ -884,82 +1041,161 @@
         </div>
     </main>
 
+    <!-- Add Car Modal -->
+    <div class="modal" id="addCarModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeCarModal">&times;</span>
+            <h2 class="modal-title">Add New Car</h2>
+            
+            <div class="form-group">
+                <label for="carMake">Make</label>
+                <input type="text" id="carMake" placeholder="Toyota" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="carModel">Model</label>
+                <input type="text" id="carModel" placeholder="Corolla" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="carYear">Year</label>
+                <input type="number" id="carYear" min="1900" max="2025" placeholder="2022" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="carColor">Color</label>
+                <input type="text" id="carColor" placeholder="Blue" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="carLicensePlate">License Plate</label>
+                <input type="text" id="carLicensePlate" placeholder="ABC123" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="carPrice">Price per Day (R)</label>
+                <input type="number" id="carPrice" min="100" placeholder="500" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Upload Images (Max 5)</label>
+                <div class="image-upload-container" id="imageUploadContainer">
+                    <div class="image-upload-preview" id="imageUpload1">
+                        <i class="fas fa-camera upload-icon"></i>
+                        <input type="file" class="car-image-input" accept="image/*">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="carFeatures">Features (Press Enter to add)</label>
+                <input type="text" id="carFeatures" placeholder="Automatic, GPS, Bluetooth">
+                <div class="features-container" id="featuresContainer"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="carDescription">Description</label>
+                <textarea id="carDescription" rows="3" placeholder="A reliable car for city trips."></textarea>
+            </div>
+            
+            <div class="availability-container">
+                <div class="form-group">
+                    <label for="availabilityStart">Available From</label>
+                    <input type="date" id="availabilityStart" required>
+                </div>
+                <div class="form-group">
+                    <label for="availabilityEnd">Available To</label>
+                    <input type="date" id="availabilityEnd" required>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="save-btn" id="saveCarBtn">List My Car</button>
+                <button type="button" class="cancel-btn" id="cancelCarBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Image View Modal -->
-<div class="image-modal" id="imageModal">
-    <span class="close-modal">&times;</span>
-    <img class="modal-content" id="modalImage">
-</div>
+    <div class="image-modal" id="imageModal">
+        <span class="close-img-modal">&times;</span>
+        <img class="modal-content-img" id="modalImage">
+    </div>
 
     <script>
         // Enhanced Mobile Menu Toggle Functionality
         document.addEventListener('DOMContentLoaded', function() {
-    const menuToggle = document.getElementById('menuToggle');
-    const navLinks = document.getElementById('navLinks');
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.getElementById('navLinks');
 
-    if (menuToggle && navLinks) {
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            if (navLinks.classList.contains('active')) {
-                menuToggle.innerHTML = '<i class="fas fa-times"></i>';
-            } else {
-                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            if (menuToggle && navLinks) {
+                menuToggle.addEventListener('click', () => {
+                    navLinks.classList.toggle('active');
+                    if (navLinks.classList.contains('active')) {
+                        menuToggle.innerHTML = '<i class="fas fa-times"></i>';
+                    } else {
+                        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                    }
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+                        if (window.innerWidth <= 768) {
+                            navLinks.classList.remove('active');
+                            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                        }
+                    }
+                });
+
+                // Close menu when clicking on any nav link (for mobile)
+                navLinks.querySelectorAll('a, button').forEach(item => {
+                    item.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            navLinks.classList.remove('active');
+                            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                        }
+                    });
+                });
             }
         });
 
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
-                if (window.innerWidth <= 768) {
-                    navLinks.classList.remove('active');
-                    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-                }
+        // Get the modal and modal image elements
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        const closeModal = document.querySelector('.close-img-modal');
+
+        // When the profile image is clicked, open the modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileAvatar = document.getElementById('profileAvatar');
+            if (profileAvatar) {
+                profileAvatar.addEventListener('click', function() {
+                    if (this.src && !this.src.includes('default-avatar.png')) {
+                        modal.style.display = 'block';
+                        modalImg.src = this.src;
+                    }
+                });
             }
         });
 
-        // Close menu when clicking on any nav link (for mobile)
-        navLinks.querySelectorAll('a, button').forEach(item => {
-            item.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    navLinks.classList.remove('active');
-                    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-                }
-            });
+        // When the close button is clicked, close the modal
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
         });
-    }
-});
 
-// Get the modal and modal image elements
-const modal = document.getElementById('imageModal');
-const modalImg = document.getElementById('modalImage');
-const closeModal = document.querySelector('.close-modal');
+        // When clicking anywhere outside the image, close the modal
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
 
-// When the profile image is clicked, open the modal
-profileAvatar.addEventListener('click', function() {
-    if (this.src && !this.src.includes('default-avatar.png')) {
-        modal.style.display = 'block';
-        modalImg.src = this.src;
-    }
-});
-
-// When the close button is clicked, close the modal
-closeModal.addEventListener('click', function() {
-    modal.style.display = 'none';
-});
-
-// When clicking anywhere outside the image, close the modal
-modal.addEventListener('click', function(e) {
-    if (e.target === modal) {
-        modal.style.display = 'none';
-    }
-});
-
-// Close modal when pressing Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && modal.style.display === 'block') {
-        modal.style.display = 'none';
-    }
-});
-    
+        // Close modal when pressing Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+        });
     </script>
 
 <script type="module">
@@ -976,8 +1212,19 @@ document.addEventListener('keydown', function(e) {
         getDoc, 
         setDoc,
         updateDoc,
-        serverTimestamp
+        serverTimestamp,
+        collection,
+        query,
+        where,
+        getDocs,
+        addDoc
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+    import { 
+        getStorage,
+        ref,
+        uploadBytes,
+        getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -994,6 +1241,7 @@ document.addEventListener('keydown', function(e) {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const storage = getStorage(app);
 
     // Geoapify API Key
     const GEOAPIFY_API_KEY = "2ca9e48dc90443978775d9ef8792b96e";
@@ -1011,6 +1259,9 @@ document.addEventListener('keydown', function(e) {
     const updateLocation = document.getElementById('updateLocation');
     const locationStatus = document.getElementById('locationStatus');
     const carsContainer = document.getElementById('carsContainer');
+    const ownerApprovalStatus = document.getElementById('ownerApprovalStatus');
+    const ownerEarnings = document.getElementById('ownerEarnings');
+    const ownerListings = document.getElementById('ownerListings');
     
     // Profile edit elements
     const avatarEdit = document.getElementById('avatarEdit');
@@ -1027,18 +1278,21 @@ document.addEventListener('keydown', function(e) {
     const editName = document.getElementById('editName');
     const editPhone = document.getElementById('editPhone');
     
-    // License elements
-    const editLicense = document.getElementById('editLicense');
-    const licenseForm = document.getElementById('licenseForm');
-    const saveLicense = document.getElementById('saveLicense');
-    const cancelLicense = document.getElementById('cancelLicense');
-    const licenseStatus = document.getElementById('licenseStatus');
-    
     // Payment elements
     const editPayment = document.getElementById('editPayment');
     const paymentForm = document.getElementById('paymentForm');
     const savePayment = document.getElementById('savePayment');
     const cancelPayment = document.getElementById('cancelPayment');
+
+    // Add Car elements
+    const addCarBtn = document.getElementById('addCarBtn');
+    const addCarModal = document.getElementById('addCarModal');
+    const closeCarModal = document.getElementById('closeCarModal');
+    const cancelCarBtn = document.getElementById('cancelCarBtn');
+    const saveCarBtn = document.getElementById('saveCarBtn');
+    const imageUploadContainer = document.getElementById('imageUploadContainer');
+    const featuresContainer = document.getElementById('featuresContainer');
+    const carFeaturesInput = document.getElementById('carFeatures');
 
     // Notification system
     function showNotification(message, isSuccess = true) {
@@ -1186,21 +1440,15 @@ document.addEventListener('keydown', function(e) {
     // Calculate profile completion percentage
     function calculateProfileCompletion(userData) {
         let completedFields = 0;
-        const totalFields = 4; // name, email, phone, license
+        const totalFields = 4; // name, email, phone, payment
         
         if (userData.name) completedFields++;
         if (userData.email) completedFields++;
         if (userData.phone) completedFields++;
-        if (userData.licenseVerified) completedFields++;
+        if (userData.paymentMethod) completedFields++;
         
         const percentage = Math.round((completedFields / totalFields) * 100);
         return percentage;
-    }
-
-    // Update profile completion UI
-    function updateProfileCompletion(percentage) {
-        completionProgress.style.width = `${percentage}%`;
-        completionPercent.textContent = `${percentage}%`;
     }
 
     // Validate phone number
@@ -1287,60 +1535,108 @@ document.addEventListener('keydown', function(e) {
         });
     }
 
-    // Show cars around user's location
-    async function showCarsNearYou(location) {
+    // Show owner's cars
+    async function showOwnerCars(ownerId) {
         try {
             carsContainer.innerHTML = '';
-            const noCarsDiv = document.createElement('div');
-            noCarsDiv.className = 'no-cars';
             
-            const image = document.createElement('img');
-            image.src = 'videos/nocars.gif';
-            image.alt = 'No cars available';
-            image.className = 'no-cars-video';
+            // Query cars where ownerId matches the current user
+            const carsQuery = query(collection(db, "cars"), where("ownerId", "==", ownerId));
+            const querySnapshot = await getDocs(carsQuery);
             
-            const message = document.createElement('p');
-            message.textContent = location 
-                ? `Finding cars near ${location}...`
-                : 'We cannot determine your current location';
-            
-            const exploreBtn = document.createElement('a');
-            exploreBtn.href = '#';
-            exploreBtn.className = 'explore-btn';
-            exploreBtn.textContent = 'Explore All Cars';
-            
-            if (location) {
-                const locationDisplay = document.createElement('p');
-                locationDisplay.className = 'location-display';
-                locationDisplay.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${location}`;
-                noCarsDiv.appendChild(locationDisplay);
+            if (querySnapshot.empty) {
+                carsContainer.innerHTML = `
+                    <div class="no-cars">
+                        <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
+                        <p>You haven't listed any cars yet.</p>
+                        <button class="explore-btn" id="addFirstCarBtn">List Your First Car</button>
+                    </div>
+                `;
+                
+                document.getElementById('addFirstCarBtn').addEventListener('click', () => {
+                    addCarModal.style.display = 'block';
+                });
+                
+                ownerListings.textContent = '0 cars';
+                return;
             }
             
-            noCarsDiv.appendChild(image);
-            noCarsDiv.appendChild(message);
-            noCarsDiv.appendChild(exploreBtn);
-            carsContainer.appendChild(noCarsDiv);
+            // Update listings count
+            ownerListings.textContent = `${querySnapshot.size} ${querySnapshot.size === 1 ? 'car' : 'cars'}`;
             
-            // Simulate loading cars (in a real app, you would fetch actual data)
-            setTimeout(() => {
-                message.textContent = location 
-                    ? `No cars available near ${location}`
-                    : 'No cars available - location unknown';
-            }, 2000);
+            querySnapshot.forEach((doc) => {
+                const car = doc.data();
+                const carCard = document.createElement('div');
+                carCard.className = 'car-card';
+                
+                // Determine status
+                let statusClass = 'pending';
+                let statusText = 'Pending Approval';
+                
+                if (car.approved) {
+                    statusClass = car.isAvailable ? 'available' : 'unavailable';
+                    statusText = car.isAvailable ? 'Available' : 'Unavailable';
+                }
+                
+                // Format price
+                const formattedPrice = `R${car.pricePerDay.toFixed(2)}/day`;
+                
+                // Create features list
+                let featuresHtml = '';
+                if (car.features && car.features.length > 0) {
+                    featuresHtml = car.features.slice(0, 3).map(feature => `
+                        <div class="car-feature">
+                            <i class="fas fa-check-circle"></i> ${feature}
+                        </div>
+                    `).join('');
+                    
+                    if (car.features.length > 3) {
+                        featuresHtml += `<div class="car-feature">+${car.features.length - 3} more</div>`;
+                    }
+                }
+                
+                // Format dates
+                let datesText = '';
+                if (car.availabilityDates) {
+                    const startDate = new Date(car.availabilityDates.start.seconds * 1000);
+                    const endDate = new Date(car.availabilityDates.end.seconds * 1000);
+                    
+                    datesText = `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
+                }
+                
+                carCard.innerHTML = `
+                    <img src="${car.images?.[0] || 'images/default-car.jpg'}" alt="${car.make} ${car.model}" class="car-image">
+                    <div class="car-status ${statusClass}">${statusText}</div>
+                    <div class="car-details">
+                        <h3 class="car-title">${car.year} ${car.make} ${car.model}</h3>
+                        <p class="car-price">${formattedPrice}</p>
+                        <div class="car-features">
+                            ${featuresHtml}
+                        </div>
+                        <div class="car-location">
+                            <i class="fas fa-map-marker-alt"></i> ${car.address || 'Location not specified'}
+                        </div>
+                        <div class="car-location">
+                            <i class="fas fa-calendar-alt"></i> ${datesText || 'Dates not specified'}
+                        </div>
+                    </div>
+                `;
+                
+                carsContainer.appendChild(carCard);
+            });
             
         } catch (error) {
-            console.error("Error loading cars:", error);
+            console.error("Error loading owner's cars:", error);
             carsContainer.innerHTML = `
                 <div class="no-cars">
                     <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
-                    <p>Error loading cars. Please try again later.</p>
-                    <a href="#" class="explore-btn">Explore All Cars</a>
+                    <p>Error loading your cars. Please try again later.</p>
                 </div>
             `;
         }
     }
 
-    // Check auth state and load user data
+    // Update auth UI
     function updateAuthUI(user) {
         const authButtons = document.querySelectorAll('.nav-links .auth-button');
         
@@ -1369,6 +1665,138 @@ document.addEventListener('keydown', function(e) {
         }
     }
 
+    // Initialize car features functionality
+    function initCarFeatures() {
+        const features = [];
+        
+        // Add feature when Enter is pressed
+        carFeaturesInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const feature = carFeaturesInput.value.trim();
+                if (feature && !features.includes(feature)) {
+                    features.push(feature);
+                    renderFeatures();
+                    carFeaturesInput.value = '';
+                }
+            }
+        });
+        
+        // Render features tags
+        function renderFeatures() {
+            featuresContainer.innerHTML = features.map(feature => `
+                <div class="feature-tag">
+                    ${feature}
+                    <span class="remove-feature" data-feature="${feature}">&times;</span>
+                </div>
+            `).join('');
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-feature').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const featureToRemove = e.target.getAttribute('data-feature');
+                    const index = features.indexOf(featureToRemove);
+                    if (index !== -1) {
+                        features.splice(index, 1);
+                        renderFeatures();
+                    }
+                });
+            });
+        }
+        
+        return features;
+    }
+
+    // Initialize image upload functionality
+    function initImageUpload() {
+        const images = [];
+        let uploadIndex = 1;
+        
+        // Create first upload box
+        createUploadBox(1);
+        
+        function createUploadBox(index) {
+            const uploadBox = document.createElement('div');
+            uploadBox.className = 'image-upload-preview';
+            uploadBox.id = `imageUpload${index}`;
+            uploadBox.innerHTML = `
+                <i class="fas fa-camera upload-icon"></i>
+                <input type="file" class="car-image-input" accept="image/*">
+            `;
+            
+            const fileInput = uploadBox.querySelector('.car-image-input');
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Please select a valid image file.', false);
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Image file is too large. Please select an image under 5MB.', false);
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    uploadBox.innerHTML = `
+                        <img src="${event.target.result}" alt="Car image">
+                        <div class="remove-image">&times;</div>
+                    `;
+                    
+                    // Store the image data
+                    images[index - 1] = file;
+                    
+                    // Add new upload box if we haven't reached the limit
+                    if (index === uploadIndex && uploadIndex < 5) {
+                        uploadIndex++;
+                        createUploadBox(uploadIndex);
+                    }
+                    
+                    // Add remove event listener
+                    uploadBox.querySelector('.remove-image').addEventListener('click', () => {
+                        images.splice(index - 1, 1);
+                        uploadBox.remove();
+                        
+                        // Re-index remaining images
+                        const remainingBoxes = document.querySelectorAll('.image-upload-preview');
+                        remainingBoxes.forEach((box, i) => {
+                            box.id = `imageUpload${i + 1}`;
+                        });
+                        
+                        uploadIndex = remainingBoxes.length;
+                        
+                        // If we removed the last one and we're under limit, add a new empty box
+                        if (uploadIndex < 5 && !document.querySelector('.image-upload-preview:last-child .upload-icon')) {
+                            createUploadBox(uploadIndex + 1);
+                        }
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            imageUploadContainer.appendChild(uploadBox);
+        }
+        
+        return images;
+    }
+
+    // Upload image to Firebase Storage and return URL
+    async function uploadCarImage(file, carId, index) {
+        try {
+            const storageRef = ref(storage, `cars/${carId}/image_${index}`);
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+            return downloadURL;
+        } catch (error) {
+            console.error('Error uploading car image:', error);
+            throw error;
+        }
+    }
+
     // Check auth state and load user data
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -1391,13 +1819,20 @@ document.addEventListener('keydown', function(e) {
                         profilePicBase64: '',
                         location: '',
                         coordinates: null,
-                        licenseVerified: false,
-                        licenseSubmitted: false,
+                        role: 'renter', // Default to renter until approved as owner
+                        ownerApproved: false,
                         createdAt: serverTimestamp(),
                         updatedAt: serverTimestamp()
                     };
                     await setDoc(userDocRef, userData);
                     showNotification('Profile created successfully!');
+                }
+                
+                // Check if user is an approved owner
+                if (userData.role !== 'owner' || !userData.ownerApproved) {
+                    // Redirect to user page if not an approved owner
+                    window.location.href = "user.html";
+                    return;
                 }
                 
                 // Display user info
@@ -1419,8 +1854,6 @@ document.addEventListener('keydown', function(e) {
                 if (userData.location) {
                     displayLocation.textContent = userData.location;
                     displayLocation.classList.remove('empty-value');
-                    // Show cars near this location
-                    await showCarsNearYou(userData.location);
                 } else {
                     displayLocation.textContent = 'Location not set';
                     displayLocation.classList.add('empty-value');
@@ -1434,10 +1867,8 @@ document.addEventListener('keydown', function(e) {
                         });
                         displayLocation.textContent = locationData.address;
                         displayLocation.classList.remove('empty-value');
-                        await showCarsNearYou(locationData.address);
                     } catch (error) {
                         console.error('Error fetching initial location:', error);
-                        await showCarsNearYou();
                     }
                 }
                 
@@ -1449,20 +1880,9 @@ document.addEventListener('keydown', function(e) {
                     profileAvatar.src = "images/default-avatar.png";
                 }
                 
-                // Update license status
-                if (userData.licenseVerified) {
-                    licenseStatus.textContent = 'Verified';
-                    licenseStatus.style.color = 'var(--primary-green)';
-                    editLicense.textContent = 'View License';
-                } else if (userData.licenseSubmitted) {
-                    licenseStatus.textContent = 'Under Review';
-                    licenseStatus.style.color = 'var(--accent-yellow)';
-                    editLicense.textContent = 'View Details';
-                } else {
-                    licenseStatus.textContent = 'Not verified';
-                    licenseStatus.style.color = 'var(--text-light)';
-                    editLicense.textContent = 'Add License';
-                }
+                // Update owner status
+                ownerApprovalStatus.textContent = userData.ownerApproved ? 'Approved' : 'Pending Approval';
+                ownerApprovalStatus.style.color = userData.ownerApproved ? 'var(--primary-green)' : 'var(--accent-yellow)';
                 
                 // Calculate and update profile completion
                 const completionPercentage = calculateProfileCompletion(userData);
@@ -1475,10 +1895,12 @@ document.addEventListener('keydown', function(e) {
                 // Update auth UI
                 updateAuthUI(user);
                 
+                // Load owner's cars
+                await showOwnerCars(user.uid);
+                
             } catch (error) {
                 console.error("Error getting user data:", error);
                 showNotification('Error loading profile data. Please try again.', false);
-                await showCarsNearYou();
             }
         } else {
             updateAuthUI(null);
@@ -1591,9 +2013,6 @@ document.addEventListener('keydown', function(e) {
             displayLocation.classList.remove('empty-value');
             locationStatus.textContent = "Location updated successfully!";
             
-            // Show cars near the new location
-            await showCarsNearYou(locationData.address);
-            
             // Recalculate profile completion
             const userDoc = await getDoc(userDocRef);
             if (userDoc.exists()) {
@@ -1676,92 +2095,6 @@ document.addEventListener('keydown', function(e) {
         }
     });
 
-    // License Edit with Base64 storage for license images
-    editLicense.addEventListener('click', () => {
-        licenseForm.style.display = 'block';
-    });
-
-    cancelLicense.addEventListener('click', () => {
-        licenseForm.style.display = 'none';
-    });
-
-    saveLicense.addEventListener('click', async () => {
-        const licenseNumber = document.getElementById('licenseNumber').value.trim();
-        const licenseState = document.getElementById('licenseState').value.trim();
-        const licenseExpiry = document.getElementById('licenseExpiry').value;
-        const licenseFront = document.getElementById('licenseFront').files[0];
-        const licenseBack = document.getElementById('licenseBack').files[0];
-        
-        // Validate inputs
-        if (!licenseNumber || !licenseState || !licenseExpiry) {
-            showNotification('Please fill all required fields', false);
-            return;
-        }
-        
-        if (!licenseFront || !licenseBack) {
-            showNotification('Please upload both front and back of your license', false);
-            return;
-        }
-        
-        // Validate file types
-        if (!licenseFront.type.startsWith('image/') || !licenseBack.type.startsWith('image/')) {
-            showNotification('Please select valid image files for license photos.', false);
-            return;
-        }
-        
-        try {
-            const user = auth.currentUser;
-            if (!user) throw new Error('User not logged in');
-            
-            const userDocRef = doc(db, "users", user.uid);
-            
-            // Show loading state
-            saveLicense.disabled = true;
-            saveLicense.innerHTML = '<div class="loading"></div> Submitting...';
-            
-            // Convert license images to Base64
-            const [frontBase64, backBase64] = await Promise.all([
-                convertFileToBase64(licenseFront),
-                convertFileToBase64(licenseBack)
-            ]);
-            
-            // Update user data in Firestore
-            await updateDoc(userDocRef, {
-                licenseNumber: licenseNumber,
-                licenseState: licenseState,
-                licenseExpiry: licenseExpiry,
-                licenseFrontBase64: frontBase64,
-                licenseBackBase64: backBase64,
-                licenseSubmitted: true,
-                licenseVerified: false,
-                updatedAt: serverTimestamp()
-            });
-            
-            // Update UI
-            licenseStatus.textContent = 'Under Review';
-            licenseStatus.style.color = 'var(--accent-yellow)';
-            editLicense.textContent = 'View Details';
-            licenseForm.style.display = 'none';
-            saveLicense.disabled = false;
-            saveLicense.textContent = 'Submit for Verification';
-            
-            // Update profile completion
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                const completionPercentage = calculateProfileCompletion(userDoc.data());
-                updateProfileCompletion(completionPercentage);
-            }
-            
-            showNotification('License submitted for verification!');
-            
-        } catch (error) {
-            console.error('Error submitting license:', error);
-            saveLicense.disabled = false;
-            saveLicense.textContent = 'Submit for Verification';
-            showNotification('Failed to submit license. Please try again.', false);
-        }
-    });
-
     // Payment Edit
     editPayment.addEventListener('click', () => {
         paymentForm.style.display = 'block';
@@ -1828,6 +2161,143 @@ document.addEventListener('keydown', function(e) {
             savePayment.disabled = false;
             savePayment.textContent = 'Save Payment Method';
             showNotification('Failed to add payment method. Please try again.', false);
+        }
+    });
+
+    // Add Car Modal functionality
+    addCarBtn.addEventListener('click', () => {
+        addCarModal.style.display = 'block';
+    });
+
+    closeCarModal.addEventListener('click', () => {
+        addCarModal.style.display = 'none';
+    });
+
+    cancelCarBtn.addEventListener('click', () => {
+        addCarModal.style.display = 'none';
+    });
+
+    // Initialize car features and image upload when modal opens
+    addCarModal.addEventListener('click', (e) => {
+        if (e.target === addCarModal) {
+            addCarModal.style.display = 'none';
+        }
+    });
+
+    // Initialize features and image upload
+    const features = initCarFeatures();
+    const carImages = initImageUpload();
+
+    // Save new car
+    saveCarBtn.addEventListener('click', async () => {
+        // Get form values
+        const make = document.getElementById('carMake').value.trim();
+        const model = document.getElementById('carModel').value.trim();
+        const year = document.getElementById('carYear').value.trim();
+        const color = document.getElementById('carColor').value.trim();
+        const licensePlate = document.getElementById('carLicensePlate').value.trim();
+        const price = parseFloat(document.getElementById('carPrice').value);
+        const description = document.getElementById('carDescription').value.trim();
+        const availabilityStart = document.getElementById('availabilityStart').value;
+        const availabilityEnd = document.getElementById('availabilityEnd').value;
+        
+        // Validate inputs
+        if (!make || !model || !year || !color || !licensePlate || isNaN(price) || !availabilityStart || !availabilityEnd) {
+            showNotification('Please fill all required fields', false);
+            return;
+        }
+        
+        if (price < 100) {
+            showNotification('Price per day must be at least R100', false);
+            return;
+        }
+        
+        if (new Date(availabilityStart) > new Date(availabilityEnd)) {
+            showNotification('End date must be after start date', false);
+            return;
+        }
+        
+        if (carImages.length === 0) {
+            showNotification('Please upload at least one image of your car', false);
+            return;
+        }
+        
+        try {
+            const user = auth.currentUser;
+            if (!user) throw new Error('User not logged in');
+            
+            // Show loading state
+            saveCarBtn.disabled = true;
+            saveCarBtn.innerHTML = '<div class="loading"></div> Listing Car...';
+            
+            // First create the car document to get an ID
+            const carDocRef = await addDoc(collection(db, "cars"), {
+                ownerId: user.uid,
+                make: make,
+                model: model,
+                year: parseInt(year),
+                color: color,
+                licensePlate: licensePlate,
+                pricePerDay: price,
+                description: description,
+                features: features,
+                availabilityDates: {
+                    start: new Date(availabilityStart),
+                    end: new Date(availabilityEnd)
+                },
+                isAvailable: true,
+                approved: false,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            });
+            
+            // Upload images
+            const imageUrls = [];
+            for (let i = 0; i < carImages.length; i++) {
+                if (carImages[i]) {
+                    const url = await uploadCarImage(carImages[i], carDocRef.id, i);
+                    imageUrls.push(url);
+                }
+            }
+            
+            // Update car with image URLs
+            await updateDoc(carDocRef, {
+                images: imageUrls
+            });
+            
+            // Close modal and reset form
+            addCarModal.style.display = 'none';
+            
+            // Reset form
+            document.getElementById('carMake').value = '';
+            document.getElementById('carModel').value = '';
+            document.getElementById('carYear').value = '';
+            document.getElementById('carColor').value = '';
+            document.getElementById('carLicensePlate').value = '';
+            document.getElementById('carPrice').value = '';
+            document.getElementById('carDescription').value = '';
+            document.getElementById('availabilityStart').value = '';
+            document.getElementById('availabilityEnd').value = '';
+            
+            // Clear features and images
+            features.length = 0;
+            featuresContainer.innerHTML = '';
+            carImages.length = 0;
+            imageUploadContainer.innerHTML = '';
+            initImageUpload(); // Reinitialize upload boxes
+            
+            // Show success message
+            showNotification('Car listed successfully! It will be visible after approval.');
+            
+            // Refresh car list
+            await showOwnerCars(user.uid);
+            
+        } catch (error) {
+            console.error('Error listing car:', error);
+            showNotification('Failed to list car. Please try again.', false);
+        } finally {
+            saveCarBtn.disabled = false;
+            saveCarBtn.textContent = 'List My Car';
         }
     });
 </script>

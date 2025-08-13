@@ -37,6 +37,26 @@
             line-height: 1.6;
             background-color: #fffbed;
         }
+
+        /* Role Selection Modal Styles */
+#roleSelectionModal .auth-primary-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#roleSelectionModal .auth-primary-btn i {
+    margin-right: 0.8rem;
+    font-size: 1.2rem;
+}
+
+#roleSelectionModal .auth-subtitle {
+    margin-bottom: 2rem;
+}
     
         /* Overlay Styles */
         .overlay {
@@ -1492,7 +1512,25 @@
     </div>
 </section>
    
-
+<!-- Role Selection Modal -->
+<div class="auth-modal" id="roleSelectionModal">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeModal('roleSelectionModal')">&times;</button>
+        <div class="modal-gif-container">
+            <img src="videos/geooverlay.gif" class="modal-gif" onload="this.onload=null; this.src=this.src;">
+        </div>
+        <h2 class="auth-title">Select Your Role</h2>
+        <p class="auth-subtitle">You have access to both renter and owner accounts</p>
+        
+        <button class="auth-primary-btn" style="margin-bottom: 1rem;" onclick="redirectToRenter()">
+            Continue as Renter
+        </button>
+        
+        <button class="auth-primary-btn" style="background-color: var(--primary-green);" onclick="redirectToOwner()">
+            Continue as Owner
+        </button>
+    </div>
+</div>
 
 <!-- Sign Up Options Modal -->
 <!-- Sign Up Options Modal -->
@@ -1697,6 +1735,16 @@ function showSignupOptions() {
 function showSignupForm() {
   closeAllModals();
   document.getElementById('signupFormModal').style.display = 'flex';
+}
+
+function redirectToRenter() {
+    closeAllModals();
+    window.location.href = "user.html";
+}
+
+function redirectToOwner() {
+    closeAllModals();
+    window.location.href = "carowner.html";
 }
 
 function showLoginModal() {
@@ -1983,83 +2031,231 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Google sign-in function
+// Modify the signInWithGoogle function to handle owner signup
 async function signInWithGoogle() {
-  try {
-    console.log("Starting Google sign-in...");
-    const result = await signInWithPopup(auth, googleProvider);
-    const user = result.user;
-    console.log("Google auth successful, UID:", user.uid);
+    try {
+        console.log("Starting Google sign-in...");
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        console.log("Google auth successful, UID:", user.uid);
 
-    const userDocRef = doc(db, "users", user.uid);
-    console.log("Checking for existing user doc...");
-    const userDoc = await getDoc(userDocRef);
-    
-    if (!userDoc.exists()) {
-      console.log("Creating new user document...");
-      await setDoc(userDocRef, {
-        userId: user.uid,
-        email: user.email,
-        name: user.displayName || '',
-        phone: user.phoneNumber || '',
-        role: 'renter',
-        profilePic: user.photoURL || '',
-        address: '',
-        licenseVerified: false,
-        ownerApproved: false,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
-      console.log("User document created");
-      showNotification('Account created with Google successfully!');
-    } else {
-      console.log("Existing user document found");
-      showNotification('Logged in with Google successfully!');
+        const userDocRef = doc(db, "users", user.uid);
+        console.log("Checking for existing user doc...");
+        const userDoc = await getDoc(userDocRef);
+        
+        if (!userDoc.exists()) {
+            console.log("Creating new user document...");
+            
+            // Check if this is a host signup (from Become a Host button)
+            const isHostSignup = window.location.pathname.includes('become-a-host') || 
+                               document.activeElement?.textContent?.includes('Host');
+            
+            await setDoc(userDocRef, {
+                userId: user.uid,
+                email: user.email,
+                name: user.displayName || '',
+                phone: user.phoneNumber || '',
+                role: isHostSignup ? 'owner' : 'renter',
+                profilePic: user.photoURL || '',
+                address: '',
+                licenseVerified: false,
+                ownerApproved: isHostSignup ? false : null,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            });
+            
+            console.log("User document created");
+            showNotification(isHostSignup ? 
+                'Host account created! Your application is pending approval.' : 
+                'Account created with Google successfully!');
+            
+            if (isHostSignup) {
+                // Redirect to owner page or show pending approval message
+                window.location.href = "carowner.html";
+                return;
+            }
+        } else {
+            console.log("Existing user document found");
+            showNotification('Logged in with Google successfully!');
+        }
+        
+        closeAllModals();
+        window.location.search = '?from_auth=true';
+        updateAuthUI(user);
+        
+    } catch (error) {
+        console.error("Google sign-in error:", error);
+        showNotification('Google sign-in failed. Please try again.', false);
     }
-    
-    closeAllModals();
-    window.location.search = '?from_auth=true';  // Add this line
-    updateAuthUI(user);
-    
-  } catch (error) {
-    console.error("Google sign-in error:", error);
-    showNotification('Google sign-in failed. Please try again.', false);
-  }
 }
+
+// Update the Become a Host button to trigger host signup
+document.querySelector('.host-button')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    // Set a flag that we're doing a host signup
+    localStorage.setItem('isHostSignup', 'true');
+    showSignupOptions();
+});
+
+// Modify the signup form submission to handle host signup
+document.getElementById('signupForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const isHostSignup = localStorage.getItem('isHostSignup') === 'true';
+    
+    try {
+        console.log("Creating auth user...");
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log("Auth user created:", user.uid);
+
+        console.log("Creating Firestore document...");
+        const userDocRef = doc(db, "users", user.uid);
+        
+        await setDoc(userDocRef, {
+            userId: user.uid,
+            email: email,
+            name: `${firstName} ${lastName}`,
+            phone: '',
+            role: isHostSignup ? 'owner' : 'renter',
+            profilePic: '',
+            address: '',
+            licenseVerified: false,
+            ownerApproved: isHostSignup ? false : null,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
+        
+        console.log("Verifying document creation...");
+        const docSnapshot = await getDoc(userDocRef);
+        
+        if (!docSnapshot.exists()) {
+            throw new Error("Firestore document not created");
+        }
+        
+        console.log("User document verified:", docSnapshot.data());
+        showNotification(isHostSignup ? 
+            'Host account created! Your application is pending approval.' : 
+            'Account created successfully!');
+        
+        closeModal('signupFormModal');
+        localStorage.removeItem('isHostSignup');
+        
+        if (isHostSignup) {
+            window.location.href = "carowner.html";
+        } else {
+            window.location.search = '?from_auth=true';
+            updateAuthUI(user);
+        }
+
+    } catch (error) {
+        console.error("Full error:", error);
+        localStorage.removeItem('isHostSignup');
+        
+        // Clean up auth user if Firestore failed
+        if (auth.currentUser) {
+            try {
+                await auth.currentUser.delete();
+                console.log("Cleaned up auth user after failure");
+            } catch (deleteError) {
+                console.error("Failed to delete auth user:", deleteError);
+            }
+        }
+        
+        showNotification('Registration failed. Please try again.', false);
+    }
+});
+
+async function checkUserRoles(userId) {
+    try {
+        const userDocRef = doc(db, "users", userId);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            return userData.role === 'both'; // Or however you're storing multiple roles
+        }
+        return false;
+    } catch (error) {
+        console.error("Error checking user roles:", error);
+        return false;
+    }
+}
+
+// Function to check user role and redirect accordingly
+async function checkUserRoleAndRedirect(userId) {
+    try {
+        const userDocRef = doc(db, "users", userId);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            
+            if (userData.role === 'owner' || userData.ownerApproved) {
+                window.location.href = "carowner.html";
+            } else {
+                window.location.href = "user.html";
+            }
+        }
+    } catch (error) {
+        console.error("Error checking user role:", error);
+        window.location.href = "user.html";
+    }
+}
+
+// Function to show role selection modal
+function showRoleSelectionModal() {
+    closeAllModals();
+    document.getElementById('roleSelectionModal').style.display = 'flex';
+}
+
 
 
 function updateAuthUI(user) {
     const authButtons = document.querySelectorAll('.nav-links .auth-button');
     
     if (user) {
-        // User is logged in - change auth buttons to "My Rides"
-        authButtons.forEach(button => {
-            if (button.textContent.trim() === 'Log In') {
-                button.textContent = 'My Rides';
-                button.onclick = function(e) {
-                    e.preventDefault();
-                    window.location.href = "user.html";
-                };
+        // Check if user has both roles
+        checkUserRoles(user.uid).then(hasBothRoles => {
+            if (hasBothRoles) {
+                showRoleSelectionModal();
+                return;
             }
-            if (button.textContent.trim() === 'Sign Up') {
-                button.textContent = 'My Profile';
-                button.onclick = function(e) {
-                    e.preventDefault();
-                    window.location.href = "user.html";
-                };
+            
+            // Default behavior for single role
+            authButtons.forEach(button => {
+                if (button.textContent.trim() === 'Log In') {
+                    button.textContent = 'My Rides';
+                    button.classList.add('my-rides');
+                    button.onclick = function(e) {
+                        e.preventDefault();
+                        window.location.href = "user.html";
+                    };
+                }
+                if (button.textContent.trim() === 'Sign Up') {
+                    button.textContent = 'My Profile';
+                    button.onclick = function(e) {
+                        e.preventDefault();
+                        window.location.href = "user.html";
+                    };
+                }
+            });
+            
+            // Only redirect if coming from auth flow
+            if (window.location.search.includes('from_auth=true')) {
+                checkUserRoleAndRedirect(user.uid);
             }
-
-
         });
-        
-        // Only redirect if coming from auth flow (not when returning to index)
-        if (window.location.search.includes('from_auth=true')) {
-            window.location.href = "user.html";
-        }
     } else {
         // User is not logged in
         authButtons.forEach(button => {
-            if (button.textContent.trim() === 'My Rides') {
+            if (button.textContent.trim() === 'My Rides' || button.textContent.trim() === 'My Profile') {
                 button.textContent = 'Log In';
+                button.classList.remove('my-rides');
                 button.onclick = function(e) {
                     e.preventDefault();
                     showLoginModal();
