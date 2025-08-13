@@ -1513,21 +1513,22 @@
 </section>
    
 <!-- Role Selection Modal -->
+<!-- Role Selection Modal -->
 <div class="auth-modal" id="roleSelectionModal">
     <div class="auth-modal-content">
         <button class="close-modal" onclick="closeModal('roleSelectionModal')">&times;</button>
         <div class="modal-gif-container">
-            <img src="videos/geooverlay.gif" class="modal-gif" onload="this.onload=null; this.src=this.src;">
+            <img src="videos/geooverlay.gif" class="modal-gif">
         </div>
         <h2 class="auth-title">Select Your Role</h2>
         <p class="auth-subtitle">You have access to both renter and owner accounts</p>
         
         <button class="auth-primary-btn" style="margin-bottom: 1rem;" onclick="redirectToRenter()">
-            Continue as Renter
+            <i class="fas fa-car"></i> Continue as Renter
         </button>
         
         <button class="auth-primary-btn" style="background-color: var(--primary-green);" onclick="redirectToOwner()">
-            Continue as Owner
+            <i class="fas fa-home"></i> Continue as Owner
         </button>
     </div>
 </div>
@@ -2034,19 +2035,14 @@ document.head.appendChild(style);
 // Modify the signInWithGoogle function to handle owner signup
 async function signInWithGoogle() {
     try {
-        console.log("Starting Google sign-in...");
         const result = await signInWithPopup(auth, googleProvider);
         const user = result.user;
-        console.log("Google auth successful, UID:", user.uid);
-
+        
         const userDocRef = doc(db, "users", user.uid);
-        console.log("Checking for existing user doc...");
         const userDoc = await getDoc(userDocRef);
         
         if (!userDoc.exists()) {
-            console.log("Creating new user document...");
-            
-            // Check if this is a host signup (from Become a Host button)
+            // Check if this is a host signup
             const isHostSignup = window.location.pathname.includes('become-a-host') || 
                                document.activeElement?.textContent?.includes('Host');
             
@@ -2064,18 +2060,10 @@ async function signInWithGoogle() {
                 updatedAt: serverTimestamp()
             });
             
-            console.log("User document created");
             showNotification(isHostSignup ? 
                 'Host account created! Your application is pending approval.' : 
                 'Account created with Google successfully!');
-            
-            if (isHostSignup) {
-                // Redirect to owner page or show pending approval message
-                window.location.href = "carowner.html";
-                return;
-            }
         } else {
-            console.log("Existing user document found");
             showNotification('Logged in with Google successfully!');
         }
         
@@ -2088,7 +2076,6 @@ async function signInWithGoogle() {
         showNotification('Google sign-in failed. Please try again.', false);
     }
 }
-
 // Update the Become a Host button to trigger host signup
 document.querySelector('.host-button')?.addEventListener('click', function(e) {
     e.preventDefault();
@@ -2215,41 +2202,50 @@ function showRoleSelectionModal() {
 
 
 
-function updateAuthUI(user) {
+async function updateAuthUI(user) {
     const authButtons = document.querySelectorAll('.nav-links .auth-button');
     
     if (user) {
-        // Check if user has both roles
-        checkUserRoles(user.uid).then(hasBothRoles => {
-            if (hasBothRoles) {
-                showRoleSelectionModal();
-                return;
+        try {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+            
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                
+                // Update navbar buttons
+                authButtons.forEach(button => {
+                    if (button.textContent.trim() === 'Log In' || button.textContent.trim() === 'Sign Up') {
+                        button.textContent = 'My Rides';
+                        button.classList.add('my-rides');
+                        button.onclick = function(e) {
+                            e.preventDefault();
+                            window.location.href = "user.html";
+                        };
+                    }
+                });
+                
+                // Check if we're coming from auth flow
+                if (window.location.search.includes('from_auth=true')) {
+                    // Handle redirection based on role
+                    if (userData.role === 'owner' && userData.ownerApproved) {
+                        window.location.href = "carowner.html";
+                    } else if (userData.role === 'both') {
+                        // Show role selection modal if user has both roles
+                        showRoleSelectionModal();
+                    } else {
+                        // Default to user page
+                        window.location.href = "user.html";
+                    }
+                }
             }
-            
-            // Default behavior for single role
-            authButtons.forEach(button => {
-                if (button.textContent.trim() === 'Log In') {
-                    button.textContent = 'My Rides';
-                    button.classList.add('my-rides');
-                    button.onclick = function(e) {
-                        e.preventDefault();
-                        window.location.href = "user.html";
-                    };
-                }
-                if (button.textContent.trim() === 'Sign Up') {
-                    button.textContent = 'My Profile';
-                    button.onclick = function(e) {
-                        e.preventDefault();
-                        window.location.href = "user.html";
-                    };
-                }
-            });
-            
-            // Only redirect if coming from auth flow
+        } catch (error) {
+            console.error("Error checking user role:", error);
+            // Default to user page if there's an error
             if (window.location.search.includes('from_auth=true')) {
-                checkUserRoleAndRedirect(user.uid);
+                window.location.href = "user.html";
             }
-        });
+        }
     } else {
         // User is not logged in
         authButtons.forEach(button => {
