@@ -1829,7 +1829,7 @@
                 }
                 
                 // Check if user is an approved owner
-                if (userData.role !== 'owner' || !userData.ownerApproved) {
+                if (userData.role !== 'owner') {
                     // Redirect to user page if not an approved owner
                     window.location.href = "user.html";
                     return;
