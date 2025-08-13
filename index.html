@@ -2182,7 +2182,7 @@ async function checkUserRoleAndRedirect(userId) {
         if (userDoc.exists()) {
             const userData = userDoc.data();
             
-            if (userData.role === 'owner' || userData.ownerApproved) {
+            if (userData.role === 'owner') {
                 window.location.href = "carowner.html";
             } else {
                 window.location.href = "user.html";
