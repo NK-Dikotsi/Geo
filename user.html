@@ -883,12 +883,6 @@
         updateDoc,
         serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-    import { 
-        getStorage,
-        ref,
-        uploadBytes,
-        getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -905,7 +899,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
 
     // Geoapify API Key
     const GEOAPIFY_API_KEY = "2ca9e48dc90443978775d9ef8792b96e";
@@ -975,71 +968,124 @@
         });
     }
 
-    // Image compression function with size limit
-    function compressImage(file, maxWidth = 800, quality = 0.7, maxSizeKB = 500) {
+    // Image compression and Base64 conversion function
+    function compressImageToBase64(file, maxWidth = 400, quality = 0.6, maxSizeKB = 100) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const scale = Math.min(maxWidth / img.width, 1);
-                    canvas.width = img.width * scale;
-                    canvas.height = img.height * scale;
+                    
+                    // Calculate new dimensions while maintaining aspect ratio
+                    let { width, height } = img;
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height = (height * maxWidth) / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxWidth) {
+                            width = (width * maxWidth) / height;
+                            height = maxWidth;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
                     
                     const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#FFFFFF'; // White background
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Convert to Blob with quality adjustments
-                    let qualityLevel = quality;
-                    let blob;
-                    
-                    const attemptCompression = () => {
-                        canvas.toBlob((resultBlob) => {
-                            blob = resultBlob;
-                            if (!blob) {
-                                reject(new Error('Failed to compress image'));
-                                return;
-                            }
-                            
-                            const sizeKB = blob.size / 1024;
-                            
-                            if (sizeKB <= maxSizeKB || qualityLevel <= 0.1) {
-                                const compressedReader = new FileReader();
-                                compressedReader.onload = () => resolve({
-                                    dataURL: compressedReader.result,
-                                    blob: blob
-                                });
-                                compressedReader.readAsDataURL(blob);
-                            } else {
-                                // Reduce quality and try again
-                                qualityLevel = Math.max(qualityLevel - 0.1, 0.1);
-                                canvas.toBlob((newBlob) => {
-                                    blob = newBlob;
-                                    attemptCompression();
-                                }, 'image/jpeg', qualityLevel);
-                            }
-                        }, 'image/jpeg', qualityLevel);
+                    // Function to get Base64 with size checking
+                    const getCompressedBase64 = (currentQuality) => {
+                        const base64 = canvas.toDataURL('image/jpeg', currentQuality);
+                        const sizeKB = (base64.length * 3/4) / 1024; // Approximate size in KB
+                        
+                        if (sizeKB <= maxSizeKB || currentQuality <= 0.1) {
+                            return base64;
+                        } else {
+                            // Reduce quality and try again
+                            return getCompressedBase64(Math.max(currentQuality - 0.1, 0.1));
+                        }
                     };
                     
-                    attemptCompression();
+                    try {
+                        const finalBase64 = getCompressedBase64(quality);
+                        resolve(finalBase64);
+                    } catch (error) {
+                        reject(error);
+                    }
                 };
+                
+                img.onerror = () => reject(new Error('Failed to load image'));
                 img.src = event.target.result;
             };
+            
+            reader.onerror = () => reject(new Error('Failed to read file'));
             reader.readAsDataURL(file);
         });
     }
 
-    // Upload file to Firebase Storage and return URL
-    async function uploadFileToStorage(file, path) {
-        try {
-            const storageRef = ref(storage, path);
-            await uploadBytes(storageRef, file);
-            return await getDownloadURL(storageRef);
-        } catch (error) {
-            console.error('Error uploading file:', error);
-            throw error;
-        }
+    // Convert file to Base64 for license images (larger size limit)
+    function convertFileToBase64(file, maxWidth = 800, quality = 0.8, maxSizeKB = 300) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    
+                    // Calculate new dimensions
+                    let { width, height } = img;
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height = (height * maxWidth) / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxWidth) {
+                            width = (width * maxWidth) / height;
+                            height = maxWidth;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const getCompressedBase64 = (currentQuality) => {
+                        const base64 = canvas.toDataURL('image/jpeg', currentQuality);
+                        const sizeKB = (base64.length * 3/4) / 1024;
+                        
+                        if (sizeKB <= maxSizeKB || currentQuality <= 0.1) {
+                            return base64;
+                        } else {
+                            return getCompressedBase64(Math.max(currentQuality - 0.1, 0.1));
+                        }
+                    };
+                    
+                    try {
+                        const finalBase64 = getCompressedBase64(quality);
+                        resolve(finalBase64);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = event.target.result;
+            };
+            
+            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.readAsDataURL(file);
+        });
     }
 
     // Calculate profile completion percentage
@@ -1247,7 +1293,7 @@
                         email: user.email,
                         name: user.displayName || '',
                         phone: '',
-                        profilePic: user.photoURL || '',
+                        profilePicBase64: '',
                         location: '',
                         coordinates: null,
                         licenseVerified: false,
@@ -1300,11 +1346,9 @@
                     }
                 }
                 
-                // Update profile picture - prioritize auth photoURL over Firestore
-                if (user.photoURL) {
-                    profileAvatar.src = `${user.photoURL}?t=${Date.now()}`;
-                } else if (userData.profilePic) {
-                    profileAvatar.src = `${userData.profilePic}?t=${Date.now()}`;
+                // Update profile picture - use Base64 from Firestore
+                if (userData.profilePicBase64) {
+                    profileAvatar.src = userData.profilePicBase64;
                 } else {
                     // Default avatar if no profile picture
                     profileAvatar.src = "images/default-avatar.png";
@@ -1356,7 +1400,7 @@
         }
     });
 
-    // Profile photo upload with Firebase Storage
+    // Profile photo upload with Base64 storage
     avatarEdit.addEventListener('click', () => {
         profilePhotoInput.click();
     });
@@ -1364,6 +1408,18 @@
     profilePhotoInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showNotification('Please select a valid image file.', false);
+            return;
+        }
+        
+        // Validate file size (max 5MB for initial file)
+        if (file.size > 5 * 1024 * 1024) {
+            showNotification('Image file is too large. Please select an image under 5MB.', false);
+            return;
+        }
         
         try {
             const user = auth.currentUser;
@@ -1376,30 +1432,24 @@
             const previewUrl = URL.createObjectURL(file);
             profileAvatar.src = previewUrl;
             
-            // Compress image and get Blob
-            const { blob } = await compressImage(file);
-            
-            // Upload to Firebase Storage
-            const storagePath = `profile_pictures/${user.uid}/${Date.now()}_${file.name}`;
-            const downloadURL = await uploadFileToStorage(blob, storagePath);
-            
-            // Update profile picture in Firebase Auth
-            await updateProfile(user, {
-                photoURL: downloadURL
-            });
+            // Compress image and convert to Base64
+            const base64Image = await compressImageToBase64(file);
             
             // Update profile picture in Firestore
             const userDocRef = doc(db, "users", user.uid);
             await updateDoc(userDocRef, {
-                profilePic: downloadURL,
+                profilePicBase64: base64Image,
                 updatedAt: serverTimestamp()
             });
             
-            // Update UI with final image
-            profileAvatar.src = downloadURL;
+            // Update UI with compressed image
+            profileAvatar.src = base64Image;
             avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
             
             showNotification('Profile picture updated successfully!');
+            
+            // Clean up preview URL
+            URL.revokeObjectURL(previewUrl);
             
             // Recalculate profile completion
             const userDoc = await getDoc(userDocRef);
@@ -1413,16 +1463,8 @@
             avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
             showNotification('Failed to update profile picture. Please try again.', false);
             
-            // Reset to previous image if available
-            const user = auth.currentUser;
-            if (user && user.photoURL) {
-                profileAvatar.src = `${user.photoURL}?t=${Date.now()}`;
-            } else {
-                profileAvatar.src = "images/default-avatar.png";
-            }
-        } finally {
-            // Clean up the preview URL
-            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            // Reset to default image on error
+            profileAvatar.src = "images/default-avatar.png";
         }
     });
 
@@ -1539,7 +1581,7 @@
         }
     });
 
-    // License Edit with Firebase Storage for license images
+    // License Edit with Base64 storage for license images
     editLicense.addEventListener('click', () => {
         licenseForm.style.display = 'block';
     });
@@ -1566,6 +1608,12 @@
             return;
         }
         
+        // Validate file types
+        if (!licenseFront.type.startsWith('image/') || !licenseBack.type.startsWith('image/')) {
+            showNotification('Please select valid image files for license photos.', false);
+            return;
+        }
+        
         try {
             const user = auth.currentUser;
             if (!user) throw new Error('User not logged in');
@@ -1576,16 +1624,10 @@
             saveLicense.disabled = true;
             saveLicense.innerHTML = '<div class="loading"></div> Submitting...';
             
-            // Compress and upload license images
-            const timestamp = Date.now();
-            const [frontCompressed, backCompressed] = await Promise.all([
-                compressImage(licenseFront),
-                compressImage(licenseBack)
-            ]);
-            
-            const [frontUrl, backUrl] = await Promise.all([
-                uploadFileToStorage(frontCompressed.blob, `licenses/${user.uid}/${timestamp}_front.jpg`),
-                uploadFileToStorage(backCompressed.blob, `licenses/${user.uid}/${timestamp}_back.jpg`)
+            // Convert license images to Base64
+            const [frontBase64, backBase64] = await Promise.all([
+                convertFileToBase64(licenseFront),
+                convertFileToBase64(licenseBack)
             ]);
             
             // Update user data in Firestore
@@ -1593,8 +1635,8 @@
                 licenseNumber: licenseNumber,
                 licenseState: licenseState,
                 licenseExpiry: licenseExpiry,
-                licenseFront: frontUrl,
-                licenseBack: backUrl,
+                licenseFrontBase64: frontBase64,
+                licenseBackBase64: backBase64,
                 licenseSubmitted: true,
                 licenseVerified: false,
                 updatedAt: serverTimestamp()
