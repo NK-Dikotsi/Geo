@@ -1169,6 +1169,10 @@
         const featuresContainer = document.getElementById('featuresContainer');
         const carFeaturesInput = document.getElementById('carFeatures');
 
+        // Global variables
+        let carImages = []; // Stores the car images to be uploaded
+        let features = []; // Stores the car features
+
         // Notification system
         function showNotification(message, isSuccess = true) {
             const notification = document.createElement('div');
@@ -1215,10 +1219,9 @@
 
         // Initialize image upload functionality
         function initImageUpload() {
-            const images = [];
-            
-            // Clear existing upload boxes
+            // Clear existing upload boxes and reset carImages
             imageUploadContainer.innerHTML = '';
+            carImages = [];
             
             // Create first upload box
             createUploadBox(0);
@@ -1255,24 +1258,24 @@
                             <div class="remove-image">&times;</div>
                         `;
                         
-                        // Store the image file in the array
-                        images[index] = file;
+                        // Store the image file in the global carImages array
+                        carImages[index] = file;
                         
                         // Add remove event listener
                         uploadBox.querySelector('.remove-image').addEventListener('click', (e) => {
                             e.stopPropagation();
-                            images.splice(index, 1);
+                            carImages.splice(index, 1);
                             uploadBox.remove();
                             
                             // If this was the last box and we have space, add a new empty box
-                            if (images.length < 5 && !document.querySelector('.image-upload-preview:last-child .upload-icon')) {
-                                createUploadBox(images.length);
+                            if (carImages.length < 5 && !document.querySelector('.image-upload-preview:last-child .upload-icon')) {
+                                createUploadBox(carImages.length);
                             }
                         });
                         
                         // If we have space for more images and this is the last box, add another
-                        if (images.length < 5 && index === images.length - 1) {
-                            createUploadBox(images.length);
+                        if (carImages.length < 5 && index === carImages.length - 1) {
+                            createUploadBox(carImages.length);
                         }
                     };
                     reader.readAsDataURL(file);
@@ -1287,8 +1290,6 @@
                 
                 imageUploadContainer.appendChild(uploadBox);
             }
-            
-            return images;
         }
 
         // Upload image to Firebase Storage and return URL
@@ -1310,7 +1311,7 @@
 
         // Initialize car features functionality
         function initCarFeatures() {
-            const features = [];
+            features = []; // Reset features array
             
             // Add feature when Enter is pressed
             carFeaturesInput.addEventListener('keypress', (e) => {
@@ -1346,8 +1347,6 @@
                     });
                 });
             }
-            
-            return features;
         }
 
         // Show owner's cars
@@ -1581,8 +1580,8 @@
         // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize features and image upload
-            const features = initCarFeatures();
-            const carImages = initImageUpload();
+            initCarFeatures();
+            initImageUpload();
             
             // Mobile menu toggle
             const menuToggle = document.getElementById('menuToggle');
