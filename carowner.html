@@ -625,6 +625,35 @@
             margin-bottom: 0;
         }
 
+        /* Location Autocomplete */
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .autocomplete-result {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .autocomplete-result:hover {
+            background-color: #f5f5f5;
+        }
+
         /* Image Modal */
         .image-modal {
             display: none;
@@ -864,7 +893,7 @@
         </button>
         
         <div class="nav-links" id="navLinks">
-            <a href="#" class="auth-button">My Rides</a>
+            <a href="index.html" class="auth-button">Home</a>
             <a href="#" class="host-button">Owner Dashboard</a>
             <button class="logout-btn" id="logoutBtn">Log Out</button>
         </div>
@@ -1056,6 +1085,14 @@
                 <textarea id="carDescription" rows="3" placeholder="A reliable car for city trips."></textarea>
             </div>
             
+            <div class="form-group autocomplete-container">
+                <label for="carLocation">Location</label>
+                <input type="text" id="carLocation" placeholder="Enter car location" required>
+                <div class="autocomplete-results" id="locationAutocomplete"></div>
+                <input type="hidden" id="carLocationLat">
+                <input type="hidden" id="carLocationLon">
+            </div>
+            
             <div class="availability-container">
                 <div class="form-group">
                     <label for="availabilityStart">Available From</label>
@@ -1161,10 +1198,15 @@
         const imageUploadContainer = document.getElementById('imageUploadContainer');
         const featuresContainer = document.getElementById('featuresContainer');
         const carFeaturesInput = document.getElementById('carFeatures');
+        const carLocationInput = document.getElementById('carLocation');
+        const carLocationLat = document.getElementById('carLocationLat');
+        const carLocationLon = document.getElementById('carLocationLon');
+        const locationAutocomplete = document.getElementById('locationAutocomplete');
 
         // Global variables
         let carImages = []; // Stores the car images to be uploaded
         let features = []; // Stores the car features
+        let userLocation = null; // Stores the user's location coordinates
 
         // Notification system
         function showNotification(message, isSuccess = true) {
@@ -1372,6 +1414,96 @@
             }
         }
 
+        // Initialize location autocomplete
+        function initLocationAutocomplete() {
+            let timeoutId;
+            
+            carLocationInput.addEventListener('input', (e) => {
+                clearTimeout(timeoutId);
+                const query = e.target.value.trim();
+                
+                if (query.length < 3) {
+                    locationAutocomplete.style.display = 'none';
+                    return;
+                }
+                
+                timeoutId = setTimeout(() => {
+                    searchLocation(query);
+                }, 300);
+            });
+            
+            // Hide autocomplete when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!carLocationInput.contains(e.target) && !locationAutocomplete.contains(e.target)) {
+                    locationAutocomplete.style.display = 'none';
+                }
+            });
+        }
+        
+        // Search location using Geoapify API
+        async function searchLocation(query) {
+            try {
+                const response = await fetch(
+                    `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(query)}&apiKey=${GEOAPIFY_API_KEY}`
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch location data');
+                }
+                
+                const data = await response.json();
+                displayAutocompleteResults(data.features);
+            } catch (error) {
+                console.error('Error searching location:', error);
+                locationAutocomplete.innerHTML = '<div class="autocomplete-result">Error loading locations</div>';
+                locationAutocomplete.style.display = 'block';
+            }
+        }
+        
+        // Display autocomplete results
+        function displayAutocompleteResults(results) {
+            if (!results || results.length === 0) {
+                locationAutocomplete.innerHTML = '<div class="autocomplete-result">No results found</div>';
+                locationAutocomplete.style.display = 'block';
+                return;
+            }
+            
+            locationAutocomplete.innerHTML = results.slice(0, 5).map(result => {
+                const address = [
+                    result.properties.address_line1,
+                    result.properties.address_line2,
+                    result.properties.city,
+                    result.properties.country
+                ].filter(Boolean).join(', ');
+                
+                return `
+                    <div class="autocomplete-result" 
+                         data-address="${address}" 
+                         data-lat="${result.properties.lat}" 
+                         data-lon="${result.properties.lon}">
+                        ${address}
+                    </div>
+                `;
+            }).join('');
+            
+            locationAutocomplete.style.display = 'block';
+            
+            // Add click handlers to results
+            document.querySelectorAll('.autocomplete-result').forEach(result => {
+                result.addEventListener('click', (e) => {
+                    const address = result.getAttribute('data-address');
+                    const lat = result.getAttribute('data-lat');
+                    const lon = result.getAttribute('data-lon');
+                    
+                    carLocationInput.value = address;
+                    carLocationLat.value = lat;
+                    carLocationLon.value = lon;
+                    
+                    locationAutocomplete.style.display = 'none';
+                });
+            });
+        }
+
         // Show owner's cars
         async function showOwnerCars(ownerId) {
             try {
@@ -1485,6 +1617,9 @@
             document.getElementById('carLicensePlate').value = '';
             document.getElementById('carPrice').value = '';
             document.getElementById('carDescription').value = '';
+            document.getElementById('carLocation').value = '';
+            document.getElementById('carLocationLat').value = '';
+            document.getElementById('carLocationLon').value = '';
             document.getElementById('availabilityStart').value = '';
             document.getElementById('availabilityEnd').value = '';
             
@@ -1506,11 +1641,15 @@
             const licensePlate = document.getElementById('carLicensePlate').value.trim();
             const price = parseFloat(document.getElementById('carPrice').value);
             const description = document.getElementById('carDescription').value.trim();
+            const address = document.getElementById('carLocation').value.trim();
+            const lat = parseFloat(document.getElementById('carLocationLat').value);
+            const lon = parseFloat(document.getElementById('carLocationLon').value);
             const availabilityStart = document.getElementById('availabilityStart').value;
             const availabilityEnd = document.getElementById('availabilityEnd').value;
             
             // Validate inputs
-            if (!make || !model || !year || !color || !licensePlate || isNaN(price) || !availabilityStart || !availabilityEnd) {
+            if (!make || !model || !year || !color || !licensePlate || isNaN(price) || 
+                !address || isNaN(lat) || isNaN(lon) || !availabilityStart || !availabilityEnd) {
                 showNotification('Please fill all required fields', false);
                 return;
             }
@@ -1563,6 +1702,11 @@
                     description: description,
                     features: [...features],
                     images: convertedImages,
+                    address: address,
+                    coordinates: {
+                        latitude: lat,
+                        longitude: lon
+                    },
                     availabilityDates: {
                         start: new Date(availabilityStart),
                         end: new Date(availabilityEnd)
@@ -1603,6 +1747,7 @@
             // Initialize features and image upload
             initCarFeatures();
             initImageUpload();
+            initLocationAutocomplete();
             
             // Mobile menu toggle
             const menuToggle = document.getElementById('menuToggle');
@@ -1631,6 +1776,13 @@
             // Add Car Modal functionality
             addCarBtn.addEventListener('click', () => {
                 addCarModal.style.display = 'block';
+                
+                // If we have user's location, pre-fill the car location
+                if (userLocation) {
+                    carLocationInput.value = userLocation.address;
+                    carLocationLat.value = userLocation.coordinates.latitude;
+                    carLocationLon.value = userLocation.coordinates.longitude;
+                }
             });
 
             closeCarModal.addEventListener('click', () => {
@@ -1663,6 +1815,12 @@
                     const locationData = await getDeviceLocation();
                     const user = auth.currentUser;
                     if (!user) throw new Error('User not logged in');
+                    
+                    // Store location for potential car location pre-fill
+                    userLocation = {
+                        address: locationData.address,
+                        coordinates: locationData.coordinates
+                    };
                     
                     const userDocRef = doc(db, "users", user.uid);
                     await updateDoc(userDocRef, {
@@ -1992,6 +2150,17 @@
                         if (userData.location) {
                             displayLocation.textContent = userData.location;
                             displayLocation.classList.remove('empty-value');
+                            
+                            // Store user location for potential car location pre-fill
+                            if (userData.coordinates) {
+                                userLocation = {
+                                    address: userData.location,
+                                    coordinates: {
+                                        latitude: userData.coordinates.latitude,
+                                        longitude: userData.coordinates.longitude
+                                    }
+                                };
+                            }
                         } else {
                             displayLocation.textContent = 'Location not set';
                             displayLocation.classList.add('empty-value');
@@ -2005,6 +2174,12 @@
                                 });
                                 displayLocation.textContent = locationData.address;
                                 displayLocation.classList.remove('empty-value');
+                                
+                                // Store for car location pre-fill
+                                userLocation = {
+                                    address: locationData.address,
+                                    coordinates: locationData.coordinates
+                                };
                             } catch (error) {
                                 console.error('Error fetching initial location:', error);
                             }

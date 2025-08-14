@@ -2217,7 +2217,7 @@ async function updateAuthUI(user) {
                 // Update navbar buttons
                 authButtons.forEach(button => {
                     if (button.textContent.trim() === 'Log In' || button.textContent.trim() === 'Sign Up') {
-                        button.textContent = 'My Rides';
+                        button.textContent = 'Home';
                         button.classList.add('my-rides');
                         button.onclick = function(e) {
                             e.preventDefault();
