@@ -380,21 +380,21 @@
             margin-bottom: 0.5rem;
         }
         
-        .car-features {
+        .car-specs {
             display: flex;
             gap: 1rem;
             margin-bottom: 0.5rem;
             flex-wrap: wrap;
         }
         
-        .car-feature {
+        .car-spec {
             display: flex;
             align-items: center;
             font-size: 0.8rem;
             color: var(--text-light);
         }
         
-        .car-feature i {
+        .car-spec i {
             margin-right: 0.3rem;
             font-size: 0.9rem;
         }
@@ -586,32 +586,6 @@
             justify-content: center;
             font-size: 0.7rem;
             cursor: pointer;
-        }
-
-        .features-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .feature-tag {
-            display: flex;
-            align-items: center;
-            background-color: #f0f0f0;
-            padding: 0.3rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-
-        .feature-tag .remove-feature {
-            margin-left: 0.3rem;
-            cursor: pointer;
-            color: var(--text-light);
-        }
-
-        .feature-tag .remove-feature:hover {
-            color: var(--text-dark);
         }
 
         .availability-container {
@@ -1068,21 +1042,27 @@
             </div>
             
             <div class="form-group">
+                <label for="carFuelType">Fuel Type</label>
+                <select id="carFuelType" required>
+                    <option value="">Select fuel type</option>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Hybrid">Hybrid</option>
+                    <option value="Electric">Electric</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="carFuelEfficiency">Fuel Efficiency (litres per 10km)</label>
+                <input type="number" id="carFuelEfficiency" min="0" step="0.1" placeholder="1.2" required>
+                <small style="color: var(--text-light);">For electric vehicles, enter 0</small>
+            </div>
+            
+            <div class="form-group">
                 <label>Upload Images (Max 5)</label>
                 <div class="image-upload-container" id="imageUploadContainer">
                     <!-- Image upload boxes will be added here dynamically -->
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="carFeatures">Features (Press Enter to add)</label>
-                <input type="text" id="carFeatures" placeholder="Automatic, GPS, Bluetooth">
-                <div class="features-container" id="featuresContainer"></div>
-            </div>
-            
-            <div class="form-group">
-                <label for="carDescription">Description</label>
-                <textarea id="carDescription" rows="3" placeholder="A reliable car for city trips."></textarea>
             </div>
             
             <div class="form-group autocomplete-container">
@@ -1196,8 +1176,8 @@
         const cancelCarBtn = document.getElementById('cancelCarBtn');
         const saveCarBtn = document.getElementById('saveCarBtn');
         const imageUploadContainer = document.getElementById('imageUploadContainer');
-        const featuresContainer = document.getElementById('featuresContainer');
-        const carFeaturesInput = document.getElementById('carFeatures');
+        const carFuelType = document.getElementById('carFuelType');
+        const carFuelEfficiency = document.getElementById('carFuelEfficiency');
         const carLocationInput = document.getElementById('carLocation');
         const carLocationLat = document.getElementById('carLocationLat');
         const carLocationLon = document.getElementById('carLocationLon');
@@ -1205,7 +1185,6 @@
 
         // Global variables
         let carImages = []; // Stores the car images to be uploaded
-        let features = []; // Stores the car features
         let userLocation = null; // Stores the user's location coordinates
 
         // Notification system
@@ -1374,46 +1353,6 @@
             });
         }
 
-        // Initialize car features functionality
-        function initCarFeatures() {
-            features = []; // Reset features array
-            
-            // Add feature when Enter is pressed
-            carFeaturesInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const feature = carFeaturesInput.value.trim();
-                    if (feature && !features.includes(feature)) {
-                        features.push(feature);
-                        renderFeatures();
-                        carFeaturesInput.value = '';
-                    }
-                }
-            });
-            
-            // Render features tags
-            function renderFeatures() {
-                featuresContainer.innerHTML = features.map(feature => `
-                    <div class="feature-tag">
-                        ${feature}
-                        <span class="remove-feature" data-feature="${feature}">&times;</span>
-                    </div>
-                `).join('');
-                
-                // Add event listeners to remove buttons
-                document.querySelectorAll('.remove-feature').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const featureToRemove = e.target.getAttribute('data-feature');
-                        const index = features.indexOf(featureToRemove);
-                        if (index !== -1) {
-                            features.splice(index, 1);
-                            renderFeatures();
-                        }
-                    });
-                });
-            }
-        }
-
         // Initialize location autocomplete
         function initLocationAutocomplete() {
             let timeoutId;
@@ -1550,18 +1489,25 @@
                     // Format price
                     const formattedPrice = `R${car.pricePerDay.toFixed(2)}/day`;
                     
-                    // Create features list
-                    let featuresHtml = '';
-                    if (car.features && car.features.length > 0) {
-                        featuresHtml = car.features.slice(0, 3).map(feature => `
-                            <div class="car-feature">
-                                <i class="fas fa-check-circle"></i> ${feature}
+                    // Create specs list
+                    let specsHtml = '';
+                    
+                    // Add fuel type and efficiency
+                    if (car.fuelType) {
+                        specsHtml += `
+                            <div class="car-spec">
+                                <i class="fas fa-gas-pump"></i> ${car.fuelType}
                             </div>
-                        `).join('');
-                        
-                        if (car.features.length > 3) {
-                            featuresHtml += `<div class="car-feature">+${car.features.length - 3} more</div>`;
-                        }
+                        `;
+                    }
+                    
+                    if (car.fuelEfficiency !== undefined) {
+                        const efficiencyText = car.fuelEfficiency === 0 ? 'Electric' : `${car.fuelEfficiency}L/10km`;
+                        specsHtml += `
+                            <div class="car-spec">
+                                <i class="fas fa-tachometer-alt"></i> ${efficiencyText}
+                            </div>
+                        `;
                     }
                     
                     // Format dates
@@ -1579,8 +1525,8 @@
                         <div class="car-details">
                             <h3 class="car-title">${car.year} ${car.make} ${car.model}</h3>
                             <p class="car-price">${formattedPrice}</p>
-                            <div class="car-features">
-                                ${featuresHtml}
+                            <div class="car-specs">
+                                ${specsHtml}
                             </div>
                             <div class="car-location">
                                 <i class="fas fa-map-marker-alt"></i> ${car.address || 'Location not specified'}
@@ -1616,16 +1562,15 @@
             document.getElementById('carColor').value = '';
             document.getElementById('carLicensePlate').value = '';
             document.getElementById('carPrice').value = '';
-            document.getElementById('carDescription').value = '';
+            document.getElementById('carFuelType').value = '';
+            document.getElementById('carFuelEfficiency').value = '';
             document.getElementById('carLocation').value = '';
             document.getElementById('carLocationLat').value = '';
             document.getElementById('carLocationLon').value = '';
             document.getElementById('availabilityStart').value = '';
             document.getElementById('availabilityEnd').value = '';
             
-            // Clear features and images
-            features.length = 0;
-            featuresContainer.innerHTML = '';
+            // Clear images
             carImages.length = 0;
             imageUploadContainer.innerHTML = '';
             initImageUpload(); // Reinitialize upload boxes
@@ -1640,7 +1585,8 @@
             const color = document.getElementById('carColor').value.trim();
             const licensePlate = document.getElementById('carLicensePlate').value.trim();
             const price = parseFloat(document.getElementById('carPrice').value);
-            const description = document.getElementById('carDescription').value.trim();
+            const fuelType = document.getElementById('carFuelType').value;
+            const fuelEfficiency = parseFloat(document.getElementById('carFuelEfficiency').value);
             const address = document.getElementById('carLocation').value.trim();
             const lat = parseFloat(document.getElementById('carLocationLat').value);
             const lon = parseFloat(document.getElementById('carLocationLon').value);
@@ -1649,6 +1595,7 @@
             
             // Validate inputs
             if (!make || !model || !year || !color || !licensePlate || isNaN(price) || 
+                !fuelType || isNaN(fuelEfficiency) || fuelEfficiency < 0 ||
                 !address || isNaN(lat) || isNaN(lon) || !availabilityStart || !availabilityEnd) {
                 showNotification('Please fill all required fields', false);
                 return;
@@ -1699,8 +1646,8 @@
                     color: color,
                     licensePlate: licensePlate,
                     pricePerDay: price,
-                    description: description,
-                    features: [...features],
+                    fuelType: fuelType,
+                    fuelEfficiency: fuelEfficiency,
                     images: convertedImages,
                     address: address,
                     coordinates: {
@@ -1744,8 +1691,7 @@
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize features and image upload
-            initCarFeatures();
+            // Initialize image upload
             initImageUpload();
             initLocationAutocomplete();
             
