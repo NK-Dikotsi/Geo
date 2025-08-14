@@ -1317,6 +1317,12 @@
         });
     }
 
+    // Update profile completion UI
+    function updateProfileCompletion(percentage) {
+        completionProgress.style.width = `${percentage}%`;
+        completionPercent.textContent = `${percentage}%`;
+    }
+
     // Image compression and Base64 conversion function
     function compressImageToBase64(file, maxWidth = 400, quality = 0.6, maxSizeKB = 100) {
         return new Promise((resolve, reject) => {
@@ -1378,74 +1384,16 @@
         });
     }
 
-    // Convert file to Base64 for license images (larger size limit)
-    function convertFileToBase64(file, maxWidth = 800, quality = 0.8, maxSizeKB = 300) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    
-                    // Calculate new dimensions
-                    let { width, height } = img;
-                    if (width > height) {
-                        if (width > maxWidth) {
-                            height = (height * maxWidth) / width;
-                            width = maxWidth;
-                        }
-                    } else {
-                        if (height > maxWidth) {
-                            width = (width * maxWidth) / height;
-                            height = maxWidth;
-                        }
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(0, 0, width, height);
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const getCompressedBase64 = (currentQuality) => {
-                        const base64 = canvas.toDataURL('image/jpeg', currentQuality);
-                        const sizeKB = (base64.length * 3/4) / 1024;
-                        
-                        if (sizeKB <= maxSizeKB || currentQuality <= 0.1) {
-                            return base64;
-                        } else {
-                            return getCompressedBase64(Math.max(currentQuality - 0.1, 0.1));
-                        }
-                    };
-                    
-                    try {
-                        const finalBase64 = getCompressedBase64(quality);
-                        resolve(finalBase64);
-                    } catch (error) {
-                        reject(error);
-                    }
-                };
-                
-                img.onerror = () => reject(new Error('Failed to load image'));
-                img.src = event.target.result;
-            };
-            
-            reader.onerror = () => reject(new Error('Failed to read file'));
-            reader.readAsDataURL(file);
-        });
-    }
-
     // Calculate profile completion percentage
-    function calculateProfileCompletion(userData) {
+    function calculateProfileCompletion(userData, hasListings = false) {
         let completedFields = 0;
-        const totalFields = 4; // name, email, phone, payment
+        const totalFields = 5; // name, email, phone, payment, listings
         
         if (userData.name) completedFields++;
         if (userData.email) completedFields++;
         if (userData.phone) completedFields++;
         if (userData.paymentMethod) completedFields++;
+        if (hasListings) completedFields++;
         
         const percentage = Math.round((completedFields / totalFields) * 100);
         return percentage;
@@ -1558,7 +1506,7 @@
                 });
                 
                 ownerListings.textContent = '0 cars';
-                return;
+                return false; // No listings
             }
             
             // Update listings count
@@ -1625,6 +1573,8 @@
                 carsContainer.appendChild(carCard);
             });
             
+            return true; // Has listings
+            
         } catch (error) {
             console.error("Error loading owner's cars:", error);
             carsContainer.innerHTML = `
@@ -1633,6 +1583,7 @@
                     <p>Error loading your cars. Please try again later.</p>
                 </div>
             `;
+            return false;
         }
     }
 
@@ -1884,8 +1835,9 @@
                 ownerApprovalStatus.textContent = userData.ownerApproved ? 'Approved' : 'Pending Approval';
                 ownerApprovalStatus.style.color = userData.ownerApproved ? 'var(--primary-green)' : 'var(--accent-yellow)';
                 
-                // Calculate and update profile completion
-                const completionPercentage = calculateProfileCompletion(userData);
+                // Load owner's cars and calculate profile completion
+                const hasListings = await showOwnerCars(user.uid);
+                const completionPercentage = calculateProfileCompletion(userData, hasListings);
                 updateProfileCompletion(completionPercentage);
                 
                 // Pre-fill edit forms with actual user data
@@ -1894,9 +1846,6 @@
                 
                 // Update auth UI
                 updateAuthUI(user);
-                
-                // Load owner's cars
-                await showOwnerCars(user.uid);
                 
             } catch (error) {
                 console.error("Error getting user data:", error);
@@ -1971,7 +1920,8 @@
             // Recalculate profile completion
             const userDoc = await getDoc(userDocRef);
             if (userDoc.exists()) {
-                const completionPercentage = calculateProfileCompletion(userDoc.data());
+                const hasListings = await showOwnerCars(user.uid);
+                const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
                 updateProfileCompletion(completionPercentage);
             }
             
@@ -2016,7 +1966,8 @@
             // Recalculate profile completion
             const userDoc = await getDoc(userDocRef);
             if (userDoc.exists()) {
-                const completionPercentage = calculateProfileCompletion(userDoc.data());
+                const hasListings = await showOwnerCars(user.uid);
+                const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
                 updateProfileCompletion(completionPercentage);
             }
             
@@ -2080,7 +2031,8 @@
             // Update profile completion
             const userDoc = await getDoc(userDocRef);
             if (userDoc.exists()) {
-                const completionPercentage = calculateProfileCompletion(userDoc.data());
+                const hasListings = await showOwnerCars(user.uid);
+                const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
                 updateProfileCompletion(completionPercentage);
             }
             
@@ -2155,6 +2107,11 @@
             savePayment.disabled = false;
             savePayment.textContent = 'Save Payment Method';
             showNotification('Payment method added successfully!');
+            
+            // Update profile completion
+            const hasListings = await showOwnerCars(user.uid);
+            const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
+            updateProfileCompletion(completionPercentage);
             
         } catch (error) {
             console.error('Error adding payment method:', error);
@@ -2289,8 +2246,14 @@
             // Show success message
             showNotification('Car listed successfully! It will be visible after approval.');
             
-            // Refresh car list
-            await showOwnerCars(user.uid);
+            // Refresh car list and update profile completion
+            const hasListings = await showOwnerCars(user.uid);
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists()) {
+                const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
+                updateProfileCompletion(completionPercentage);
+            }
             
         } catch (error) {
             console.error('Error listing car:', error);
