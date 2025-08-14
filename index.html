@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2055,13 +2054,13 @@ async function signInWithGoogle() {
                 profilePic: user.photoURL || '',
                 address: '',
                 licenseVerified: false,
-                ownerApproved: isHostSignup ? false : null,
+                // Removed ownerApproved field entirely
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             });
             
             showNotification(isHostSignup ? 
-                'Host account created! Your application is pending approval.' : 
+                'Host account created successfully!' : 
                 'Account created with Google successfully!');
         } else {
             showNotification('Logged in with Google successfully!');
@@ -2076,7 +2075,10 @@ async function signInWithGoogle() {
         showNotification('Google sign-in failed. Please try again.', false);
     }
 }
-// Update the Become a Host button to trigger host signup
+
+
+
+
 document.querySelector('.host-button')?.addEventListener('click', function(e) {
     e.preventDefault();
     // Set a flag that we're doing a host signup
@@ -2201,7 +2203,6 @@ function showRoleSelectionModal() {
 }
 
 
-
 async function updateAuthUI(user) {
     const authButtons = document.querySelectorAll('.nav-links .auth-button');
     
@@ -2228,7 +2229,8 @@ async function updateAuthUI(user) {
                 // Check if we're coming from auth flow
                 if (window.location.search.includes('from_auth=true')) {
                     // Handle redirection based on role
-                    if (userData.role === 'owner' && userData.ownerApproved) {
+                    if (userData.role === 'owner') {
+                        // Directly redirect to carowner.html without checking approval
                         window.location.href = "carowner.html";
                     } else if (userData.role === 'both') {
                         // Show role selection modal if user has both roles
@@ -2262,66 +2264,76 @@ async function updateAuthUI(user) {
 }
 
 document.getElementById('signupForm')?.addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
-  const firstName = document.getElementById('firstName').value;
-  const lastName = document.getElementById('lastName').value;
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  
-  try {
-    console.log("Creating auth user...");
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    console.log("Auth user created:", user.uid);
+    e.preventDefault();
+    
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const isHostSignup = localStorage.getItem('isHostSignup') === 'true';
+    
+    try {
+        console.log("Creating auth user...");
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log("Auth user created:", user.uid);
 
-    console.log("Creating Firestore document...");
-    const userDocRef = doc(db, "users", user.uid);
-    
-    await setDoc(userDocRef, {
-      userId: user.uid,
-      email: email,
-      name: `${firstName} ${lastName}`,
-      phone: '',
-      role: 'renter',
-      profilePic: '',
-      address: '',
-      licenseVerified: false,
-      ownerApproved: false,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
-    
-    console.log("Verifying document creation...");
-    const docSnapshot = await getDoc(userDocRef);
-    
-    if (!docSnapshot.exists()) {
-      throw new Error("Firestore document not created");
-    }
-    
-    console.log("User document verified:", docSnapshot.data());
-    showNotification('Account created successfully!');
-    closeModal('signupFormModal');
-    window.location.search = '?from_auth=true';  // Add this line
-    updateAuthUI(user);
+        console.log("Creating Firestore document...");
+        const userDocRef = doc(db, "users", user.uid);
+        
+        await setDoc(userDocRef, {
+            userId: user.uid,
+            email: email,
+            name: `${firstName} ${lastName}`,
+            phone: '',
+            role: isHostSignup ? 'owner' : 'renter',
+            profilePic: '',
+            address: '',
+            licenseVerified: false,
+            // Removed ownerApproved field entirely
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
+        
+        console.log("Verifying document creation...");
+        const docSnapshot = await getDoc(userDocRef);
+        
+        if (!docSnapshot.exists()) {
+            throw new Error("Firestore document not created");
+        }
+        
+        console.log("User document verified:", docSnapshot.data());
+        showNotification(isHostSignup ? 
+            'Host account created successfully!' : 
+            'Account created successfully!');
+        
+        closeModal('signupFormModal');
+        localStorage.removeItem('isHostSignup');
+        
+        if (isHostSignup) {
+            window.location.href = "carowner.html";
+        } else {
+            window.location.search = '?from_auth=true';
+            updateAuthUI(user);
+        }
 
-  } catch (error) {
-    console.error("Full error:", error);
-    
-    // Clean up auth user if Firestore failed
-    if (auth.currentUser) {
-      try {
-        await auth.currentUser.delete();
-        console.log("Cleaned up auth user after failure");
-      } catch (deleteError) {
-        console.error("Failed to delete auth user:", deleteError);
-      }
+    } catch (error) {
+        console.error("Full error:", error);
+        localStorage.removeItem('isHostSignup');
+        
+        // Clean up auth user if Firestore failed
+        if (auth.currentUser) {
+            try {
+                await auth.currentUser.delete();
+                console.log("Cleaned up auth user after failure");
+            } catch (deleteError) {
+                console.error("Failed to delete auth user:", deleteError);
+            }
+        }
+        
+        showNotification('Registration failed. Please try again.', false);
     }
-    
-    showNotification('Registration failed. Please try again.', false);
-  }
 });
-
 
 document.getElementById('loginEmailForm')?.addEventListener('submit', async function(e) {
   e.preventDefault();
