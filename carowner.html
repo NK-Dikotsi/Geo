@@ -1101,12 +1101,6 @@
             getDocs,
             addDoc
         } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-        import { 
-            getStorage,
-            ref,
-            uploadBytes,
-            getDownloadURL
-        } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1123,7 +1117,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
         // Geoapify API Key
         const GEOAPIFY_API_KEY = "2ca9e48dc90443978775d9ef8792b96e";
@@ -1292,21 +1285,51 @@
             }
         }
 
-        // Upload image to Firebase Storage and return URL
-        async function uploadCarImage(file, carId, index) {
-            try {
-                // Generate a unique filename
-                const fileExt = file.name.split('.').pop();
-                const filename = `car_image_${index}_${Date.now()}.${fileExt}`;
-                
-                const storageRef = ref(storage, `cars/${carId}/${filename}`);
-                const uploadTask = await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(uploadTask.ref);
-                return downloadURL;
-            } catch (error) {
-                console.error('Error uploading car image:', error);
-                throw error;
-            }
+        // Convert image to Base64 with compression
+        async function uploadCarImage(file, index) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Set canvas dimensions (resize if needed)
+                        const MAX_WIDTH = 800;
+                        const MAX_HEIGHT = 600;
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        // Draw image on canvas (this will compress it)
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Convert to base64 with quality 0.7
+                        const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                        resolve({
+                            index,
+                            base64
+                        });
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
         }
 
         // Initialize car features functionality
@@ -1515,8 +1538,21 @@
                 saveCarBtn.disabled = true;
                 saveCarBtn.innerHTML = '<div class="loading"></div> Listing Car...';
                 
-                // First create the car document to get an ID
-                const carDocRef = await addDoc(collection(db, "cars"), {
+                // Convert all images to Base64
+                const imageConversionPromises = carImages.map((image, index) => {
+                    if (image) {
+                        return uploadCarImage(image, index);
+                    }
+                    return Promise.resolve(null);
+                });
+                
+                const convertedImages = (await Promise.all(imageConversionPromises))
+                    .filter(img => img !== null)
+                    .sort((a, b) => a.index - b.index) // Maintain original order
+                    .map(img => img.base64);
+                
+                // Create the car document with Base64 images
+                await addDoc(collection(db, "cars"), {
                     ownerId: user.uid,
                     make: make,
                     model: model,
@@ -1525,7 +1561,8 @@
                     licensePlate: licensePlate,
                     pricePerDay: price,
                     description: description,
-                    features: [...features], // Create a copy of the features array
+                    features: [...features],
+                    images: convertedImages,
                     availabilityDates: {
                         start: new Date(availabilityStart),
                         end: new Date(availabilityEnd)
@@ -1534,22 +1571,6 @@
                     approved: false,
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp()
-                });
-                
-                // Upload images to Firebase Storage
-                const uploadPromises = carImages.map((image, index) => {
-                    if (image) {
-                        return uploadCarImage(image, carDocRef.id, index);
-                    }
-                    return Promise.resolve(null);
-                });
-                
-                // Wait for all images to upload
-                const imageUrls = (await Promise.all(uploadPromises)).filter(url => url !== null);
-                
-                // Update car with image URLs
-                await updateDoc(carDocRef, {
-                    images: imageUrls
                 });
                 
                 // Close modal and reset form
