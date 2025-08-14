@@ -280,13 +280,6 @@
             margin-bottom: 1.5rem;
         }
         
-        .form-group label {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-        
         .form-group input, 
         .form-group select, 
         .form-group textarea {
@@ -923,6 +916,19 @@
             </div>
         </div>
 
+        <div class="account-section">
+            <h2>
+                My Bookings
+                <span class="section-edit" id="editPayment">View Bookings</span>
+            </h2>
+            
+            <div class="section-content">
+                <div class="info-group">
+                    <p class="info-value empty-value">No Bookings</p>
+                </div>
+            </div>
+        </div>
+            
         <!-- My Cars Section -->
         <div class="account-section">
             <h2>
@@ -994,51 +1000,6 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Payment Methods Section -->
-        <div class="account-section">
-            <h2>
-                Payment Methods
-                <span class="section-edit" id="editPayment">Add Payment</span>
-            </h2>
-            
-            <div class="section-content">
-                <div class="info-group">
-                    <p class="info-label">Primary Payment</p>
-                    <p class="info-value empty-value">No payment method added</p>
-                </div>
-            </div>
-            
-            <!-- Edit Payment Form -->
-            <div class="edit-form" id="paymentForm">
-                <div class="form-group">
-                    <label for="cardNumber">Card Number</label>
-                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="cardName">Name on Card</label>
-                    <input type="text" id="cardName" required>
-                </div>
-                
-                <div style="display: flex; gap: 1rem;">
-                    <div class="form-group" style="flex: 1;">
-                        <label for="cardExpiry">Expiry Date</label>
-                        <input type="text" id="cardExpiry" placeholder="MM/YY" required>
-                    </div>
-                    
-                    <div class="form-group" style="flex: 1;">
-                        <label for="cardCvv">CVV</label>
-                        <input type="text" id="cardCvv" placeholder="123" required>
-                    </div>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="save-btn" id="savePayment">Save Payment Method</button>
-                    <button type="button" class="cancel-btn" id="cancelPayment">Cancel</button>
-                </div>
-            </div>
-        </div>
     </main>
 
     <!-- Add Car Modal -->
@@ -1080,10 +1041,7 @@
             <div class="form-group">
                 <label>Upload Images (Max 5)</label>
                 <div class="image-upload-container" id="imageUploadContainer">
-                    <div class="avatar-edit" id="avatarEdit">
-    <i class="fas fa-camera"></i>
-    <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
-</div>
+                    <!-- Image upload boxes will be added here dynamically -->
                 </div>
             </div>
             
@@ -1122,1110 +1080,382 @@
         <img class="modal-content-img" id="modalImage">
     </div>
 
-    <script>
-        // Enhanced Mobile Menu Toggle Functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.getElementById('menuToggle');
-            const navLinks = document.getElementById('navLinks');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signOut, 
+            onAuthStateChanged,
+            updateProfile
+        } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            setDoc,
+            updateDoc,
+            serverTimestamp,
+            collection,
+            query,
+            where,
+            getDocs,
+            addDoc
+        } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+        import { 
+            getStorage,
+            ref,
+            uploadBytes,
+            getDownloadURL
+        } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
-            if (menuToggle && navLinks) {
-                menuToggle.addEventListener('click', () => {
-                    navLinks.classList.toggle('active');
-                    if (navLinks.classList.contains('active')) {
-                        menuToggle.innerHTML = '<i class="fas fa-times"></i>';
-                    } else {
-                        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMU2y175sXjHkxAv6SF88-E9FCjaR2kJc",
+            authDomain: "geocarrental-9a4de.firebaseapp.com",
+            projectId: "geocarrental-9a4de",
+            storageBucket: "geocarrental-9a4de.appspot.com",
+            messagingSenderId: "951760186950",
+            appId: "1:951760186950:web:7e8cc25aacdd251f152447",
+            measurementId: "G-LJEF344295"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Geoapify API Key
+        const GEOAPIFY_API_KEY = "2ca9e48dc90443978775d9ef8792b96e";
+
+        // DOM elements
+        const logoutBtn = document.getElementById('logoutBtn');
+        const profileAvatar = document.getElementById('profileAvatar');
+        const userName = document.getElementById('userName');
+        const userEmail = document.getElementById('userEmail');
+        const userPhone = document.getElementById('userPhone');
+        const completionProgress = document.getElementById('completionProgress');
+        const completionPercent = document.getElementById('completionPercent');
+        const displayLocation = document.getElementById('displayLocation');
+        const updateLocation = document.getElementById('updateLocation');
+        const locationStatus = document.getElementById('locationStatus');
+        const carsContainer = document.getElementById('carsContainer');
+        const ownerApprovalStatus = document.getElementById('ownerApprovalStatus');
+        const ownerEarnings = document.getElementById('ownerEarnings');
+        const ownerListings = document.getElementById('ownerListings');
+        
+        // Profile edit elements
+        const avatarEdit = document.getElementById('avatarEdit');
+        const profilePhotoInput = document.getElementById('profilePhotoInput');
+        
+        // Personal info elements
+        const editPersonalInfo = document.getElementById('editPersonalInfo');
+        const personalInfoForm = document.getElementById('personalInfoForm');
+        const savePersonalInfo = document.getElementById('savePersonalInfo');
+        const cancelPersonalInfo = document.getElementById('cancelPersonalInfo');
+        const displayName = document.getElementById('displayName');
+        const displayEmail = document.getElementById('displayEmail');
+        const displayPhone = document.getElementById('displayPhone');
+        const editName = document.getElementById('editName');
+        const editPhone = document.getElementById('editPhone');
+        
+        // Add Car elements
+        const addCarBtn = document.getElementById('addCarBtn');
+        const addCarModal = document.getElementById('addCarModal');
+        const closeCarModal = document.getElementById('closeCarModal');
+        const cancelCarBtn = document.getElementById('cancelCarBtn');
+        const saveCarBtn = document.getElementById('saveCarBtn');
+        const imageUploadContainer = document.getElementById('imageUploadContainer');
+        const featuresContainer = document.getElementById('featuresContainer');
+        const carFeaturesInput = document.getElementById('carFeatures');
+
+        // Notification system
+        function showNotification(message, isSuccess = true) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button class="close-notification">&times;</button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            const timer = setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+            
+            notification.querySelector('.close-notification').addEventListener('click', () => {
+                clearTimeout(timer);
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            });
+        }
+
+        // Update profile completion UI
+        function updateProfileCompletion(percentage) {
+            completionProgress.style.width = `${percentage}%`;
+            completionPercent.textContent = `${percentage}%`;
+        }
+
+        // Calculate profile completion percentage
+        function calculateProfileCompletion(userData, hasListings = false) {
+            let completedFields = 0;
+            const totalFields = 5; // name, email, phone, payment, listings
+            
+            if (userData.name) completedFields++;
+            if (userData.email) completedFields++;
+            if (userData.phone) completedFields++;
+            if (userData.paymentMethod) completedFields++;
+            if (hasListings) completedFields++;
+            
+            const percentage = Math.round((completedFields / totalFields) * 100);
+            return percentage;
+        }
+
+        // Initialize image upload functionality
+        function initImageUpload() {
+            const images = [];
+            
+            // Clear existing upload boxes
+            imageUploadContainer.innerHTML = '';
+            
+            // Create first upload box
+            createUploadBox(0);
+            
+            function createUploadBox(index) {
+                const uploadBox = document.createElement('div');
+                uploadBox.className = 'image-upload-preview';
+                uploadBox.id = `imageUpload${index}`;
+                uploadBox.innerHTML = `
+                    <i class="fas fa-camera upload-icon"></i>
+                    <input type="file" class="car-image-input" accept="image/*">
+                `;
+                
+                const fileInput = uploadBox.querySelector('.car-image-input');
+                
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    if (!file.type.startsWith('image/')) {
+                        showNotification('Please select a valid image file.', false);
+                        return;
                     }
-                });
-
-                // Close menu when clicking outside
-                document.addEventListener('click', (e) => {
-                    if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
-                        if (window.innerWidth <= 768) {
-                            navLinks.classList.remove('active');
-                            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                    
+                    if (file.size > 5 * 1024 * 1024) {
+                        showNotification('Image file is too large. Please select an image under 5MB.', false);
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        uploadBox.innerHTML = `
+                            <img src="${event.target.result}" alt="Car image">
+                            <div class="remove-image">&times;</div>
+                        `;
+                        
+                        // Store the image file in the array
+                        images[index] = file;
+                        
+                        // Add remove event listener
+                        uploadBox.querySelector('.remove-image').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            images.splice(index, 1);
+                            uploadBox.remove();
+                            
+                            // If this was the last box and we have space, add a new empty box
+                            if (images.length < 5 && !document.querySelector('.image-upload-preview:last-child .upload-icon')) {
+                                createUploadBox(images.length);
+                            }
+                        });
+                        
+                        // If we have space for more images and this is the last box, add another
+                        if (images.length < 5 && index === images.length - 1) {
+                            createUploadBox(images.length);
                         }
+                    };
+                    reader.readAsDataURL(file);
+                });
+                
+                // Handle click on the box to trigger file input
+                uploadBox.addEventListener('click', (e) => {
+                    if (e.target === uploadBox || e.target.classList.contains('upload-icon')) {
+                        fileInput.click();
                     }
                 });
+                
+                imageUploadContainer.appendChild(uploadBox);
+            }
+            
+            return images;
+        }
 
-                // Close menu when clicking on any nav link (for mobile)
-                navLinks.querySelectorAll('a, button').forEach(item => {
-                    item.addEventListener('click', () => {
-                        if (window.innerWidth <= 768) {
-                            navLinks.classList.remove('active');
-                            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        // Upload image to Firebase Storage and return URL
+        async function uploadCarImage(file, carId, index) {
+            try {
+                // Generate a unique filename
+                const fileExt = file.name.split('.').pop();
+                const filename = `car_image_${index}_${Date.now()}.${fileExt}`;
+                
+                const storageRef = ref(storage, `cars/${carId}/${filename}`);
+                const uploadTask = await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(uploadTask.ref);
+                return downloadURL;
+            } catch (error) {
+                console.error('Error uploading car image:', error);
+                throw error;
+            }
+        }
+
+        // Initialize car features functionality
+        function initCarFeatures() {
+            const features = [];
+            
+            // Add feature when Enter is pressed
+            carFeaturesInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const feature = carFeaturesInput.value.trim();
+                    if (feature && !features.includes(feature)) {
+                        features.push(feature);
+                        renderFeatures();
+                        carFeaturesInput.value = '';
+                    }
+                }
+            });
+            
+            // Render features tags
+            function renderFeatures() {
+                featuresContainer.innerHTML = features.map(feature => `
+                    <div class="feature-tag">
+                        ${feature}
+                        <span class="remove-feature" data-feature="${feature}">&times;</span>
+                    </div>
+                `).join('');
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-feature').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const featureToRemove = e.target.getAttribute('data-feature');
+                        const index = features.indexOf(featureToRemove);
+                        if (index !== -1) {
+                            features.splice(index, 1);
+                            renderFeatures();
                         }
                     });
                 });
             }
-        });
+            
+            return features;
+        }
 
-        // Get the modal and modal image elements
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImage');
-        const closeModal = document.querySelector('.close-img-modal');
-
-        // When the profile image is clicked, open the modal
-        document.addEventListener('DOMContentLoaded', function() {
-            const profileAvatar = document.getElementById('profileAvatar');
-            if (profileAvatar) {
-                profileAvatar.addEventListener('click', function() {
-                    if (this.src && !this.src.includes('default-avatar.png')) {
-                        modal.style.display = 'block';
-                        modalImg.src = this.src;
-                    }
-                });
-            }
-        });
-
-        // When the close button is clicked, close the modal
-        closeModal.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
-
-        // When clicking anywhere outside the image, close the modal
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        // Close modal when pressing Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modal.style.display === 'block') {
-                modal.style.display = 'none';
-            }
-        });
-    </script>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { 
-        getAuth, 
-        signOut, 
-        onAuthStateChanged,
-        updateProfile
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-    import { 
-        getFirestore, 
-        doc, 
-        getDoc, 
-        setDoc,
-        updateDoc,
-        serverTimestamp,
-        collection,
-        query,
-        where,
-        getDocs,
-        addDoc
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-    import { 
-        getStorage,
-        ref,
-        uploadBytes,
-        getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
-
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyAMU2y175sXjHkxAv6SF88-E9FCjaR2kJc",
-        authDomain: "geocarrental-9a4de.firebaseapp.com",
-        projectId: "geocarrental-9a4de",
-        storageBucket: "geocarrental-9a4de.appspot.com",
-        messagingSenderId: "951760186950",
-        appId: "1:951760186950:web:7e8cc25aacdd251f152447",
-        measurementId: "G-LJEF344295"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    // Geoapify API Key
-    const GEOAPIFY_API_KEY = "2ca9e48dc90443978775d9ef8792b96e";
-
-    // DOM elements
-    const logoutBtn = document.getElementById('logoutBtn');
-    const profileAvatar = document.getElementById('profileAvatar');
-    const userName = document.getElementById('userName');
-    const userEmail = document.getElementById('userEmail');
-    const userPhone = document.getElementById('userPhone');
-    const accountLink = document.getElementById('accountLink');
-    const completionProgress = document.getElementById('completionProgress');
-    const completionPercent = document.getElementById('completionPercent');
-    const displayLocation = document.getElementById('displayLocation');
-    const updateLocation = document.getElementById('updateLocation');
-    const locationStatus = document.getElementById('locationStatus');
-    const carsContainer = document.getElementById('carsContainer');
-    const ownerApprovalStatus = document.getElementById('ownerApprovalStatus');
-    const ownerEarnings = document.getElementById('ownerEarnings');
-    const ownerListings = document.getElementById('ownerListings');
-    
-    // Profile edit elements
-    const avatarEdit = document.getElementById('avatarEdit');
-    const profilePhotoInput = document.getElementById('profilePhotoInput');
-    
-    // Personal info elements
-    const editPersonalInfo = document.getElementById('editPersonalInfo');
-    const personalInfoForm = document.getElementById('personalInfoForm');
-    const savePersonalInfo = document.getElementById('savePersonalInfo');
-    const cancelPersonalInfo = document.getElementById('cancelPersonalInfo');
-    const displayName = document.getElementById('displayName');
-    const displayEmail = document.getElementById('displayEmail');
-    const displayPhone = document.getElementById('displayPhone');
-    const editName = document.getElementById('editName');
-    const editPhone = document.getElementById('editPhone');
-    
-    // Payment elements
-    const editPayment = document.getElementById('editPayment');
-    const paymentForm = document.getElementById('paymentForm');
-    const savePayment = document.getElementById('savePayment');
-    const cancelPayment = document.getElementById('cancelPayment');
-
-    // Add Car elements
-    const addCarBtn = document.getElementById('addCarBtn');
-    const addCarModal = document.getElementById('addCarModal');
-    const closeCarModal = document.getElementById('closeCarModal');
-    const cancelCarBtn = document.getElementById('cancelCarBtn');
-    const saveCarBtn = document.getElementById('saveCarBtn');
-    const imageUploadContainer = document.getElementById('imageUploadContainer');
-    const featuresContainer = document.getElementById('featuresContainer');
-    const carFeaturesInput = document.getElementById('carFeatures');
-
-    // Notification system
-    function showNotification(message, isSuccess = true) {
-        const notification = document.createElement('div');
-        notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
-        notification.innerHTML = `
-            <span>${message}</span>
-            <button class="close-notification">&times;</button>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        const timer = setTimeout(() => {
-            notification.classList.add('fade-out');
-            setTimeout(() => notification.remove(), 300);
-        }, 2000);
-        
-        notification.querySelector('.close-notification').addEventListener('click', () => {
-            clearTimeout(timer);
-            notification.classList.add('fade-out');
-            setTimeout(() => notification.remove(), 300);
-        });
-    }
-
-    // Update profile completion UI
-    function updateProfileCompletion(percentage) {
-        completionProgress.style.width = `${percentage}%`;
-        completionPercent.textContent = `${percentage}%`;
-    }
-
-    // Image compression and Base64 conversion function
-    function compressImageToBase64(file, maxWidth = 400, quality = 0.6, maxSizeKB = 100) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    
-                    // Calculate new dimensions while maintaining aspect ratio
-                    let { width, height } = img;
-                    if (width > height) {
-                        if (width > maxWidth) {
-                            height = (height * maxWidth) / width;
-                            width = maxWidth;
-                        }
-                    } else {
-                        if (height > maxWidth) {
-                            width = (width * maxWidth) / height;
-                            height = maxWidth;
-                        }
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.fillStyle = '#FFFFFF'; // White background
-                    ctx.fillRect(0, 0, width, height);
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Function to get Base64 with size checking
-                    const getCompressedBase64 = (currentQuality) => {
-                        const base64 = canvas.toDataURL('image/jpeg', currentQuality);
-                        const sizeKB = (base64.length * 3/4) / 1024; // Approximate size in KB
-                        
-                        if (sizeKB <= maxSizeKB || currentQuality <= 0.1) {
-                            return base64;
-                        } else {
-                            // Reduce quality and try again
-                            return getCompressedBase64(Math.max(currentQuality - 0.1, 0.1));
-                        }
-                    };
-                    
-                    try {
-                        const finalBase64 = getCompressedBase64(quality);
-                        resolve(finalBase64);
-                    } catch (error) {
-                        reject(error);
-                    }
-                };
+        // Show owner's cars
+        async function showOwnerCars(ownerId) {
+            try {
+                carsContainer.innerHTML = '';
                 
-                img.onerror = () => reject(new Error('Failed to load image'));
-                img.src = event.target.result;
-            };
-            
-            reader.onerror = () => reject(new Error('Failed to read file'));
-            reader.readAsDataURL(file);
-        });
-    }
-
-    // Calculate profile completion percentage
-    function calculateProfileCompletion(userData, hasListings = false) {
-        let completedFields = 0;
-        const totalFields = 5; // name, email, phone, payment, listings
-        
-        if (userData.name) completedFields++;
-        if (userData.email) completedFields++;
-        if (userData.phone) completedFields++;
-        if (userData.paymentMethod) completedFields++;
-        if (hasListings) completedFields++;
-        
-        const percentage = Math.round((completedFields / totalFields) * 100);
-        return percentage;
-    }
-
-    // Validate phone number
-    function validatePhoneNumber(phone) {
-        const regex = /^\+?[\d\s\-\(\)]{8,}$/;
-        return regex.test(phone);
-    }
-
-    // Validate name
-    function validateName(name) {
-        return name.length >= 2;
-    }
-
-    // Get device location using browser's Geolocation API and Geoapify for reverse geocoding
-    async function getDeviceLocation() {
-        return new Promise((resolve, reject) => {
-            if (!navigator.geolocation) {
-                reject(new Error('Geolocation is not supported by your browser'));
-                return;
-            }
-
-            locationStatus.textContent = "Detecting your location...";
-            updateLocation.disabled = true;
-            updateLocation.querySelector('#locationBtnText').textContent = "Detecting...";
-
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    try {
-                        const { latitude, longitude } = position.coords;
-                        
-                        // Use Geoapify Reverse Geocoding API
-                        const response = await fetch(
-                            `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&apiKey=${GEOAPIFY_API_KEY}`,
-                            { method: 'GET' }
-                        );
-                        
-                        if (!response.ok) {
-                            throw new Error('Failed to fetch location data');
-                        }
-                        
-                        const data = await response.json();
-                        
-                        // Extract the most relevant address information
-                        let locationName = "Unknown location";
-                        if (data.features && data.features.length > 0) {
-                            const properties = data.features[0].properties;
-                            locationName = [
-                                properties.address_line1,
-                                properties.address_line2,
-                                properties.city,
-                                properties.country
-                            ].filter(Boolean).join(', ');
-                        }
-                        
-                        resolve({
-                            coordinates: { latitude, longitude },
-                            address: locationName
-                        });
-                    } catch (error) {
-                        console.error("Error getting location:", error);
-                        // Fallback to just coordinates if API fails
-                        resolve({
-                            coordinates: { latitude, longitude },
-                            address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
-                        });
-                    } finally {
-                        updateLocation.disabled = false;
-                        updateLocation.querySelector('#locationBtnText').textContent = "Update My Location";
-                    }
-                },
-                (error) => {
-                    console.error("Error getting position:", error);
-                    locationStatus.textContent = "Location access denied. Please enable location services.";
-                    updateLocation.disabled = false;
-                    updateLocation.querySelector('#locationBtnText').textContent = "Update My Location";
-                    reject(error);
-                },
-                { 
-                    enableHighAccuracy: true,
-                    timeout: 20000,
-                    maximumAge: 0
+                // Query cars where ownerId matches the current user
+                const carsQuery = query(collection(db, "cars"), where("ownerId", "==", ownerId));
+                const querySnapshot = await getDocs(carsQuery);
+                
+                if (querySnapshot.empty) {
+                    carsContainer.innerHTML = `
+                        <div class="no-cars">
+                            <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
+                            <p>You haven't listed any cars yet.</p>
+                            <button class="explore-btn" id="addFirstCarBtn">List Your First Car</button>
+                        </div>
+                    `;
+                    
+                    document.getElementById('addFirstCarBtn').addEventListener('click', () => {
+                        addCarModal.style.display = 'block';
+                    });
+                    
+                    ownerListings.textContent = '0 cars';
+                    return false; // No listings
                 }
-            );
-        });
-    }
-
-    // Show owner's cars
-    async function showOwnerCars(ownerId) {
-        try {
-            carsContainer.innerHTML = '';
-            
-            // Query cars where ownerId matches the current user
-            const carsQuery = query(collection(db, "cars"), where("ownerId", "==", ownerId));
-            const querySnapshot = await getDocs(carsQuery);
-            
-            if (querySnapshot.empty) {
+                
+                // Update listings count
+                ownerListings.textContent = `${querySnapshot.size} ${querySnapshot.size === 1 ? 'car' : 'cars'}`;
+                
+                querySnapshot.forEach((doc) => {
+                    const car = doc.data();
+                    const carCard = document.createElement('div');
+                    carCard.className = 'car-card';
+                    
+                    // Determine status
+                    let statusClass = 'pending';
+                    let statusText = 'Pending Approval';
+                    
+                    if (car.approved) {
+                        statusClass = car.isAvailable ? 'available' : 'unavailable';
+                        statusText = car.isAvailable ? 'Available' : 'Unavailable';
+                    }
+                    
+                    // Format price
+                    const formattedPrice = `R${car.pricePerDay.toFixed(2)}/day`;
+                    
+                    // Create features list
+                    let featuresHtml = '';
+                    if (car.features && car.features.length > 0) {
+                        featuresHtml = car.features.slice(0, 3).map(feature => `
+                            <div class="car-feature">
+                                <i class="fas fa-check-circle"></i> ${feature}
+                            </div>
+                        `).join('');
+                        
+                        if (car.features.length > 3) {
+                            featuresHtml += `<div class="car-feature">+${car.features.length - 3} more</div>`;
+                        }
+                    }
+                    
+                    // Format dates
+                    let datesText = '';
+                    if (car.availabilityDates) {
+                        const startDate = new Date(car.availabilityDates.start.seconds * 1000);
+                        const endDate = new Date(car.availabilityDates.end.seconds * 1000);
+                        
+                        datesText = `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
+                    }
+                    
+                    carCard.innerHTML = `
+                        <img src="${car.images?.[0] || 'images/default-car.jpg'}" alt="${car.make} ${car.model}" class="car-image">
+                        <div class="car-status ${statusClass}">${statusText}</div>
+                        <div class="car-details">
+                            <h3 class="car-title">${car.year} ${car.make} ${car.model}</h3>
+                            <p class="car-price">${formattedPrice}</p>
+                            <div class="car-features">
+                                ${featuresHtml}
+                            </div>
+                            <div class="car-location">
+                                <i class="fas fa-map-marker-alt"></i> ${car.address || 'Location not specified'}
+                            </div>
+                            <div class="car-location">
+                                <i class="fas fa-calendar-alt"></i> ${datesText || 'Dates not specified'}
+                            </div>
+                        </div>
+                    `;
+                    
+                    carsContainer.appendChild(carCard);
+                });
+                
+                return true; // Has listings
+                
+            } catch (error) {
+                console.error("Error loading owner's cars:", error);
                 carsContainer.innerHTML = `
                     <div class="no-cars">
                         <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
-                        <p>You haven't listed any cars yet.</p>
-                        <button class="explore-btn" id="addFirstCarBtn">List Your First Car</button>
+                        <p>Error loading your cars. Please try again later.</p>
                     </div>
                 `;
-                
-                document.getElementById('addFirstCarBtn').addEventListener('click', () => {
-                    addCarModal.style.display = 'block';
-                });
-                
-                ownerListings.textContent = '0 cars';
-                return false; // No listings
+                return false;
             }
-            
-            // Update listings count
-            ownerListings.textContent = `${querySnapshot.size} ${querySnapshot.size === 1 ? 'car' : 'cars'}`;
-            
-            querySnapshot.forEach((doc) => {
-                const car = doc.data();
-                const carCard = document.createElement('div');
-                carCard.className = 'car-card';
-                
-                // Determine status
-                let statusClass = 'pending';
-                let statusText = 'Pending Approval';
-                
-                if (car.approved) {
-                    statusClass = car.isAvailable ? 'available' : 'unavailable';
-                    statusText = car.isAvailable ? 'Available' : 'Unavailable';
-                }
-                
-                // Format price
-                const formattedPrice = `R${car.pricePerDay.toFixed(2)}/day`;
-                
-                // Create features list
-                let featuresHtml = '';
-                if (car.features && car.features.length > 0) {
-                    featuresHtml = car.features.slice(0, 3).map(feature => `
-                        <div class="car-feature">
-                            <i class="fas fa-check-circle"></i> ${feature}
-                        </div>
-                    `).join('');
-                    
-                    if (car.features.length > 3) {
-                        featuresHtml += `<div class="car-feature">+${car.features.length - 3} more</div>`;
-                    }
-                }
-                
-                // Format dates
-                let datesText = '';
-                if (car.availabilityDates) {
-                    const startDate = new Date(car.availabilityDates.start.seconds * 1000);
-                    const endDate = new Date(car.availabilityDates.end.seconds * 1000);
-                    
-                    datesText = `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
-                }
-                
-                carCard.innerHTML = `
-                    <img src="${car.images?.[0] || 'images/default-car.jpg'}" alt="${car.make} ${car.model}" class="car-image">
-                    <div class="car-status ${statusClass}">${statusText}</div>
-                    <div class="car-details">
-                        <h3 class="car-title">${car.year} ${car.make} ${car.model}</h3>
-                        <p class="car-price">${formattedPrice}</p>
-                        <div class="car-features">
-                            ${featuresHtml}
-                        </div>
-                        <div class="car-location">
-                            <i class="fas fa-map-marker-alt"></i> ${car.address || 'Location not specified'}
-                        </div>
-                        <div class="car-location">
-                            <i class="fas fa-calendar-alt"></i> ${datesText || 'Dates not specified'}
-                        </div>
-                    </div>
-                `;
-                
-                carsContainer.appendChild(carCard);
-            });
-            
-            return true; // Has listings
-            
-        } catch (error) {
-            console.error("Error loading owner's cars:", error);
-            carsContainer.innerHTML = `
-                <div class="no-cars">
-                    <img src="videos/nocars.gif" alt="No cars available" class="no-cars-video">
-                    <p>Error loading your cars. Please try again later.</p>
-                </div>
-            `;
-            return false;
         }
-    }
 
-    // Update auth UI
-    function updateAuthUI(user) {
-        const authButtons = document.querySelectorAll('.nav-links .auth-button');
-        
-        if (user) {
-            // User is logged in - change auth buttons to "My Rides"
-            authButtons.forEach(button => {
-                if (button.textContent.trim() === 'Insurance') {
-                    button.textContent = 'My Rides';
-                    button.classList.add('my-rides');
-                    button.onclick = function(e) {
-                        e.preventDefault();
-                        window.location.href = "user.html";
-                    };
-                }
-            });
-        } else {
-            // User is not logged in
-            authButtons.forEach(button => {
-                if (button.textContent.trim() === 'My Rides') {
-                    button.textContent = 'Insurance';
-                    button.classList.remove('my-rides');
-                }
-            });
-            // Redirect to index.html if no user is signed in
-            window.location.href = "index.html";
-        }
-    }
-
-    // Initialize car features functionality
-    function initCarFeatures() {
-        const features = [];
-        
-        // Add feature when Enter is pressed
-        carFeaturesInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const feature = carFeaturesInput.value.trim();
-                if (feature && !features.includes(feature)) {
-                    features.push(feature);
-                    renderFeatures();
-                    carFeaturesInput.value = '';
-                }
-            }
-        });
-        
-        // Render features tags
-        function renderFeatures() {
-            featuresContainer.innerHTML = features.map(feature => `
-                <div class="feature-tag">
-                    ${feature}
-                    <span class="remove-feature" data-feature="${feature}">&times;</span>
-                </div>
-            `).join('');
-            
-            // Add event listeners to remove buttons
-            document.querySelectorAll('.remove-feature').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const featureToRemove = e.target.getAttribute('data-feature');
-                    const index = features.indexOf(featureToRemove);
-                    if (index !== -1) {
-                        features.splice(index, 1);
-                        renderFeatures();
-                    }
-                });
-            });
-        }
-        
-        return features;
-    }
-
-    // Initialize image upload functionality
-    function initImageUpload() {
-        const images = [];
-        let uploadIndex = 1;
-        
-        // Create first upload box
-        createUploadBox(1);
-        
-        function createUploadBox(index) {
-            const uploadBox = document.createElement('div');
-            uploadBox.className = 'image-upload-preview';
-            uploadBox.id = `imageUpload${index}`;
-            uploadBox.innerHTML = `
-                <i class="fas fa-camera upload-icon"></i>
-                <input type="file" class="car-image-input" accept="image/*">
-            `;
-            
-            const fileInput = uploadBox.querySelector('.car-image-input');
-            
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                if (!file.type.startsWith('image/')) {
-                    showNotification('Please select a valid image file.', false);
-                    return;
-                }
-                
-                if (file.size > 5 * 1024 * 1024) {
-                    showNotification('Image file is too large. Please select an image under 5MB.', false);
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    uploadBox.innerHTML = `
-                        <img src="${event.target.result}" alt="Car image">
-                        <div class="remove-image">&times;</div>
-                    `;
-                    
-                    // Store the image data
-                    images[index - 1] = file;
-                    
-                    // Add new upload box if we haven't reached the limit
-                    if (index === uploadIndex && uploadIndex < 5) {
-                        uploadIndex++;
-                        createUploadBox(uploadIndex);
-                    }
-                    
-                    // Add remove event listener
-                    uploadBox.querySelector('.remove-image').addEventListener('click', () => {
-                        images.splice(index - 1, 1);
-                        uploadBox.remove();
-                        
-                        // Re-index remaining images
-                        const remainingBoxes = document.querySelectorAll('.image-upload-preview');
-                        remainingBoxes.forEach((box, i) => {
-                            box.id = `imageUpload${i + 1}`;
-                        });
-                        
-                        uploadIndex = remainingBoxes.length;
-                        
-                        // If we removed the last one and we're under limit, add a new empty box
-                        if (uploadIndex < 5 && !document.querySelector('.image-upload-preview:last-child .upload-icon')) {
-                            createUploadBox(uploadIndex + 1);
-                        }
-                    });
-                };
-                reader.readAsDataURL(file);
-            });
-            
-            imageUploadContainer.appendChild(uploadBox);
-        }
-        
-        return images;
-    }
-
-    // Upload image to Firebase Storage and return URL
-    async function uploadCarImage(file, carId, index) {
-        try {
-            const storageRef = ref(storage, `cars/${carId}/image_${index}`);
-            await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(storageRef);
-            return downloadURL;
-        } catch (error) {
-            console.error('Error uploading car image:', error);
-            throw error;
-        }
-    }
-
-    // Check auth state and load user data
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            try {
-                // Get user data from Firestore
-                const userDocRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userDocRef);
-                
-                let userData;
-                
-                if (userDoc.exists()) {
-                    userData = userDoc.data();
-                } else {
-                    // Create user document if it doesn't exist
-                    userData = {
-                        userId: user.uid,
-                        email: user.email,
-                        name: user.displayName || '',
-                        phone: '',
-                        profilePicBase64: '',
-                        location: '',
-                        coordinates: null,
-                        role: 'renter', // Default to renter until approved as owner
-                        ownerApproved: false,
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    };
-                    await setDoc(userDocRef, userData);
-                    showNotification('Profile created successfully!');
-                }
-                
-                // Check if user is an approved owner
-                if (userData.role !== 'owner') {
-                    // Redirect to user page if not an approved owner
-                    window.location.href = "user.html";
-                    return;
-                }
-                
-                // Display user info
-                userName.textContent = userData.name || user.email;
-                userEmail.textContent = user.email;
-                displayName.textContent = userData.name || 'Not provided';
-                displayEmail.textContent = user.email;
-                
-                if (userData.phone) {
-                    userPhone.textContent = userData.phone;
-                    displayPhone.textContent = userData.phone;
-                    userPhone.classList.remove('empty-value');
-                } else {
-                    userPhone.textContent = 'No phone number added';
-                    displayPhone.textContent = 'Not provided';
-                    userPhone.classList.add('empty-value');
-                }
-                
-                if (userData.location) {
-                    displayLocation.textContent = userData.location;
-                    displayLocation.classList.remove('empty-value');
-                } else {
-                    displayLocation.textContent = 'Location not set';
-                    displayLocation.classList.add('empty-value');
-                    // Try to fetch location automatically on first load if not set
-                    try {
-                        const locationData = await getDeviceLocation();
-                        await updateDoc(userDocRef, {
-                            location: locationData.address,
-                            coordinates: locationData.coordinates,
-                            updatedAt: serverTimestamp()
-                        });
-                        displayLocation.textContent = locationData.address;
-                        displayLocation.classList.remove('empty-value');
-                    } catch (error) {
-                        console.error('Error fetching initial location:', error);
-                    }
-                }
-                
-                // Update profile picture - use Base64 from Firestore
-                if (userData.profilePicBase64) {
-                    profileAvatar.src = userData.profilePicBase64;
-                } else {
-                    // Default avatar if no profile picture
-                    profileAvatar.src = "images/default-avatar.png";
-                }
-                
-                // Update owner status
-                ownerApprovalStatus.textContent = userData.ownerApproved ? 'Approved' : 'Pending Approval';
-                ownerApprovalStatus.style.color = userData.ownerApproved ? 'var(--primary-green)' : 'var(--accent-yellow)';
-                
-                // Load owner's cars and calculate profile completion
-                const hasListings = await showOwnerCars(user.uid);
-                const completionPercentage = calculateProfileCompletion(userData, hasListings);
-                updateProfileCompletion(completionPercentage);
-                
-                // Pre-fill edit forms with actual user data
-                editName.value = userData.name || '';
-                editPhone.value = userData.phone || '';
-                
-                // Update auth UI
-                updateAuthUI(user);
-                
-            } catch (error) {
-                console.error("Error getting user data:", error);
-                showNotification('Error loading profile data. Please try again.', false);
-            }
-        } else {
-            updateAuthUI(null);
-        }
-    });
-
-    // Logout button
-    logoutBtn.addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-        } catch (error) {
-            console.error("Error signing out:", error);
-            showNotification('Error signing out. Please try again.', false);
-        }
-    });
-
-    // Profile photo upload with Base64 storage
-    avatarEdit.addEventListener('click', () => {
-        profilePhotoInput.click();
-    });
-
-    profilePhotoInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-            showNotification('Please select a valid image file.', false);
-            return;
-        }
-        
-        // Validate file size (max 5MB for initial file)
-        if (file.size > 5 * 1024 * 1024) {
-            showNotification('Image file is too large. Please select an image under 5MB.', false);
-            return;
-        }
-        
-        try {
-            const user = auth.currentUser;
-            if (!user) throw new Error('User not logged in');
-            
-            // Show loading state immediately
-            avatarEdit.innerHTML = '<div class="loading"></div>';
-            
-            // Create a preview URL for instant feedback
-            const previewUrl = URL.createObjectURL(file);
-            profileAvatar.src = previewUrl;
-            
-            // Compress image and convert to Base64
-            const base64Image = await compressImageToBase64(file);
-            
-            // Update profile picture in Firestore
-            const userDocRef = doc(db, "users", user.uid);
-            await updateDoc(userDocRef, {
-                profilePicBase64: base64Image,
-                updatedAt: serverTimestamp()
-            });
-            
-            // Update UI with compressed image
-            profileAvatar.src = base64Image;
-            avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
-            
-            showNotification('Profile picture updated successfully!');
-            
-            // Clean up preview URL
-            URL.revokeObjectURL(previewUrl);
-            
-            // Recalculate profile completion
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                const hasListings = await showOwnerCars(user.uid);
-                const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
-                updateProfileCompletion(completionPercentage);
-            }
-            
-        } catch (error) {
-            console.error('Error uploading profile picture:', error);
-            avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
-            showNotification('Failed to update profile picture. Please try again.', false);
-            
-            // Reset to default image on error
-            profileAvatar.src = "images/default-avatar.png";
-        }
-    });
-
-    // Personal Info Edit
-    editPersonalInfo.addEventListener('click', () => {
-        personalInfoForm.style.display = 'block';
-    });
-
-    cancelPersonalInfo.addEventListener('click', () => {
-        personalInfoForm.style.display = 'none';
-    });
-
-    // Update location button
-    updateLocation.addEventListener('click', async () => {
-        try {
-            const locationData = await getDeviceLocation();
-            const user = auth.currentUser;
-            if (!user) throw new Error('User not logged in');
-            
-            const userDocRef = doc(db, "users", user.uid);
-            await updateDoc(userDocRef, {
-                location: locationData.address,
-                coordinates: locationData.coordinates,
-                updatedAt: serverTimestamp()
-            });
-            
-            // Update UI
-            displayLocation.textContent = locationData.address;
-            displayLocation.classList.remove('empty-value');
-            locationStatus.textContent = "Location updated successfully!";
-            
-            // Recalculate profile completion
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                const hasListings = await showOwnerCars(user.uid);
-                const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
-                updateProfileCompletion(completionPercentage);
-            }
-            
-            showNotification('Location updated successfully!');
-            
-        } catch (error) {
-            console.error('Error updating location:', error);
-            locationStatus.textContent = "Failed to update location. Please try again.";
-        }
-    });
-
-    savePersonalInfo.addEventListener('click', async () => {
-        const name = editName.value.trim();
-        const phone = editPhone.value.trim();
-        
-        // Validate inputs
-        if (!validateName(name)) {
-            showNotification('Please enter a valid name (at least 2 characters)', false);
-            return;
-        }
-        
-        if (phone && !validatePhoneNumber(phone)) {
-            showNotification('Please enter a valid phone number', false);
-            return;
-        }
-        
-        try {
-            const user = auth.currentUser;
-            if (!user) throw new Error('User not logged in');
-            
-            const userDocRef = doc(db, "users", user.uid);
-            
-            // Show loading state
-            savePersonalInfo.disabled = true;
-            savePersonalInfo.innerHTML = '<div class="loading"></div> Saving...';
-            
-            // Update user data in Firestore
-            await updateDoc(userDocRef, {
-                name: name,
-                phone: phone || null,
-                updatedAt: serverTimestamp()
-            });
-            
-            // Update UI
-            displayName.textContent = name;
-            userName.textContent = name || user.email;
-            
-            if (phone) {
-                displayPhone.textContent = phone;
-                userPhone.textContent = phone;
-                userPhone.classList.remove('empty-value');
-            } else {
-                displayPhone.textContent = 'Not provided';
-                userPhone.textContent = 'No phone number added';
-                userPhone.classList.add('empty-value');
-            }
-            
-            // Hide form
-            personalInfoForm.style.display = 'none';
-            
-            // Update profile completion
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                const hasListings = await showOwnerCars(user.uid);
-                const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
-                updateProfileCompletion(completionPercentage);
-            }
-            
-            showNotification('Profile updated successfully!');
-            
-        } catch (error) {
-            console.error('Error updating profile:', error);
-            showNotification('Failed to update profile. Please try again.', false);
-        } finally {
-            savePersonalInfo.disabled = false;
-            savePersonalInfo.textContent = 'Save Changes';
-        }
-    });
-
-    // Payment Edit
-    editPayment.addEventListener('click', () => {
-        paymentForm.style.display = 'block';
-    });
-
-    cancelPayment.addEventListener('click', () => {
-        paymentForm.style.display = 'none';
-    });
-
-    savePayment.addEventListener('click', async () => {
-        const cardNumber = document.getElementById('cardNumber').value.trim();
-        const cardName = document.getElementById('cardName').value.trim();
-        const cardExpiry = document.getElementById('cardExpiry').value.trim();
-        const cardCvv = document.getElementById('cardCvv').value.trim();
-        
-        // Validate inputs (basic validation)
-        if (!cardNumber || !cardName || !cardExpiry || !cardCvv) {
-            showNotification('Please fill all required fields', false);
-            return;
-        }
-        
-        if (cardNumber.length < 16) {
-            showNotification('Please enter a valid card number', false);
-            return;
-        }
-        
-        if (cardCvv.length < 3) {
-            showNotification('Please enter a valid CVV', false);
-            return;
-        }
-        
-        try {
-            const user = auth.currentUser;
-            if (!user) throw new Error('User not logged in');
-            
-            const userDocRef = doc(db, "users", user.uid);
-            
-            // Show loading state
-            savePayment.disabled = true;
-            savePayment.innerHTML = '<div class="loading"></div> Processing...';
-            
-            // In a real app, you would use a payment processor API here
-            // For demo purposes, we'll just store the last 4 digits
-            const last4 = cardNumber.slice(-4);
-            
-            await updateDoc(userDocRef, {
-                paymentMethod: {
-                    type: 'card',
-                    last4: last4,
-                    name: cardName,
-                    expiry: cardExpiry
-                },
-                updatedAt: serverTimestamp()
-            });
-            
-            // Update UI
-            paymentForm.style.display = 'none';
-            savePayment.disabled = false;
-            savePayment.textContent = 'Save Payment Method';
-            showNotification('Payment method added successfully!');
-            
-            // Update profile completion
-            const hasListings = await showOwnerCars(user.uid);
-            const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
-            updateProfileCompletion(completionPercentage);
-            
-        } catch (error) {
-            console.error('Error adding payment method:', error);
-            savePayment.disabled = false;
-            savePayment.textContent = 'Save Payment Method';
-            showNotification('Failed to add payment method. Please try again.', false);
-        }
-    });
-
-    // Add Car Modal functionality
-    addCarBtn.addEventListener('click', () => {
-        addCarModal.style.display = 'block';
-    });
-
-    closeCarModal.addEventListener('click', () => {
-        addCarModal.style.display = 'none';
-    });
-
-    cancelCarBtn.addEventListener('click', () => {
-        addCarModal.style.display = 'none';
-    });
-
-    // Initialize car features and image upload when modal opens
-    addCarModal.addEventListener('click', (e) => {
-        if (e.target === addCarModal) {
-            addCarModal.style.display = 'none';
-        }
-    });
-
-    // Initialize features and image upload
-    const features = initCarFeatures();
-    const carImages = initImageUpload();
-
-    // Save new car
-    saveCarBtn.addEventListener('click', async () => {
-        // Get form values
-        const make = document.getElementById('carMake').value.trim();
-        const model = document.getElementById('carModel').value.trim();
-        const year = document.getElementById('carYear').value.trim();
-        const color = document.getElementById('carColor').value.trim();
-        const licensePlate = document.getElementById('carLicensePlate').value.trim();
-        const price = parseFloat(document.getElementById('carPrice').value);
-        const description = document.getElementById('carDescription').value.trim();
-        const availabilityStart = document.getElementById('availabilityStart').value;
-        const availabilityEnd = document.getElementById('availabilityEnd').value;
-        
-        // Validate inputs
-        if (!make || !model || !year || !color || !licensePlate || isNaN(price) || !availabilityStart || !availabilityEnd) {
-            showNotification('Please fill all required fields', false);
-            return;
-        }
-        
-        if (price < 100) {
-            showNotification('Price per day must be at least R100', false);
-            return;
-        }
-        
-        if (new Date(availabilityStart) > new Date(availabilityEnd)) {
-            showNotification('End date must be after start date', false);
-            return;
-        }
-        
-        if (carImages.length === 0) {
-            showNotification('Please upload at least one image of your car', false);
-            return;
-        }
-        
-        try {
-            const user = auth.currentUser;
-            if (!user) throw new Error('User not logged in');
-            
-            // Show loading state
-            saveCarBtn.disabled = true;
-            saveCarBtn.innerHTML = '<div class="loading"></div> Listing Car...';
-            
-            // First create the car document to get an ID
-            const carDocRef = await addDoc(collection(db, "cars"), {
-                ownerId: user.uid,
-                make: make,
-                model: model,
-                year: parseInt(year),
-                color: color,
-                licensePlate: licensePlate,
-                pricePerDay: price,
-                description: description,
-                features: features,
-                availabilityDates: {
-                    start: new Date(availabilityStart),
-                    end: new Date(availabilityEnd)
-                },
-                isAvailable: true,
-                approved: false,
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp()
-            });
-            
-            // Upload images
-            const imageUrls = [];
-            for (let i = 0; i < carImages.length; i++) {
-                if (carImages[i]) {
-                    const url = await uploadCarImage(carImages[i], carDocRef.id, i);
-                    imageUrls.push(url);
-                }
-            }
-            
-            // Update car with image URLs
-            await updateDoc(carDocRef, {
-                images: imageUrls
-            });
-            
-            // Close modal and reset form
-            addCarModal.style.display = 'none';
-            
-            // Reset form
+        // Helper function to reset the car form
+        function resetCarForm() {
             document.getElementById('carMake').value = '';
             document.getElementById('carModel').value = '';
             document.getElementById('carYear').value = '';
@@ -2242,27 +1472,551 @@
             carImages.length = 0;
             imageUploadContainer.innerHTML = '';
             initImageUpload(); // Reinitialize upload boxes
+        }
+
+        // Save new car
+        saveCarBtn.addEventListener('click', async () => {
+            // Get form values
+            const make = document.getElementById('carMake').value.trim();
+            const model = document.getElementById('carModel').value.trim();
+            const year = document.getElementById('carYear').value.trim();
+            const color = document.getElementById('carColor').value.trim();
+            const licensePlate = document.getElementById('carLicensePlate').value.trim();
+            const price = parseFloat(document.getElementById('carPrice').value);
+            const description = document.getElementById('carDescription').value.trim();
+            const availabilityStart = document.getElementById('availabilityStart').value;
+            const availabilityEnd = document.getElementById('availabilityEnd').value;
             
-            // Show success message
-            showNotification('Car listed successfully! It will be visible after approval.');
-            
-            // Refresh car list and update profile completion
-            const hasListings = await showOwnerCars(user.uid);
-            const userDocRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
-                updateProfileCompletion(completionPercentage);
+            // Validate inputs
+            if (!make || !model || !year || !color || !licensePlate || isNaN(price) || !availabilityStart || !availabilityEnd) {
+                showNotification('Please fill all required fields', false);
+                return;
             }
             
-        } catch (error) {
-            console.error('Error listing car:', error);
-            showNotification('Failed to list car. Please try again.', false);
-        } finally {
-            saveCarBtn.disabled = false;
-            saveCarBtn.textContent = 'List My Car';
-        }
-    });
-</script>
+            if (price < 100) {
+                showNotification('Price per day must be at least R100', false);
+                return;
+            }
+            
+            if (new Date(availabilityStart) > new Date(availabilityEnd)) {
+                showNotification('End date must be after start date', false);
+                return;
+            }
+            
+            if (carImages.length === 0) {
+                showNotification('Please upload at least one image of your car', false);
+                return;
+            }
+            
+            try {
+                const user = auth.currentUser;
+                if (!user) throw new Error('User not logged in');
+                
+                // Show loading state
+                saveCarBtn.disabled = true;
+                saveCarBtn.innerHTML = '<div class="loading"></div> Listing Car...';
+                
+                // First create the car document to get an ID
+                const carDocRef = await addDoc(collection(db, "cars"), {
+                    ownerId: user.uid,
+                    make: make,
+                    model: model,
+                    year: parseInt(year),
+                    color: color,
+                    licensePlate: licensePlate,
+                    pricePerDay: price,
+                    description: description,
+                    features: [...features], // Create a copy of the features array
+                    availabilityDates: {
+                        start: new Date(availabilityStart),
+                        end: new Date(availabilityEnd)
+                    },
+                    isAvailable: true,
+                    approved: false,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
+                
+                // Upload images to Firebase Storage
+                const uploadPromises = carImages.map((image, index) => {
+                    if (image) {
+                        return uploadCarImage(image, carDocRef.id, index);
+                    }
+                    return Promise.resolve(null);
+                });
+                
+                // Wait for all images to upload
+                const imageUrls = (await Promise.all(uploadPromises)).filter(url => url !== null);
+                
+                // Update car with image URLs
+                await updateDoc(carDocRef, {
+                    images: imageUrls
+                });
+                
+                // Close modal and reset form
+                addCarModal.style.display = 'none';
+                resetCarForm();
+                
+                // Show success message
+                showNotification('Car listed successfully! It will be visible after approval.');
+                
+                // Refresh car list and update profile completion
+                const hasListings = await showOwnerCars(user.uid);
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
+                    updateProfileCompletion(completionPercentage);
+                }
+                
+            } catch (error) {
+                console.error('Error listing car:', error);
+                showNotification('Failed to list car. Please try again.', false);
+            } finally {
+                saveCarBtn.disabled = false;
+                saveCarBtn.textContent = 'List My Car';
+            }
+        });
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize features and image upload
+            const features = initCarFeatures();
+            const carImages = initImageUpload();
+            
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.getElementById('navLinks');
+            const overlay = document.getElementById('overlay');
+
+            if (menuToggle && navLinks) {
+                menuToggle.addEventListener('click', () => {
+                    navLinks.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                    if (navLinks.classList.contains('active')) {
+                        menuToggle.innerHTML = '<i class="fas fa-times"></i>';
+                    } else {
+                        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                    }
+                });
+
+                // Close menu when clicking outside
+                overlay.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                    overlay.classList.remove('active');
+                    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                });
+            }
+
+            // Add Car Modal functionality
+            addCarBtn.addEventListener('click', () => {
+                addCarModal.style.display = 'block';
+            });
+
+            closeCarModal.addEventListener('click', () => {
+                addCarModal.style.display = 'none';
+            });
+
+            cancelCarBtn.addEventListener('click', () => {
+                addCarModal.style.display = 'none';
+            });
+
+            // Close modal when clicking outside
+            addCarModal.addEventListener('click', (e) => {
+                if (e.target === addCarModal) {
+                    addCarModal.style.display = 'none';
+                }
+            });
+
+            // Personal Info Edit
+            editPersonalInfo.addEventListener('click', () => {
+                personalInfoForm.style.display = 'block';
+            });
+
+            cancelPersonalInfo.addEventListener('click', () => {
+                personalInfoForm.style.display = 'none';
+            });
+
+            // Update location button
+            updateLocation.addEventListener('click', async () => {
+                try {
+                    const locationData = await getDeviceLocation();
+                    const user = auth.currentUser;
+                    if (!user) throw new Error('User not logged in');
+                    
+                    const userDocRef = doc(db, "users", user.uid);
+                    await updateDoc(userDocRef, {
+                        location: locationData.address,
+                        coordinates: locationData.coordinates,
+                        updatedAt: serverTimestamp()
+                    });
+                    
+                    // Update UI
+                    displayLocation.textContent = locationData.address;
+                    displayLocation.classList.remove('empty-value');
+                    locationStatus.textContent = "Location updated successfully!";
+                    
+                    // Recalculate profile completion
+                    const userDoc = await getDoc(userDocRef);
+                    if (userDoc.exists()) {
+                        const hasListings = await showOwnerCars(user.uid);
+                        const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
+                        updateProfileCompletion(completionPercentage);
+                    }
+                    
+                    showNotification('Location updated successfully!');
+                    
+                } catch (error) {
+                    console.error('Error updating location:', error);
+                    locationStatus.textContent = "Failed to update location. Please try again.";
+                }
+            });
+
+            // Save personal info
+            savePersonalInfo.addEventListener('click', async () => {
+                const name = editName.value.trim();
+                const phone = editPhone.value.trim();
+                
+                // Validate inputs
+                if (name.length < 2) {
+                    showNotification('Please enter a valid name (at least 2 characters)', false);
+                    return;
+                }
+                
+                if (phone && !/^\+?[\d\s\-\(\)]{8,}$/.test(phone)) {
+                    showNotification('Please enter a valid phone number', false);
+                    return;
+                }
+                
+                try {
+                    const user = auth.currentUser;
+                    if (!user) throw new Error('User not logged in');
+                    
+                    const userDocRef = doc(db, "users", user.uid);
+                    
+                    // Show loading state
+                    savePersonalInfo.disabled = true;
+                    savePersonalInfo.innerHTML = '<div class="loading"></div> Saving...';
+                    
+                    // Update user data in Firestore
+                    await updateDoc(userDocRef, {
+                        name: name,
+                        phone: phone || null,
+                        updatedAt: serverTimestamp()
+                    });
+                    
+                    // Update UI
+                    displayName.textContent = name;
+                    userName.textContent = name || user.email;
+                    
+                    if (phone) {
+                        displayPhone.textContent = phone;
+                        userPhone.textContent = phone;
+                        userPhone.classList.remove('empty-value');
+                    } else {
+                        displayPhone.textContent = 'Not provided';
+                        userPhone.textContent = 'No phone number added';
+                        userPhone.classList.add('empty-value');
+                    }
+                    
+                    // Hide form
+                    personalInfoForm.style.display = 'none';
+                    
+                    // Update profile completion
+                    const userDoc = await getDoc(userDocRef);
+                    if (userDoc.exists()) {
+                        const hasListings = await showOwnerCars(user.uid);
+                        const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
+                        updateProfileCompletion(completionPercentage);
+                    }
+                    
+                    showNotification('Profile updated successfully!');
+                    
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    showNotification('Failed to update profile. Please try again.', false);
+                } finally {
+                    savePersonalInfo.disabled = false;
+                    savePersonalInfo.textContent = 'Save Changes';
+                }
+            });
+
+            // Logout button
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                } catch (error) {
+                    console.error("Error signing out:", error);
+                    showNotification('Error signing out. Please try again.', false);
+                }
+            });
+
+            // Profile photo upload
+            avatarEdit.addEventListener('click', () => {
+                profilePhotoInput.click();
+            });
+
+            profilePhotoInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Please select a valid image file.', false);
+                    return;
+                }
+                
+                // Validate file size (max 5MB for initial file)
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Image file is too large. Please select an image under 5MB.', false);
+                    return;
+                }
+                
+                try {
+                    const user = auth.currentUser;
+                    if (!user) throw new Error('User not logged in');
+                    
+                    // Show loading state immediately
+                    avatarEdit.innerHTML = '<div class="loading"></div>';
+                    
+                    // Create a preview URL for instant feedback
+                    const previewUrl = URL.createObjectURL(file);
+                    profileAvatar.src = previewUrl;
+                    
+                    // Compress image and convert to Base64
+                    const base64Image = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                const canvas = document.createElement('canvas');
+                                const ctx = canvas.getContext('2d');
+                                
+                                // Set canvas dimensions
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                
+                                // Draw image on canvas
+                                ctx.drawImage(img, 0, 0);
+                                
+                                // Convert to base64 with quality 0.7
+                                const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                                resolve(base64);
+                            };
+                            img.src = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    
+                    // Update profile picture in Firestore
+                    const userDocRef = doc(db, "users", user.uid);
+                    await updateDoc(userDocRef, {
+                        profilePicBase64: base64Image,
+                        updatedAt: serverTimestamp()
+                    });
+                    
+                    // Update UI with compressed image
+                    profileAvatar.src = base64Image;
+                    avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
+                    
+                    showNotification('Profile picture updated successfully!');
+                    
+                    // Clean up preview URL
+                    URL.revokeObjectURL(previewUrl);
+                    
+                    // Recalculate profile completion
+                    const userDoc = await getDoc(userDocRef);
+                    if (userDoc.exists()) {
+                        const hasListings = await showOwnerCars(user.uid);
+                        const completionPercentage = calculateProfileCompletion(userDoc.data(), hasListings);
+                        updateProfileCompletion(completionPercentage);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error uploading profile picture:', error);
+                    avatarEdit.innerHTML = '<i class="fas fa-camera"></i>';
+                    showNotification('Failed to update profile picture. Please try again.', false);
+                    
+                    // Reset to default image on error
+                    profileAvatar.src = "images/default-avatar.png";
+                }
+            });
+
+            // Get device location using browser's Geolocation API and Geoapify for reverse geocoding
+            async function getDeviceLocation() {
+                return new Promise((resolve, reject) => {
+                    if (!navigator.geolocation) {
+                        reject(new Error('Geolocation is not supported by your browser'));
+                        return;
+                    }
+
+                    locationStatus.textContent = "Detecting your location...";
+                    updateLocation.disabled = true;
+                    updateLocation.querySelector('#locationBtnText').textContent = "Detecting...";
+
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            try {
+                                const { latitude, longitude } = position.coords;
+                                
+                                // Use Geoapify Reverse Geocoding API
+                                const response = await fetch(
+                                    `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&apiKey=${GEOAPIFY_API_KEY}`,
+                                    { method: 'GET' }
+                                );
+                                
+                                if (!response.ok) {
+                                    throw new Error('Failed to fetch location data');
+                                }
+                                
+                                const data = await response.json();
+                                
+                                // Extract the most relevant address information
+                                let locationName = "Unknown location";
+                                if (data.features && data.features.length > 0) {
+                                    const properties = data.features[0].properties;
+                                    locationName = [
+                                        properties.address_line1,
+                                        properties.address_line2,
+                                        properties.city,
+                                        properties.country
+                                    ].filter(Boolean).join(', ');
+                                }
+                                
+                                resolve({
+                                    coordinates: { latitude, longitude },
+                                    address: locationName
+                                });
+                            } catch (error) {
+                                console.error("Error getting location:", error);
+                                // Fallback to just coordinates if API fails
+                                resolve({
+                                    coordinates: { latitude, longitude },
+                                    address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+                                });
+                            } finally {
+                                updateLocation.disabled = false;
+                                updateLocation.querySelector('#locationBtnText').textContent = "Update My Location";
+                            }
+                        },
+                        (error) => {
+                            console.error("Error getting position:", error);
+                            locationStatus.textContent = "Location access denied. Please enable location services.";
+                            updateLocation.disabled = false;
+                            updateLocation.querySelector('#locationBtnText').textContent = "Update My Location";
+                            reject(error);
+                        },
+                        { 
+                            enableHighAccuracy: true,
+                            timeout: 20000,
+                            maximumAge: 0
+                        }
+                    );
+                });
+            }
+
+            // Check auth state and load user data
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    try {
+                        // Get user data from Firestore
+                        const userDocRef = doc(db, "users", user.uid);
+                        const userDoc = await getDoc(userDocRef);
+                        
+                        let userData;
+                        
+                        if (userDoc.exists()) {
+                            userData = userDoc.data();
+                        } else {
+                            // Create user document if it doesn't exist
+                            userData = {
+                                userId: user.uid,
+                                email: user.email,
+                                name: user.displayName || '',
+                                phone: '',
+                                profilePicBase64: '',
+                                location: '',
+                                coordinates: null,
+                                role: 'renter', // Default to renter until approved as owner
+                                ownerApproved: false,
+                                createdAt: serverTimestamp(),
+                                updatedAt: serverTimestamp()
+                            };
+                            await setDoc(userDocRef, userData);
+                            showNotification('Profile created successfully!');
+                        }
+                        
+                        // Check if user is an approved owner
+                        if (userData.role !== 'owner') {
+                            // Redirect to user page if not an approved owner
+                            window.location.href = "user.html";
+                            return;
+                        }
+                        
+                        // Display user info
+                        userName.textContent = userData.name || user.email;
+                        userEmail.textContent = user.email;
+                        displayName.textContent = userData.name || 'Not provided';
+                        displayEmail.textContent = user.email;
+                        
+                        if (userData.phone) {
+                            userPhone.textContent = userData.phone;
+                            displayPhone.textContent = userData.phone;
+                            userPhone.classList.remove('empty-value');
+                        } else {
+                            userPhone.textContent = 'No phone number added';
+                            displayPhone.textContent = 'Not provided';
+                            userPhone.classList.add('empty-value');
+                        }
+                        
+                        if (userData.location) {
+                            displayLocation.textContent = userData.location;
+                            displayLocation.classList.remove('empty-value');
+                        } else {
+                            displayLocation.textContent = 'Location not set';
+                            displayLocation.classList.add('empty-value');
+                            // Try to fetch location automatically on first load if not set
+                            try {
+                                const locationData = await getDeviceLocation();
+                                await updateDoc(userDocRef, {
+                                    location: locationData.address,
+                                    coordinates: locationData.coordinates,
+                                    updatedAt: serverTimestamp()
+                                });
+                                displayLocation.textContent = locationData.address;
+                                displayLocation.classList.remove('empty-value');
+                            } catch (error) {
+                                console.error('Error fetching initial location:', error);
+                            }
+                        }
+                        
+                        // Update profile picture - use Base64 from Firestore
+                        if (userData.profilePicBase64) {
+                            profileAvatar.src = userData.profilePicBase64;
+                        } else {
+                            // Default avatar if no profile picture
+                            profileAvatar.src = "images/default-avatar.png";
+                        }
+                        
+                        // Update owner status
+                        ownerApprovalStatus.textContent = userData.ownerApproved ? 'Approved' : 'Pending Approval';
+                        ownerApprovalStatus.style.color = userData.ownerApproved ? 'var(--primary-green)' : 'var(--accent-yellow)';
+                        
+                        // Load owner's cars and calculate profile completion
+                        const hasListings = await showOwnerCars(user.uid);
+                        const completionPercentage = calculateProfileCompletion(userData, hasListings);
+                        updateProfileCompletion(completionPercentage);
+                        
+                    } catch (error) {
+                        console.error("Error getting user data:", error);
+                        showNotification('Error loading profile data. Please try again.', false);
+                    }
+                } else {
+                    // User is not logged in, redirect to home page
+                    window.location.href = "index.html";
+                }
+            });
+        });
+    </script>
 </body>
 </html>
