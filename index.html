@@ -2363,22 +2363,38 @@ document.getElementById('loginEmailForm')?.addEventListener('submit', async func
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
   
-  // Check for admin login first
-  if (email === "admin@geo.com" && password === "admin@geo.com") {
-    window.location.href = "admin.html";
-    return;
-  }
-  
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    // First try normal authentication
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    
+    // Check if this is an admin user in Firestore
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    
+    if (userDoc.exists() && userDoc.data().role === "admin") {
+      // Redirect to admin panel if user has admin role
+      showNotification('Admin login successful!');
+      closeModal('loginEmailModal');
+      window.location.href = "admin.html";
+      return;
+    }
+    
+    // Regular user login
     showNotification('Logged in successfully!');
     closeModal('loginEmailModal');
     window.location.search = '?from_auth=true';
     updateAuthUI(user);
+    
   } catch (error) {
     console.error('Error logging in:', error);
-    let errorMessage = 'Login failed. Please try again.';
     
+    // Special case: if using the admin credentials but auth fails
+    if (email === "admin@geo.com" && password === "admin@geo.com") {
+      showNotification('Admin credentials incorrect or admin account not properly setup', false);
+      return;
+    }
+    
+    let errorMessage = 'Login failed. Please try again.';
     if (error.code === 'auth/user-not-found') {
       errorMessage = 'No account found with this email.';
     } else if (error.code === 'auth/wrong-password') {
@@ -2390,7 +2406,6 @@ document.getElementById('loginEmailForm')?.addEventListener('submit', async func
     showNotification(errorMessage, false);
   }
 });
-
 // Connect Google sign-in buttons
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.auth-provider-btn.google').forEach(btn => {
