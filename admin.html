@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - GeoCarRental</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #2962FF;
+            --primary-green: #00C853;
+            --accent-yellow: #FFD600;
+            --accent-orange: #FFAB40;
+            --text-dark: #212121;
+            --text-light: #757575;
+            --bg-white: #FFFFFF;
+            --bg-light: #f5f7fa;
+            --bg-dark: #121212;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background-color: var(--bg-light);
+        }
+
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--bg-light);
+        }
+
+        .auth-card {
+            background-color: var(--bg-white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .auth-logo {
+            height: 80px;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .auth-message {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Rest of your existing CSS styles... */
+        /* [Previous CSS styles remain exactly the same] */
+    </style>
+</head>
+<body>
+    <!-- Auth Check Container (shown while verifying admin status) -->
+    <div id="authCheckContainer" class="auth-container">
+        <div class="auth-card">
+            <img src="images/logoblack1.png" alt="GeoCarRental Logo" class="auth-logo">
+            <div class="auth-title">Verifying Admin Access</div>
+            <div class="auth-message">Please wait while we verify your admin privileges...</div>
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary-blue);"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Admin Dashboard (hidden until auth verified) -->
+    <div id="adminDashboard" style="display: none;">
+        <!-- [Previous HTML structure remains exactly the same] -->
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signOut,
+            onAuthStateChanged,
+            signInWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection,
+            query,
+            where,
+            getDocs,
+            doc,
+            getDoc,
+            updateDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMU2y175sXjHkxAv6SF88-E9FCjaR2kJc",
+            authDomain: "geocarrental-9a4de.firebaseapp.com",
+            projectId: "geocarrental-9a4de",
+            storageBucket: "geocarrental-9a4de.appspot.com",
+            messagingSenderId: "951760186950",
+            appId: "1:951760186950:web:7e8cc25aacdd251f152447",
+            measurementId: "G-LJEF344295"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DOM Elements
+        const authCheckContainer = document.getElementById('authCheckContainer');
+        const adminDashboard = document.getElementById('adminDashboard');
+
+        // Check if user is admin@geo.com
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                if (user.email === 'admin@geo.com') {
+                    // User is the admin, show dashboard
+                    authCheckContainer.style.display = 'none';
+                    adminDashboard.style.display = 'block';
+                    
+                    // Initialize admin dashboard
+                    initializeAdminDashboard();
+                } else {
+                    // User is not admin, redirect to home
+                    await signOut(auth);
+                    window.location.href = "index.html";
+                }
+            } else {
+                // No user logged in, redirect to login
+                window.location.href = "index.html";
+            }
+        });
+
+        async function initializeAdminDashboard() {
+            try {
+                // Load all stats
+                await loadStats();
+                
+                // Load pending approvals
+                await loadPendingApprovals();
+                
+                // Load recent users
+                await loadRecentUsers();
+                
+                // Initialize charts
+                initializeCharts();
+                
+                // Set up event listeners
+                setupEventListeners();
+                
+            } catch (error) {
+                console.error("Error initializing admin dashboard:", error);
+                showNotification('Failed to load admin data. Please refresh.', false);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                // Get total users count
+                const usersQuery = query(collection(db, "users"));
+                const usersSnapshot = await getDocs(usersQuery);
+                document.querySelectorAll('.stat-value')[0].textContent = usersSnapshot.size;
+                
+                // Get total cars count (approved only)
+                const carsQuery = query(collection(db, "cars"), where("approved", "==", true));
+                const carsSnapshot = await getDocs(carsQuery);
+                document.querySelectorAll('.stat-value')[1].textContent = carsSnapshot.size;
+                
+                // Get active bookings count (logic depends on your booking structure)
+                const bookingsQuery = query(collection(db, "bookings"), where("status", "==", "active"));
+                const bookingsSnapshot = await getDocs(bookingsQuery);
+                document.querySelectorAll('.stat-value')[2].textContent = bookingsSnapshot.size;
+                
+                // Get pending approvals count
+                const pendingLicensesQuery = query(collection(db, "users"), 
+                    where("licenseSubmitted", "==", true), 
+                    where("licenseVerified", "==", false));
+                const pendingLicensesSnapshot = await getDocs(pendingLicensesQuery);
+                
+                const pendingCarsQuery = query(collection(db, "cars"), where("approved", "==", false));
+                const pendingCarsSnapshot = await getDocs(pendingCarsQuery);
+                
+                const totalPending = pendingLicensesSnapshot.size + pendingCarsSnapshot.size;
+                document.querySelectorAll('.stat-value')[3].textContent = totalPending;
+                
+            } catch (error) {
+                console.error("Error loading stats:", error);
+                throw error;
+            }
+        }
+
+        async function loadPendingApprovals() {
+            try {
+                const approvalsTableBody = document.querySelector('.table-section tbody');
+                approvalsTableBody.innerHTML = ''; // Clear existing rows
+                
+                // Get pending licenses
+                const pendingLicensesQuery = query(collection(db, "users"), 
+                    where("licenseSubmitted", "==", true), 
+                    where("licenseVerified", "==", false));
+                const pendingLicensesSnapshot = await getDocs(pendingLicensesQuery);
+                
+                // Get pending cars
+                const pendingCarsQuery = query(collection(db, "cars"), where("approved", "==", false));
+                const pendingCarsSnapshot = await getDocs(pendingCarsQuery);
+                
+                // Process license approvals
+                pendingLicensesSnapshot.forEach(async (doc) => {
+                    const userData = doc.data();
+                    const row = createApprovalRow({
+                        id: doc.id,
+                        type: 'license',
+                        user: userData,
+                        timestamp: userData.licenseSubmittedAt?.toDate() || new Date()
+                    });
+                    approvalsTableBody.appendChild(row);
+                });
+                
+                // Process car approvals
+                pendingCarsSnapshot.forEach(async (doc) => {
+                    const carData = doc.data();
+                    // Get owner info
+                    const ownerDoc = await getDoc(doc(db, "users", carData.ownerId));
+                    const ownerData = ownerDoc.data();
+                    
+                    const row = createApprovalRow({
+                        id: doc.id,
+                        type: 'car',
+                        user: ownerData,
+                        car: carData,
+                        timestamp: carData.createdAt?.toDate() || new Date()
+                    });
+                    approvalsTableBody.appendChild(row);
+                });
+                
+                // Handle empty state
+                if (pendingLicensesSnapshot.size === 0 && pendingCarsSnapshot.size === 0) {
+                    approvalsTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">
+                                <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--primary-green); margin-bottom: 1rem;"></i>
+                                <p>No pending approvals at this time</p>
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error("Error loading pending approvals:", error);
+                throw error;
+            }
+        }
+
+        function createApprovalRow(data) {
+            const row = document.createElement('tr');
+            const { id, type, user, car, timestamp } = data;
+            
+            // Format timestamp
+            const formattedDate = timestamp.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            // Create row HTML based on type
+            if (type === 'license') {
+                row.innerHTML = `
+                    <td>
+                        <div class="user-cell">
+                            <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" alt="User" class="table-avatar">
+                            <div class="user-info">
+                                <div class="user-name">${user.name || 'No name'}</div>
+                                <div class="user-email">${user.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Driver License</td>
+                    <td>${formattedDate}</td>
+                    <td><span class="status-badge pending">Pending</span></td>
+                    <td>
+                        <div class="action-cell">
+                            <button class="table-btn primary" onclick="viewLicenseApproval('${id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="table-btn success" onclick="approveLicense('${id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="table-btn danger" onclick="rejectLicense('${id}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+            } else if (type === 'car') {
+                row.innerHTML = `
+                    <td>
+                        <div class="user-cell">
+                            <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" alt="User" class="table-avatar">
+                            <div class="user-info">
+                                <div class="user-name">${user.name || 'No name'}</div>
+                                <div class="user-email">${user.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Car Listing</td>
+                    <td>${formattedDate}</td>
+                    <td><span class="status-badge pending">Pending</span></td>
+                    <td>
+                        <div class="action-cell">
+                            <button class="table-btn primary" onclick="viewCarApproval('${id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="table-btn success" onclick="approveCar('${id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="table-btn danger" onclick="rejectCar('${id}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+            }
+            
+            return row;
+        }
+
+        async function loadRecentUsers() {
+            try {
+                const usersTableBody = document.querySelectorAll('.table-section tbody')[1];
+                usersTableBody.innerHTML = ''; // Clear existing rows
+                
+                // Get recent users (last 7 days)
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                
+                const usersQuery = query(
+                    collection(db, "users"),
+                    where("createdAt", ">=", oneWeekAgo),
+                    where("email", "!=", "admin@geo.com") // Exclude admin
+                );
+                
+                const usersSnapshot = await getDocs(usersQuery);
+                
+                // Process users
+                usersSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    const row = createUserRow(doc.id, userData);
+                    usersTableBody.appendChild(row);
+                });
+                
+                // Handle empty state
+                if (usersSnapshot.size === 0) {
+                    usersTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">
+                                <i class="fas fa-user-plus" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 1rem;"></i>
+                                <p>No new users in the last 7 days</p>
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error("Error loading recent users:", error);
+                throw error;
+            }
+        }
+
+        function createUserRow(userId, userData) {
+            const row = document.createElement('tr');
+            const joinedDate = userData.createdAt?.toDate() || new Date();
+            
+            const formattedDate = joinedDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            const statusClass = userData.isActive !== false ? 'active' : 'inactive';
+            const statusText = userData.isActive !== false ? 'Active' : 'Inactive';
+            
+            row.innerHTML = `
+                <td>
+                    <div class="user-cell">
+                        <img src="${userData.profilePicBase64 || 'images/default-avatar.png'}" alt="User" class="table-avatar">
+                        <div class="user-info">
+                            <div class="user-name">${userData.name || 'No name'}</div>
+                            <div class="user-email">${userData.email}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${userData.role || 'renter'}</td>
+                <td>${formattedDate}</td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>
+                    <div class="action-cell">
+                        <button class="table-btn primary" onclick="viewUserDetails('${userId}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="table-btn" onclick="editUser('${userId}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="table-btn danger" onclick="deleteUser('${userId}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            return row;
+        }
+
+        function initializeCharts() {
+            // Bookings Chart
+            const bookingsCtx = document.getElementById('bookingsChart').getContext('2d');
+            const bookingsChart = new Chart(bookingsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'Bookings',
+                        data: [65, 59, 80, 81, 56, 55, 40],
+                        backgroundColor: 'rgba(41, 98, 255, 0.1)',
+                        borderColor: 'rgba(41, 98, 255, 1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Users Chart
+            const usersCtx = document.getElementById('usersChart').getContext('2d');
+            const usersChart = new Chart(usersCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Renters', 'Owners', 'Admins'],
+                    datasets: [{
+                        data: [300, 50, 1], // Only 1 admin (admin@geo.com)
+                        backgroundColor: [
+                            'rgba(41, 98, 255, 0.8)',
+                            'rgba(0, 200, 83, 0.8)',
+                            'rgba(255, 214, 0, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // Logout functionality
+            document.querySelector('.user-profile').addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    window.location.href = "index.html";
+                } catch (error) {
+                    console.error("Error signing out:", error);
+                    showNotification('Failed to sign out. Please try again.', false);
+                }
+            });
+            
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', async () => {
+                try {
+                    await initializeAdminDashboard();
+                    showNotification('Dashboard refreshed successfully!');
+                } catch (error) {
+                    console.error("Error refreshing dashboard:", error);
+                    showNotification('Failed to refresh data. Please try again.', false);
+                }
+            });
+        }
+
+        // Approval functions
+        async function approveLicense(userId) {
+            try {
+                await updateDoc(doc(db, "users", userId), {
+                    licenseVerified: true,
+                    licenseSubmitted: false,
+                    updatedAt: serverTimestamp()
+                });
+                
+                showNotification('License approved successfully!');
+                await loadPendingApprovals();
+                await loadStats();
+            } catch (error) {
+                console.error("Error approving license:", error);
+                showNotification('Failed to approve license. Please try again.', false);
+            }
+        }
+
+        async function rejectLicense(userId) {
+            try {
+                await updateDoc(doc(db, "users", userId), {
+                    licenseVerified: false,
+                    licenseSubmitted: false,
+                    updatedAt: serverTimestamp()
+                });
+                
+                showNotification('License rejected successfully!');
+                await loadPendingApprovals();
+                await loadStats();
+            } catch (error) {
+                console.error("Error rejecting license:", error);
+                showNotification('Failed to reject license. Please try again.', false);
+            }
+        }
+
+        async function approveCar(carId) {
+            try {
+                await updateDoc(doc(db, "cars", carId), {
+                    approved: true,
+                    updatedAt: serverTimestamp()
+                });
+                
+                showNotification('Car listing approved successfully!');
+                await loadPendingApprovals();
+                await loadStats();
+            } catch (error) {
+                console.error("Error approving car:", error);
+                showNotification('Failed to approve car. Please try again.', false);
+            }
+        }
+
+        async function rejectCar(carId) {
+            try {
+                await updateDoc(doc(db, "cars", carId), {
+                    approved: false,
+                    isAvailable: false,
+                    updatedAt: serverTimestamp()
+                });
+                
+                showNotification('Car listing rejected successfully!');
+                await loadPendingApprovals();
+                await loadStats();
+            } catch (error) {
+                console.error("Error rejecting car:", error);
+                showNotification('Failed to reject car. Please try again.', false);
+            }
+        }
+
+        // View details functions
+        async function viewLicenseApproval(userId) {
+            try {
+                const userDoc = await getDoc(doc(db, "users", userId));
+                const userData = userDoc.data();
+                
+                // Populate modal with user data
+                document.getElementById('modalTitle').textContent = 'License Approval - ' + (userData.name || 'User');
+                document.getElementById('userFullName').textContent = userData.name || 'No name';
+                document.getElementById('userEmail').textContent = userData.email;
+                document.getElementById('userPhone').textContent = userData.phone || 'Not provided';
+                document.getElementById('userRole').textContent = userData.role || 'renter';
+                document.getElementById('userJoined').textContent = userData.createdAt?.toDate().toLocaleDateString() || 'Unknown';
+                document.getElementById('userLocation').textContent = userData.location || 'Not specified';
+                document.getElementById('licenseStatus').textContent = 'Pending Approval';
+                
+                // Show license images if available
+                const licenseImagesContainer = document.querySelector('.license-images');
+                licenseImagesContainer.innerHTML = '';
+                
+                if (userData.licenseFrontBase64) {
+                    const frontImg = document.createElement('img');
+                    frontImg.src = userData.licenseFrontBase64;
+                    frontImg.alt = 'License Front';
+                    frontImg.className = 'license-image';
+                    frontImg.onclick = () => openImageModal(userData.licenseFrontBase64);
+                    licenseImagesContainer.appendChild(frontImg);
+                }
+                
+                if (userData.licenseBackBase64) {
+                    const backImg = document.createElement('img');
+                    backImg.src = userData.licenseBackBase64;
+                    backImg.alt = 'License Back';
+                    backImg.className = 'license-image';
+                    backImg.onclick = () => openImageModal(userData.licenseBackBase64);
+                    licenseImagesContainer.appendChild(backImg);
+                }
+                
+                // Show modal
+                document.getElementById('userModal').style.display = 'flex';
+                
+            } catch (error) {
+                console.error("Error viewing license approval:", error);
+                showNotification('Failed to load license details. Please try again.', false);
+            }
+        }
+
+        // Utility functions
+        function showNotification(message, isSuccess = true) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button class="close-notification">&times;</button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            const timer = setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+            
+            notification.querySelector('.close-notification').addEventListener('click', () => {
+                clearTimeout(timer);
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            });
+        }
+
+        function openImageModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = imageSrc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Expose functions to global scope for HTML onclick handlers
+        window.viewLicenseApproval = viewLicenseApproval;
+        window.approveLicense = approveLicense;
+        window.rejectLicense = rejectLicense;
+        window.viewCarApproval = viewCarApproval;
+        window.approveCar = approveCar;
+        window.rejectCar = rejectCar;
+        window.viewUserDetails = viewUserDetails;
+        window.editUser = editUser;
+        window.deleteUser = deleteUser;
+        window.openImageModal = openImageModal;
+        window.closeModal = closeModal;
+
+    </script>
+</body>
+</html>

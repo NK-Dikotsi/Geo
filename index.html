@@ -1768,6 +1768,23 @@ function closeAllModals() {
   });
 }
 
+function adminLogin() {
+  const email = "admin@geo.com";
+  const password = "admin@geo.com";
+  
+  // Get the login form values
+  const loginEmail = document.getElementById('loginEmail').value;
+  const loginPassword = document.getElementById('loginPassword').value;
+  
+  // Check if it's the admin credentials
+  if (loginEmail === email && loginPassword === password) {
+    // Redirect to admin.html
+    window.location.href = "admin.html";
+    return true; // Prevent form submission
+  }
+  return false; // Continue with normal login
+}
+
 // Mobile menu and basic UI interactions
 document.addEventListener('DOMContentLoaded', function() {
   // Mobile menu toggle
@@ -2239,6 +2256,11 @@ async function updateAuthUI(user) {
                         // Default to user page
                         window.location.href = "user.html";
                     }
+
+                    if (userData.role === 'owner') {
+                        // Directly redirect to carowner.html without checking approval
+                        window.location.href = "carowner.html";
+                    }
                 }
             }
         } catch (error) {
@@ -2341,11 +2363,17 @@ document.getElementById('loginEmailForm')?.addEventListener('submit', async func
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
   
+  // Check for admin login first
+  if (email === "admin@geo.com" && password === "admin@geo.com") {
+    window.location.href = "admin.html";
+    return;
+  }
+  
   try {
     await signInWithEmailAndPassword(auth, email, password);
     showNotification('Logged in successfully!');
     closeModal('loginEmailModal');
-    window.location.search = '?from_auth=true';  // Add this line
+    window.location.search = '?from_auth=true';
     updateAuthUI(user);
   } catch (error) {
     console.error('Error logging in:', error);
