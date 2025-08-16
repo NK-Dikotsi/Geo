@@ -1193,6 +1193,7 @@
                 });
             } catch (error) {
                 console.error("Error loading cars:", error);
+                showNotification("Failed to load cars", false);
                 carsTable.innerHTML = `
                     <tr>
                         <td colspan="5" style="text-align: center; padding: 2rem;">
@@ -1278,6 +1279,7 @@
                 });
             } catch (error) {
                 console.error("Error loading bookings:", error);
+                showNotification("Failed to load bookings", false);
                 bookingsTable.innerHTML = `
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 2rem;">
@@ -1352,7 +1354,7 @@
                 });
                 
                 // Process car approvals
-                pendingCars.forEach(async doc => {
+                for (const doc of pendingCars.docs) {
                     const car = doc.data();
                     const ownerDoc = await getDoc(doc(db, "users", car.ownerId));
                     const owner = ownerDoc.data();
@@ -1386,9 +1388,10 @@
                     `;
                     
                     approvalsTable.appendChild(row);
-                });
+                }
             } catch (error) {
                 console.error("Error loading approvals:", error);
+                showNotification("Failed to load approvals", false);
                 approvalsTable.innerHTML = `
                     <tr>
                         <td colspan="5" style="text-align: center; padding: 2rem;">
