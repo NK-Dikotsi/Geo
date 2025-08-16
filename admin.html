@@ -4,408 +4,724 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Portal - GeoCarRental</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary-blue: #2962FF;
-            --primary-green: #00C853;
-            --accent-yellow: #FFD600;
-            --accent-orange: #FFAB40;
-            --text-dark: #212121;
-            --text-light: #757575;
-            --bg-white: #FFFFFF;
-            --bg-light: #f5f7fa;
-            --border-radius: 8px;
-            --transition: all 0.3s ease;
+            /* Color Scheme */
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #ebefff;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f72585;
+            --info-color: #560bad;
+            
+            /* Neutral Colors */
+            --dark-color: #212529;
+            --gray-dark: #495057;
+            --gray-medium: #adb5bd;
+            --gray-light: #e9ecef;
+            --light-color: #f8f9fa;
+            --white: #ffffff;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            /* Border Radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-full: 9999px;
+            
+            /* Spacing */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            /* Typography */
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+            --text-4xl: 2.25rem;
+            
+            /* Transitions */
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.45s ease;
         }
-    
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-    
+        
         body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-dark);
-            line-height: 1.6;
-            background-color: var(--bg-light);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: var(--dark-color);
+            background-color: var(--light-color);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-
+        
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            line-height: 1.25;
+            margin-bottom: var(--space-md);
+        }
+        
+        h1 { font-size: var(--text-3xl); }
+        h2 { font-size: var(--text-2xl); }
+        h3 { font-size: var(--text-xl); }
+        h4 { font-size: var(--text-lg); }
+        
+        p {
+            margin-bottom: var(--space-md);
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* Layout */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--space-lg);
+        }
+        
+        /* Navigation */
         .navbar {
-            background-color: var(--bg-white);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             position: sticky;
             top: 0;
             z-index: 1000;
-            height: 80px;
-        }
-
-        .navbar-logo-container {
-            height: 80px;
             display: flex;
             align-items: center;
-            margin-right: auto;
+            justify-content: space-between;
+            padding: var(--space-md) var(--space-lg);
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            height: 72px;
         }
-
+        
+        .navbar-logo-container {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        
         .navbar-logo {
-            height: 160px;
+            height: 48px;
             width: auto;
-            max-height: 100%;
             object-fit: contain;
         }
-
+        
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: var(--space-sm);
         }
-
+        
         .nav-link {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.6rem 1.2rem;
-            border-radius: 50px;
-            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: var(--text-sm);
+            color: var(--gray-dark);
+            transition: var(--transition-fast);
         }
-
-        .nav-link.active {
-            background-color: rgba(41, 98, 255, 0.1);
-            color: var(--primary-blue);
-        }
-
+        
         .nav-link:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: var(--gray-light);
+            color: var(--dark-color);
         }
-
+        
+        .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .nav-link i {
+            font-size: var(--text-base);
+        }
+        
         .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: var(--text-sm);
+            color: var(--gray-dark);
             background: none;
             border: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.6rem 1.2rem;
-            border-radius: 50px;
             cursor: pointer;
-            transition: var(--transition);
+            transition: var(--transition-fast);
         }
-
+        
         .logout-btn:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: var(--gray-light);
+            color: var(--dark-color);
         }
-
-        /* Mobile Menu Toggle */
+        
+        .logout-btn i {
+            font-size: var(--text-base);
+        }
+        
+        /* Mobile Menu */
         .menu-toggle {
             display: none;
             background: none;
             border: none;
-            font-size: 1.5rem;
+            color: var(--dark-color);
+            font-size: var(--text-xl);
             cursor: pointer;
-            color: var(--text-dark);
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
         }
-
-        /* Admin Container */
+        
+        .menu-toggle:hover {
+            background-color: var(--gray-light);
+        }
+        
+        /* Main Content */
         .admin-container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 5%;
+            padding: var(--space-xl) 0;
         }
-
+        
+        /* Cards */
+        .card {
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: var(--transition-normal);
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .card-header {
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .card-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .card-body {
+            padding: var(--space-lg);
+        }
+        
+        .card-footer {
+            padding: var(--space-md) var(--space-lg);
+            border-top: 1px solid var(--gray-light);
+            background-color: var(--light-color);
+        }
+        
         /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
         }
-
+        
         .stat-card {
-            background: var(--bg-white);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-normal);
         }
-
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
         .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            margin-bottom: 0.5rem;
+            font-size: var(--text-sm);
+            color: var(--gray-medium);
+            margin-bottom: var(--space-xs);
+            font-weight: 500;
         }
-
+        
         .stat-value {
-            font-size: 2rem;
+            font-size: var(--text-3xl);
             font-weight: 700;
-            color: var(--primary-blue);
+            color: var(--primary-color);
+            line-height: 1.2;
         }
-
-        /* Admin Sections */
-        .admin-section {
-            background: var(--bg-white);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-
-        .section-header {
+        
+        .stat-icon {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-size: var(--text-xl);
+            margin-bottom: var(--space-md);
         }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
+        
         /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
         .data-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: var(--text-sm);
         }
-
+        
         .data-table th {
             text-align: left;
-            padding: 1rem;
+            padding: var(--space-md) var(--space-lg);
             font-weight: 600;
-            color: var(--text-light);
-            border-bottom: 1px solid #eee;
+            color: var(--gray-dark);
+            background-color: var(--light-color);
+            text-transform: uppercase;
+            font-size: var(--text-xs);
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--gray-light);
         }
-
+        
         .data-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--gray-light);
+            vertical-align: middle;
         }
-
+        
         .data-table tr:last-child td {
             border-bottom: none;
         }
-
+        
         .data-table tr:hover td {
-            background-color: #f9f9f9;
+            background-color: rgba(67, 97, 238, 0.03);
         }
-
+        
+        /* User Cell */
         .user-cell {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: var(--space-md);
         }
-
+        
         .user-avatar {
             width: 40px;
             height: 40px;
-            border-radius: 50%;
+            border-radius: var(--radius-full);
             object-fit: cover;
+            background-color: var(--gray-light);
         }
-
+        
         .user-info {
             display: flex;
             flex-direction: column;
         }
-
+        
         .user-name {
             font-weight: 500;
+            color: var(--dark-color);
         }
-
+        
         .user-email {
-            font-size: 0.8rem;
-            color: var(--text-light);
+            font-size: var(--text-xs);
+            color: var(--gray-medium);
         }
-
-        .status-badge {
+        
+        /* Status Badges */
+        .badge {
             display: inline-block;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .badge-success {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success-color);
+        }
+        
+        .badge-warning {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .badge-danger {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .badge-info {
+            background-color: rgba(86, 11, 173, 0.1);
+            color: var(--info-color);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
             font-weight: 500;
-        }
-
-        .status-badge.pending {
-            background-color: #FFF3E0;
-            color: #E65100;
-        }
-
-        .status-badge.approved {
-            background-color: #E8F5E9;
-            color: #2E7D32;
-        }
-
-        .status-badge.rejected {
-            background-color: #FFEBEE;
-            color: #C62828;
-        }
-
-        .status-badge.active {
-            background-color: #E3F2FD;
-            color: #1565C0;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
+            font-size: var(--text-sm);
             cursor: pointer;
-            font-size: 1rem;
-            margin: 0 0.5rem;
-            transition: var(--transition);
+            transition: var(--transition-fast);
+            border: 1px solid transparent;
         }
-
-        .action-btn.view {
-            color: var(--primary-blue);
+        
+        .btn-sm {
+            padding: var(--space-xs) var(--space-sm);
+            font-size: var(--text-xs);
         }
-
-        .action-btn.approve {
-            color: var(--primary-green);
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
         }
-
-        .action-btn.reject {
-            color: #F44336;
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
         }
-
+        
+        .btn-outline {
+            background-color: transparent;
+            border-color: var(--gray-light);
+            color: var(--dark-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--gray-light);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: var(--white);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: var(--white);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: var(--white);
+        }
+        
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: var(--radius-full);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Action Buttons */
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            background-color: transparent;
+            border: none;
+            color: var(--gray-medium);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
         .action-btn:hover {
-            opacity: 0.8;
+            background-color: var(--gray-light);
+            color: var(--dark-color);
         }
-
+        
+        .action-btn.view {
+            color: var(--primary-color);
+        }
+        
+        .action-btn.view:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .action-btn.approve {
+            color: var(--success-color);
+        }
+        
+        .action-btn.approve:hover {
+            background-color: rgba(76, 201, 240, 0.1);
+        }
+        
+        .action-btn.reject {
+            color: var(--danger-color);
+        }
+        
+        .action-btn.reject:hover {
+            background-color: rgba(247, 37, 133, 0.1);
+        }
+        
         /* Empty State */
         .empty-state {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 3rem;
+            padding: var(--space-xl);
             text-align: center;
         }
-
+        
         .empty-icon {
-            font-size: 3rem;
-            color: var(--text-light);
-            margin-bottom: 1rem;
+            font-size: var(--text-3xl);
+            color: var(--gray-medium);
+            margin-bottom: var(--space-md);
         }
-
+        
         .empty-text {
-            color: var(--text-light);
-            margin-bottom: 1.5rem;
+            color: var(--gray-medium);
+            margin-bottom: var(--space-md);
         }
-
-        /* Modal */
+        
+        /* Modals */
         .modal {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: none;
             overflow-y: auto;
+            padding: var(--space-xl) 0;
         }
-
+        
         .modal-content {
-            background-color: var(--bg-white);
-            margin: 2rem auto;
-            border-radius: var(--border-radius);
+            background-color: var(--white);
+            margin: 0 auto;
+            border-radius: var(--radius-md);
             width: 90%;
             max-width: 800px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
         }
-
+        
         .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #eee;
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--gray-light);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
+        
         .modal-title {
-            font-size: 1.3rem;
+            font-size: var(--text-xl);
             font-weight: 600;
+            color: var(--dark-color);
         }
-
+        
         .close-modal {
             background: none;
             border: none;
-            font-size: 1.5rem;
+            font-size: var(--text-xl);
             cursor: pointer;
-            color: var(--text-light);
+            color: var(--gray-medium);
+            transition: var(--transition-fast);
         }
-
+        
+        .close-modal:hover {
+            color: var(--dark-color);
+        }
+        
         .modal-body {
-            padding: 1.5rem;
+            padding: var(--space-lg);
         }
-
-        /* Notification */
+        
+        .modal-footer {
+            padding: var(--space-md) var(--space-lg);
+            border-top: 1px solid var(--gray-light);
+            background-color: var(--light-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-md);
+        }
+        
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: var(--space-lg);
+        }
+        
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        /* Notifications */
         .notification {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 4px;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            bottom: var(--space-lg);
+            right: var(--space-lg);
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md);
+            color: var(--white);
+            box-shadow: var(--shadow-lg);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            z-index: 1000;
-            transition: all 0.3s ease;
+            z-index: 3000;
+            transition: var(--transition-normal);
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
         }
-
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
         .notification.success {
-            background-color: var(--primary-green);
+            background-color: var(--success-color);
         }
-
+        
         .notification.error {
-            background-color: #F44336;
+            background-color: var(--danger-color);
         }
-
+        
+        .notification.warning {
+            background-color: var(--warning-color);
+        }
+        
         .close-notification {
             background: none;
             border: none;
-            color: white;
-            margin-left: 15px;
+            color: inherit;
+            margin-left: var(--space-md);
             cursor: pointer;
+            font-size: var(--text-lg);
         }
-
+        
         /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+        
         @media (max-width: 768px) {
             .menu-toggle {
                 display: block;
             }
-
+            
             .nav-links {
                 position: fixed;
-                top: 80px;
+                top: 72px;
                 left: 0;
-                width: 100%;
-                background-color: var(--bg-white);
+                right: 0;
+                background-color: var(--white);
                 flex-direction: column;
-                align-items: flex-start;
-                padding: 1rem 5%;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                gap: 1rem;
-                transform: translateY(-150%);
-                transition: var(--transition);
+                padding: var(--space-md);
+                box-shadow: var(--shadow-md);
+                transform: translateY(-100%);
+                transition: var(--transition-normal);
                 z-index: 999;
             }
-
+            
             .nav-links.active {
                 transform: translateY(0);
             }
-
+            
             .nav-link, .logout-btn {
                 width: 100%;
-                text-align: left;
-                padding: 0.8rem 0;
+                justify-content: flex-start;
+            }
+            
+            .grid-cols-2 {
+                grid-template-columns: 1fr;
             }
         }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+        }
+        
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-muted {
+            color: var(--gray-medium);
+        }
+        
+        .mt-1 { margin-top: var(--space-xs); }
+        .mt-2 { margin-top: var(--space-sm); }
+        .mt-3 { margin-top: var(--space-md); }
+        .mt-4 { margin-top: var(--space-lg); }
+        .mt-5 { margin-top: var(--space-xl); }
+        
+        .mb-1 { margin-bottom: var(--space-xs); }
+        .mb-2 { margin-bottom: var(--space-sm); }
+        .mb-3 { margin-bottom: var(--space-md); }
+        .mb-4 { margin-bottom: var(--space-lg); }
+        .mb-5 { margin-bottom: var(--space-xl); }
+        
+        .p-1 { padding: var(--space-xs); }
+        .p-2 { padding: var(--space-sm); }
+        .p-3 { padding: var(--space-md); }
+        .p-4 { padding: var(--space-lg); }
+        .p-5 { padding: var(--space-xl); }
     </style>
 </head>
 <body>
@@ -444,147 +760,174 @@
     </nav>
 
     <!-- Admin Content -->
-    <main class="admin-container">
+    <main class="admin-container container">
         <!-- Dashboard Section -->
         <section id="dashboardSection">
-            <h1>Admin Dashboard</h1>
+            <h1 class="mb-4">Admin Dashboard</h1>
             
             <!-- Stats Grid -->
-            <div class="stats-grid">
+            <div class="stats-grid mb-5">
                 <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
                     <div class="stat-label">Total Users</div>
                     <div class="stat-value" id="totalUsers">0</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
                     <div class="stat-label">Total Cars</div>
                     <div class="stat-value" id="totalCars">0</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
                     <div class="stat-label">Active Bookings</div>
                     <div class="stat-value" id="activeBookings">0</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
                     <div class="stat-label">Pending Approvals</div>
                     <div class="stat-value" id="pendingApprovals">0</div>
                 </div>
             </div>
             
             <!-- Recent Activity -->
-            <div class="admin-section">
-                <div class="section-header">
-                    <h2 class="section-title">Recent Activity</h2>
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Activity</h2>
                 </div>
-                
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Action</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="recentActivityTable">
-                        <!-- Will be populated by JavaScript -->
-                    </tbody>
-                </table>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivityTable">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
         
         <!-- Users Section (Hidden by default) -->
         <section id="usersSection" style="display: none;">
-            <div class="admin-section">
-                <div class="section-header">
-                    <h2 class="section-title">All Users</h2>
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h2 class="card-title">All Users</h2>
                 </div>
-                
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Role</th>
-                            <th>Joined</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersTable">
-                        <!-- Will be populated by JavaScript -->
-                    </tbody>
-                </table>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
         
         <!-- Cars Section (Hidden by default) -->
         <section id="carsSection" style="display: none;">
-            <div class="admin-section">
-                <div class="section-header">
-                    <h2 class="section-title">All Cars</h2>
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h2 class="card-title">All Cars</h2>
                 </div>
-                
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Car</th>
-                            <th>Owner</th>
-                            <th>Price</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="carsTable">
-                        <!-- Will be populated by JavaScript -->
-                    </tbody>
-                </table>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Car</th>
+                                    <th>Owner</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="carsTable">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
         
         <!-- Bookings Section (Hidden by default) -->
         <section id="bookingsSection" style="display: none;">
-            <div class="admin-section">
-                <div class="section-header">
-                    <h2 class="section-title">All Bookings</h2>
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h2 class="card-title">All Bookings</h2>
                 </div>
-                
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Booking ID</th>
-                            <th>User</th>
-                            <th>Car</th>
-                            <th>Dates</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bookingsTable">
-                        <!-- Will be populated by JavaScript -->
-                    </tbody>
-                </table>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>User</th>
+                                    <th>Car</th>
+                                    <th>Dates</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTable">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
         
         <!-- Approvals Section (Hidden by default) -->
         <section id="approvalsSection" style="display: none;">
-            <div class="admin-section">
-                <div class="section-header">
-                    <h2 class="section-title">Pending Approvals</h2>
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h2 class="card-title">Pending Approvals</h2>
                 </div>
-                
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>User</th>
-                            <th>Submitted</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="approvalsTable">
-                        <!-- Will be populated by JavaScript -->
-                    </tbody>
-                </table>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>User</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="approvalsTable">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -597,7 +940,7 @@
                 <button class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="user-cell" style="margin-bottom: 1.5rem;">
+                <div class="user-cell mb-4">
                     <img id="licenseUserAvatar" src="" class="user-avatar">
                     <div class="user-info">
                         <span class="user-name" id="licenseUserName">Loading...</span>
@@ -605,18 +948,18 @@
                     </div>
                 </div>
                 
-                <div style="display: flex; gap: 2rem; margin-bottom: 2rem;">
-                    <div style="flex: 1;">
-                        <img id="licenseFrontImage" src="" alt="License Front" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--border-radius);">
-                        <p style="text-align: center; color: var(--text-light); margin-top: 0.5rem;">Front Side</p>
+                <div class="grid grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <img id="licenseFrontImage" src="" alt="License Front" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--radius-md);">
+                        <p class="text-center text-muted mt-2">Front Side</p>
                     </div>
-                    <div style="flex: 1;">
-                        <img id="licenseBackImage" src="" alt="License Back" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--border-radius);">
-                        <p style="text-align: center; color: var(--text-light); margin-top: 0.5rem;">Back Side</p>
+                    <div>
+                        <img id="licenseBackImage" src="" alt="License Back" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--radius-md);">
+                        <p class="text-center text-muted mt-2">Back Side</p>
                     </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <p class="stat-label">License Number</p>
                         <p class="stat-value" id="licenseNumber">-</p>
@@ -635,11 +978,11 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 1rem;">
-                <button class="logout-btn" id="rejectLicenseBtn" style="color: #F44336;">
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="rejectLicenseBtn">
                     <i class="fas fa-times"></i> Reject
                 </button>
-                <button class="logout-btn" id="approveLicenseBtn" style="background-color: var(--primary-green); color: white;">
+                <button class="btn btn-success" id="approveLicenseBtn">
                     <i class="fas fa-check"></i> Approve
                 </button>
             </div>
@@ -654,7 +997,7 @@
                 <button class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="user-cell" style="margin-bottom: 1.5rem;">
+                <div class="user-cell mb-4">
                     <img id="carOwnerAvatar" src="" class="user-avatar">
                     <div class="user-info">
                         <span class="user-name" id="carOwnerName">Loading...</span>
@@ -662,26 +1005,26 @@
                     </div>
                 </div>
                 
-                <div id="carImagesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div id="carImagesContainer" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                     <!-- Car images will be inserted here -->
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <h4>Car Details</h4>
-                        <div style="margin-top: 1rem;">
+                        <div class="mt-3">
                             <p class="stat-label">Make & Model</p>
                             <p class="stat-value" id="carMakeModel">-</p>
                         </div>
-                        <div style="margin-top: 1rem;">
+                        <div class="mt-3">
                             <p class="stat-label">Year</p>
                             <p class="stat-value" id="carYear">-</p>
                         </div>
-                        <div style="margin-top: 1rem;">
+                        <div class="mt-3">
                             <p class="stat-label">Color</p>
                             <p class="stat-value" id="carColor">-</p>
                         </div>
-                        <div style="margin-top: 1rem;">
+                        <div class="mt-3">
                             <p class="stat-label">License Plate</p>
                             <p class="stat-value" id="carLicensePlate">-</p>
                         </div>
@@ -689,35 +1032,38 @@
                     
                     <div>
                         <h4>Rental Information</h4>
-                        <div style="margin-top: 1rem;">
+                        <div class="mt-3">
                             <p class="stat-label">Price per Day</p>
                             <p class="stat-value" id="carPrice">-</p>
                         </div>
-                        <div style="margin-top: 1rem;">
+                        <div class="mt-3">
                             <p class="stat-label">Fuel Type</p>
                             <p class="stat-value" id="carFuelType">-</p>
                         </div>
-                        <div style="margin-top: 1rem;">
+                        <div class="mt-3">
                             <p class="stat-label">Fuel Efficiency</p>
                             <p class="stat-value" id="carFuelEfficiency">-</p>
                         </div>
-                        <div style="margin-top: 1rem;">
+                        <div class="mt-3">
                             <p class="stat-label">Location</p>
                             <p class="stat-value" id="carLocation">-</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 1rem;">
-                <button class="logout-btn" id="rejectCarBtn" style="color: #F44336;">
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="rejectCarBtn">
                     <i class="fas fa-times"></i> Reject
                 </button>
-                <button class="logout-btn" id="approveCarBtn" style="background-color: var(--primary-green); color: white;">
+                <button class="btn btn-success" id="approveCarBtn">
                     <i class="fas fa-check"></i> Approve
                 </button>
             </div>
         </div>
     </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
@@ -1031,7 +1377,7 @@
                         </td>
                         <td>${activity.action}</td>
                         <td>${activity.date.toLocaleDateString()}</td>
-                        <td><span class="status-badge ${activity.status}">${activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}</span></td>
+                        <td><span class="badge ${getStatusBadgeClass(activity.status)}">${activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}</span></td>
                     `;
                     
                     recentActivityTable.appendChild(row);
@@ -1048,6 +1394,22 @@
                         </td>
                     </tr>
                 `;
+            }
+        }
+
+        // Get appropriate badge class for status
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'active':
+                    return 'badge-primary';
+                case 'pending':
+                    return 'badge-warning';
+                case 'completed':
+                    return 'badge-success';
+                case 'cancelled':
+                    return 'badge-danger';
+                default:
+                    return 'badge-info';
             }
         }
 
@@ -1089,7 +1451,7 @@
                         <td>${user.role || 'renter'}</td>
                         <td>${user.createdAt?.toDate().toLocaleDateString() || 'Unknown'}</td>
                         <td>
-                            <span class="status-badge ${user.licenseVerified ? 'approved' : user.licenseSubmitted ? 'pending' : 'rejected'}">
+                            <span class="badge ${user.licenseVerified ? 'badge-success' : user.licenseSubmitted ? 'badge-warning' : 'badge-danger'}">
                                 ${user.licenseVerified ? 'Verified' : user.licenseSubmitted ? 'Pending' : 'Not Submitted'}
                             </span>
                         </td>
@@ -1117,7 +1479,7 @@
             }
         }
 
-        // Load cars table - FIXED VERSION
+        // Load cars table
         async function loadCarsTable() {
             try {
                 carsTable.innerHTML = '';
@@ -1138,7 +1500,7 @@
                     return;
                 }
                 
-                // Get owner details for each car - FIXED: renamed 'doc' parameter to 'carDoc'
+                // Get owner details for each car
                 const carsWithOwners = await Promise.all(carsSnapshot.docs.map(async carDoc => {
                     const car = carDoc.data();
                     const ownerDoc = await getDoc(doc(db, "users", car.ownerId));
@@ -1170,7 +1532,7 @@
                         </td>
                         <td>R${item.car.pricePerDay?.toFixed(2) || '0.00'}/day</td>
                         <td>
-                            <span class="status-badge ${item.car.approved ? (item.car.isAvailable ? 'approved' : 'rejected') : 'pending'}">
+                            <span class="badge ${item.car.approved ? (item.car.isAvailable ? 'badge-success' : 'badge-danger') : 'badge-warning'}">
                                 ${item.car.approved ? (item.car.isAvailable ? 'Available' : 'Unavailable') : 'Pending'}
                             </span>
                         </td>
@@ -1269,7 +1631,7 @@
                         <td>${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</td>
                         <td>R${totalPrice.toFixed(2)}</td>
                         <td>
-                            <span class="status-badge ${item.booking.status || 'active'}">
+                            <span class="badge ${getStatusBadgeClass(item.booking.status || 'active')}">
                                 ${item.booking.status ? item.booking.status.charAt(0).toUpperCase() + item.booking.status.slice(1) : 'Active'}
                             </span>
                         </td>
@@ -1336,7 +1698,7 @@
                             </div>
                         </td>
                         <td>${user.licenseSubmittedAt?.toDate().toLocaleDateString() || 'Unknown'}</td>
-                        <td><span class="status-badge pending">Pending</span></td>
+                        <td><span class="badge badge-warning">Pending</span></td>
                         <td>
                             <button class="action-btn view" onclick="viewLicenseApproval('${licenseDoc.id}')">
                                 <i class="fas fa-eye"></i>
@@ -1373,7 +1735,7 @@
                             </div>
                         </td>
                         <td>${car.createdAt?.toDate().toLocaleDateString() || 'Unknown'}</td>
-                        <td><span class="status-badge pending">Pending</span></td>
+                        <td><span class="badge badge-warning">Pending</span></td>
                         <td>
                             <button class="action-btn view" onclick="viewCarApproval('${carDoc.id}')">
                                 <i class="fas fa-eye"></i>
@@ -1472,12 +1834,12 @@
                         const img = document.createElement('img');
                         img.src = image;
                         img.alt = `Car image ${index + 1}`;
-                        img.style = "width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);";
+                        img.style = "width: 100%; height: 150px; object-fit: cover; border-radius: var(--radius-md);";
                         imgDiv.appendChild(img);
                         container.appendChild(imgDiv);
                     });
                 } else {
-                    container.innerHTML = '<p style="color: var(--text-light); text-align: center;">No images available</p>';
+                    container.innerHTML = '<p class="text-muted text-center">No images available</p>';
                 }
                 
                 // Show modal
@@ -1581,31 +1943,31 @@
                         <button class="close-modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <div class="user-cell" style="margin-bottom: 1.5rem; justify-content: center;">
+                        <div class="user-cell mb-4" style="justify-content: center;">
                             <img src="${user.profilePicBase64 || ''}" class="user-avatar" style="width: 80px; height: 80px;">
                             <div class="user-info">
                                 <span class="user-name">${user.name || 'No name'}</span>
                                 <span class="user-email">${user.email}</span>
-                                <span class="status-badge active" style="margin-top: 0.5rem;">Active</span>
+                                <span class="badge badge-primary mt-1">Active</span>
                             </div>
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <h4>Personal Information</h4>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Full Name</p>
                                     <p class="stat-value">${user.name || 'Not provided'}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Email</p>
                                     <p class="stat-value">${user.email}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Phone</p>
                                     <p class="stat-value">${user.phone || 'Not provided'}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Location</p>
                                     <p class="stat-value">${user.location || 'Not provided'}</p>
                                 </div>
@@ -1613,19 +1975,19 @@
                             
                             <div>
                                 <h4>Account Information</h4>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Role</p>
                                     <p class="stat-value">${user.role || 'renter'}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Joined Date</p>
                                     <p class="stat-value">${user.createdAt?.toDate().toLocaleDateString() || 'Unknown'}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">License Status</p>
                                     <p class="stat-value">${user.licenseVerified ? 'Verified' : user.licenseSubmitted ? 'Pending' : 'Not submitted'}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Payment Method</p>
                                     <p class="stat-value">${user.paymentMethod ? `${user.paymentMethod.type} **** ${user.paymentMethod.last4}` : 'Not added'}</p>
                                 </div>
@@ -1680,7 +2042,7 @@
                         <button class="close-modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <div class="user-cell" style="margin-bottom: 1.5rem;">
+                        <div class="user-cell mb-4">
                             <img src="${owner.profilePicBase64 || ''}" class="user-avatar">
                             <div class="user-info">
                                 <span class="user-name">${owner.name || 'No name'}</span>
@@ -1688,29 +2050,29 @@
                             </div>
                         </div>
                         
-                        <div id="carImagesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                        <div id="carImagesContainer" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                             ${car.images && car.images.length > 0 ? 
-                                car.images.map(img => `<img src="${img}" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);">`).join('') : 
-                                '<p style="color: var(--text-light); text-align: center; grid-column: 1 / -1;">No images available</p>'
+                                car.images.map(img => `<img src="${img}" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--radius-md);">`).join('') : 
+                                '<p class="text-muted text-center" style="grid-column: 1 / -1;">No images available</p>'
                             }
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <h4>Car Details</h4>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Make & Model</p>
                                     <p class="stat-value">${car.year || ''} ${car.make || ''} ${car.model || ''}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Year</p>
                                     <p class="stat-value">${car.year || 'Not provided'}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Color</p>
                                     <p class="stat-value">${car.color || 'Not provided'}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">License Plate</p>
                                     <p class="stat-value">${car.licensePlate || 'Not provided'}</p>
                                 </div>
@@ -1718,19 +2080,19 @@
                             
                             <div>
                                 <h4>Rental Information</h4>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Price per Day</p>
                                     <p class="stat-value">R${car.pricePerDay?.toFixed(2) || '0.00'}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Fuel Type</p>
                                     <p class="stat-value">${car.fuelType || 'Not provided'}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Fuel Efficiency</p>
                                     <p class="stat-value">${car.fuelEfficiency === 0 ? 'Electric' : car.fuelEfficiency ? `${car.fuelEfficiency}L/10km` : 'Not provided'}</p>
                                 </div>
-                                <div style="margin-top: 1rem;">
+                                <div class="mt-3">
                                     <p class="stat-label">Location</p>
                                     <p class="stat-value">${car.address || 'Not provided'}</p>
                                 </div>
@@ -1772,6 +2134,7 @@
 
         // Show notification
         function showNotification(message, isSuccess = true) {
+            const container = document.getElementById('notificationContainer');
             const notification = document.createElement('div');
             notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
             notification.innerHTML = `
@@ -1779,11 +2142,16 @@
                 <button class="close-notification">&times;</button>
             `;
             
-            document.body.appendChild(notification);
+            container.appendChild(notification);
             
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Auto-hide after 3 seconds
             const timer = setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateY(20px)';
+                notification.classList.remove('show');
                 setTimeout(() => {
                     if (notification.parentNode) {
                         notification.remove();
@@ -1791,10 +2159,10 @@
                 }, 300);
             }, 3000);
             
+            // Manual close
             notification.querySelector('.close-notification').addEventListener('click', () => {
                 clearTimeout(timer);
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateY(20px)';
+                notification.classList.remove('show');
                 setTimeout(() => {
                     if (notification.parentNode) {
                         notification.remove();
