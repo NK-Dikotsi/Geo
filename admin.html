@@ -390,6 +390,25 @@
             }
         }
 
+        function viewCarApproval(carId) {
+  // Get a reference to the car document
+  const carRef = db.collection('cars').doc(carId);
+  
+  // Get the car data
+  carRef.get().then((doc) => {
+    if (doc.exists) {
+      // Open a modal or redirect to approval page
+      window.location.href = `car-approval.html?carId=${carId}`;
+    } else {
+      console.error('No such car document!');
+      alert('Car not found!');
+    }
+  }).catch((error) => {
+    console.error('Error getting car:', error);
+    alert('Error loading car details');
+  });
+}
+
         function createUserRow(userId, userData) {
             const row = document.createElement('tr');
             const joinedDate = userData.createdAt?.toDate() || new Date();
