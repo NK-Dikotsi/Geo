@@ -2233,8 +2233,15 @@ async function updateAuthUI(user) {
                 
                 // Update navbar buttons
                 authButtons.forEach(button => {
-                    if (button.textContent.trim() === 'Log In' || button.textContent.trim() === 'Sign Up') {
+                    if (button.textContent.trim() === 'Log In') {
                         button.textContent = 'Home';
+                        button.classList.add('my-rides');
+                        button.onclick = function(e) {
+                            e.preventDefault();
+                            window.location.href = "user.html";
+                        };
+                    } else if (button.textContent.trim() === 'Sign Up'){
+                        button.textContent = 'Services';
                         button.classList.add('my-rides');
                         button.onclick = function(e) {
                             e.preventDefault();

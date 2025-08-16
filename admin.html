@@ -78,6 +78,9 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
         /* Typography */
@@ -209,6 +212,7 @@
         
         /* Main Content */
         .admin-container {
+            flex: 1;
             padding: var(--space-xl) 0;
         }
         
@@ -219,6 +223,7 @@
             box-shadow: var(--shadow-sm);
             overflow: hidden;
             transition: var(--transition-normal);
+            margin-bottom: var(--space-lg);
         }
         
         .card:hover {
@@ -298,12 +303,14 @@
         .table-responsive {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            width: 100%;
         }
         
         .data-table {
             width: 100%;
             border-collapse: collapse;
             font-size: var(--text-sm);
+            min-width: 600px;
         }
         
         .data-table th {
@@ -661,28 +668,39 @@
             .nav-links {
                 position: fixed;
                 top: 72px;
-                left: 0;
-                right: 0;
+                left: -100%;
+                width: 280px;
+                height: calc(100vh - 72px);
                 background-color: var(--white);
                 flex-direction: column;
                 padding: var(--space-md);
                 box-shadow: var(--shadow-md);
-                transform: translateY(-100%);
                 transition: var(--transition-normal);
                 z-index: 999;
+                overflow-y: auto;
             }
             
             .nav-links.active {
-                transform: translateY(0);
+                left: 0;
             }
             
             .nav-link, .logout-btn {
                 width: 100%;
                 justify-content: flex-start;
+                padding: var(--space-md);
+                border-radius: var(--radius-md);
             }
             
             .grid-cols-2 {
                 grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+            
+            .card-body {
+                padding: var(--space-md);
             }
         }
         
@@ -691,8 +709,17 @@
                 grid-template-columns: 1fr;
             }
             
-            .modal-content {
-                width: 95%;
+            .modal-body {
+                padding: var(--space-md);
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+            
+            .modal-footer .btn {
+                width: 100%;
             }
         }
         
@@ -1193,26 +1220,36 @@
             dashboardLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showSection('dashboard');
+                navLinks.classList.remove('active');
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
             });
 
             usersLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showSection('users');
+                navLinks.classList.remove('active');
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
             });
 
             carsLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showSection('cars');
+                navLinks.classList.remove('active');
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
             });
 
             bookingsLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showSection('bookings');
+                navLinks.classList.remove('active');
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
             });
 
             approvalsLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showSection('approvals');
+                navLinks.classList.remove('active');
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
             });
 
             // Logout button
