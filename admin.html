@@ -598,7 +598,7 @@
             </div>
             <div class="modal-body">
                 <div class="user-cell" style="margin-bottom: 1.5rem;">
-                    <img id="licenseUserAvatar" src="images/default-avatar.png" class="user-avatar">
+                    <img id="licenseUserAvatar" src="" class="user-avatar">
                     <div class="user-info">
                         <span class="user-name" id="licenseUserName">Loading...</span>
                         <span class="user-email" id="licenseUserEmail">Loading...</span>
@@ -655,7 +655,7 @@
             </div>
             <div class="modal-body">
                 <div class="user-cell" style="margin-bottom: 1.5rem;">
-                    <img id="carOwnerAvatar" src="images/default-avatar.png" class="user-avatar">
+                    <img id="carOwnerAvatar" src="" class="user-avatar">
                     <div class="user-info">
                         <span class="user-name" id="carOwnerName">Loading...</span>
                         <span class="user-email" id="carOwnerEmail">Loading...</span>
@@ -1022,7 +1022,7 @@
                     row.innerHTML = `
                         <td>
                             <div class="user-cell">
-                                <img src="${activity.user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" onerror="this.src='images/default-avatar.png'">
+                                <img src="${activity.user.profilePicBase64 || ''}" class="user-avatar">
                                 <div class="user-info">
                                     <span class="user-name">${activity.user.name || 'No name'}</span>
                                     <span class="user-email">${activity.user.email}</span>
@@ -1079,7 +1079,7 @@
                     row.innerHTML = `
                         <td>
                             <div class="user-cell">
-                                <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" onerror="this.src='images/default-avatar.png'">
+                                <img src="${user.profilePicBase64 || ''}" class="user-avatar">
                                 <div class="user-info">
                                     <span class="user-name">${user.name || 'No name'}</span>
                                     <span class="user-email">${user.email}</span>
@@ -1155,7 +1155,7 @@
                     row.innerHTML = `
                         <td>
                             <div class="user-cell">
-                                <img src="${item.car.images?.[0] || 'images/default-car.jpg'}" class="user-avatar" style="border-radius: 4px;" onerror="this.src='images/default-car.jpg'">
+                                <img src="${item.car.images?.[0] || ''}" class="user-avatar" style="border-radius: 4px;">
                                 <div class="user-info">
                                     <span class="user-name">${item.car.year || ''} ${item.car.make || ''} ${item.car.model || ''}</span>
                                     <span class="user-email">${item.car.color || ''}</span>
@@ -1326,7 +1326,7 @@
                         <td>Driver License</td>
                         <td>
                             <div class="user-cell">
-                                <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" onerror="this.src='images/default-avatar.png'">
+                                <img src="${user.profilePicBase64 || ''}" class="user-avatar">
                                 <div class="user-info">
                                     <span class="user-name">${user.name || 'No name'}</span>
                                     <span class="user-email">${user.email}</span>
@@ -1363,7 +1363,7 @@
                         <td>Car Listing</td>
                         <td>
                             <div class="user-cell">
-                                <img src="${owner.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" onerror="this.src='images/default-avatar.png'">
+                                <img src="${owner.profilePicBase64 || ''}" class="user-avatar">
                                 <div class="user-info">
                                     <span class="user-name">${owner.name || 'No name'}</span>
                                     <span class="user-email">${owner.email}</span>
@@ -1413,8 +1413,7 @@
                 document.getElementById('licenseUserName').textContent = user.name || 'No name';
                 document.getElementById('licenseUserEmail').textContent = user.email;
                 const avatarImg = document.getElementById('licenseUserAvatar');
-                avatarImg.src = user.profilePicBase64 || 'images/default-avatar.png';
-                avatarImg.onerror = "this.src='images/default-avatar.png'";
+                avatarImg.src = user.profilePicBase64 || '';
                 
                 document.getElementById('licenseNumber').textContent = user.licenseNumber || 'Not provided';
                 document.getElementById('licenseState').textContent = user.licenseState || 'Not provided';
@@ -1423,12 +1422,10 @@
                 
                 // Set license images
                 const frontImg = document.getElementById('licenseFrontImage');
-                frontImg.src = user.licenseFrontBase64 || 'images/default-license-front.jpg';
-                frontImg.onerror = "this.src='images/default-license-front.jpg'";
+                frontImg.src = user.licenseFrontBase64 || '';
                 
                 const backImg = document.getElementById('licenseBackImage');
-                backImg.src = user.licenseBackBase64 || 'images/default-license-back.jpg';
-                backImg.onerror = "this.src='images/default-license-back.jpg'";
+                backImg.src = user.licenseBackBase64 || '';
                 
                 // Show modal
                 licenseModal.style.display = 'block';
@@ -1451,8 +1448,7 @@
                 document.getElementById('carOwnerName').textContent = owner.name || 'No name';
                 document.getElementById('carOwnerEmail').textContent = owner.email;
                 const avatarImg = document.getElementById('carOwnerAvatar');
-                avatarImg.src = owner.profilePicBase64 || 'images/default-avatar.png';
-                avatarImg.onerror = "this.src='images/default-avatar.png'";
+                avatarImg.src = owner.profilePicBase64 || '';
                 
                 document.getElementById('carMakeModel').textContent = `${car.year || ''} ${car.make || ''} ${car.model || ''}`;
                 document.getElementById('carYear').textContent = car.year || 'Not provided';
@@ -1474,7 +1470,6 @@
                         img.src = image;
                         img.alt = `Car image ${index + 1}`;
                         img.style = "width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);";
-                        img.onerror = "this.src='images/default-car.jpg'";
                         imgDiv.appendChild(img);
                         container.appendChild(imgDiv);
                     });
@@ -1584,7 +1579,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="user-cell" style="margin-bottom: 1.5rem; justify-content: center;">
-                            <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" style="width: 80px; height: 80px;" onerror="this.src='images/default-avatar.png'">
+                            <img src="${user.profilePicBase64 || ''}" class="user-avatar" style="width: 80px; height: 80px;">
                             <div class="user-info">
                                 <span class="user-name">${user.name || 'No name'}</span>
                                 <span class="user-email">${user.email}</span>
@@ -1681,7 +1676,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="user-cell" style="margin-bottom: 1.5rem;">
-                            <img src="${owner.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" onerror="this.src='images/default-avatar.png'">
+                            <img src="${owner.profilePicBase64 || ''}" class="user-avatar">
                             <div class="user-info">
                                 <span class="user-name">${owner.name || 'No name'}</span>
                                 <span class="user-email">${owner.email}</span>
@@ -1690,7 +1685,7 @@
                         
                         <div id="carImagesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                             ${car.images && car.images.length > 0 ? 
-                                car.images.map(img => `<img src="${img}" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);" onerror="this.src='images/default-car.jpg'">`).join('') : 
+                                car.images.map(img => `<img src="${img}" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);">`).join('') : 
                                 '<p style="color: var(--text-light); text-align: center; grid-column: 1 / -1;">No images available</p>'
                             }
                         </div>
