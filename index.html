@@ -2235,14 +2235,14 @@ async function updateAuthUI(user) {
                 authButtons.forEach(button => {
                     if (button.textContent.trim() === 'Log In') {
                         button.textContent = 'Home';
-                        button.classList.add('my-rides');
+                        
                         button.onclick = function(e) {
                             e.preventDefault();
                             window.location.href = "user.html";
                         };
                     } else if (button.textContent.trim() === 'Sign Up'){
                         button.textContent = 'Services';
-                        button.classList.add('my-rides');
+                        
                         button.onclick = function(e) {
                             e.preventDefault();
                             window.location.href = "user.html";
