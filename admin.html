@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - GeoCarRental</title>
+    <title>Admin Portal - GeoCarRental</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,227 +18,672 @@
             --bg-white: #FFFFFF;
             --bg-light: #f5f7fa;
             --border-radius: 8px;
+            --transition: all 0.3s ease;
         }
     
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
         }
     
         body {
-            background-color: var(--bg-light);
+            font-family: 'Poppins', sans-serif;
             color: var(--text-dark);
+            line-height: 1.6;
+            background-color: var(--bg-light);
         }
 
-        /* Auth Check Styles */
-        .auth-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .auth-card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .auth-logo {
-            height: 80px;
-            margin-bottom: 1.5rem;
-        }
-
-        .auth-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        /* Dashboard Styles */
-        #adminDashboard {
-            display: none;
-            padding: 20px;
-        }
-
-        .dashboard-header {
+        .navbar {
+            background-color: var(--bg-white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 80px;
         }
 
+        .navbar-logo-container {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            margin-right: auto;
+        }
+
+        .navbar-logo {
+            height: 160px;
+            width: auto;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        .nav-link.active {
+            background-color: rgba(41, 98, 255, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .nav-link:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        /* Admin Container */
+        .admin-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 5%;
+        }
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .stat-card {
-            background: white;
+            background: var(--bg-white);
             border-radius: var(--border-radius);
             padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
         }
 
         .stat-value {
             font-size: 2rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary-blue);
         }
 
-        .table-section {
-            background: white;
+        /* Admin Sections */
+        .admin-section {
+            background: var(--bg-white);
             border-radius: var(--border-radius);
-            padding: 1.5rem;
+            padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
 
-        table {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        /* Tables */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        th, td {
-            padding: 12px 15px;
+        .data-table th {
             text-align: left;
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
             border-bottom: 1px solid #eee;
         }
 
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background-color: #f9f9f9;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
         .status-badge {
-            padding: 5px 10px;
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 500;
         }
 
         .status-badge.pending {
-            background: #FFF3E0;
+            background-color: #FFF3E0;
             color: #E65100;
         }
 
-        .status-badge.active {
-            background: #E8F5E9;
+        .status-badge.approved {
+            background-color: #E8F5E9;
             color: #2E7D32;
         }
 
-        .table-btn {
-            border: none;
-            background: none;
-            cursor: pointer;
-            margin: 0 5px;
-            font-size: 1rem;
+        .status-badge.rejected {
+            background-color: #FFEBEE;
+            color: #C62828;
         }
 
-        .table-btn.primary {
+        .status-badge.active {
+            background-color: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0 0.5rem;
+            transition: var(--transition);
+        }
+
+        .action-btn.view {
             color: var(--primary-blue);
         }
 
-        .table-btn.success {
+        .action-btn.approve {
             color: var(--primary-green);
         }
 
-        .table-btn.danger {
+        .action-btn.reject {
             color: #F44336;
         }
 
-        .user-cell {
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Empty State */
+        .empty-state {
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .empty-text {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: var(--bg-white);
+            margin: 2rem auto;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
 
-        .table-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            object-fit: cover;
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
         }
 
-        /* Add more styles as needed */
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background-color: var(--bg-white);
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem 5%;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                gap: 1rem;
+                transform: translateY(-150%);
+                transition: var(--transition);
+                z-index: 999;
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+            }
+
+            .nav-link, .logout-btn {
+                width: 100%;
+                text-align: left;
+                padding: 0.8rem 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Auth Check Container -->
-    <div id="authCheckContainer" class="auth-container">
-        <div class="auth-card">
-            <img src="images/logoblack1.png" alt="Logo" class="auth-logo">
-            <div class="auth-title">Verifying Admin Access</div>
-            <div>Please wait while we verify your admin privileges...</div>
-            <div style="margin-top: 1rem;">
-                <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary-blue);"></i>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-logo-container">
+            <a href="#">
+                <img src="images/logoblack1.png" alt="GeoCarRental Logo" class="navbar-logo">
+            </a>
+        </div>
+        
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links" id="navLinks">
+            <a href="#" class="nav-link active" id="dashboardLink">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="#" class="nav-link" id="usersLink">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a href="#" class="nav-link" id="carsLink">
+                <i class="fas fa-car"></i> Cars
+            </a>
+            <a href="#" class="nav-link" id="bookingsLink">
+                <i class="fas fa-calendar-alt"></i> Bookings
+            </a>
+            <a href="#" class="nav-link" id="approvalsLink">
+                <i class="fas fa-check-circle"></i> Approvals
+            </a>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Admin Content -->
+    <main class="admin-container">
+        <!-- Dashboard Section -->
+        <section id="dashboardSection">
+            <h1>Admin Dashboard</h1>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Cars</div>
+                    <div class="stat-value" id="totalCars">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Active Bookings</div>
+                    <div class="stat-value" id="activeBookings">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pending Approvals</div>
+                    <div class="stat-value" id="pendingApprovals">0</div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Activity</h2>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentActivityTable">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Users Section (Hidden by default) -->
+        <section id="usersSection" style="display: none;">
+            <div class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">All Users</h2>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Cars Section (Hidden by default) -->
+        <section id="carsSection" style="display: none;">
+            <div class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">All Cars</h2>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Car</th>
+                            <th>Owner</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="carsTable">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Bookings Section (Hidden by default) -->
+        <section id="bookingsSection" style="display: none;">
+            <div class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">All Bookings</h2>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>User</th>
+                            <th>Car</th>
+                            <th>Dates</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTable">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Approvals Section (Hidden by default) -->
+        <section id="approvalsSection" style="display: none;">
+            <div class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">Pending Approvals</h2>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>User</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="approvalsTable">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- License Approval Modal -->
+    <div class="modal" id="licenseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Driver License Verification</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="user-cell" style="margin-bottom: 1.5rem;">
+                    <img id="licenseUserAvatar" src="images/default-avatar.png" class="user-avatar">
+                    <div class="user-info">
+                        <span class="user-name" id="licenseUserName">Loading...</span>
+                        <span class="user-email" id="licenseUserEmail">Loading...</span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 2rem; margin-bottom: 2rem;">
+                    <div style="flex: 1;">
+                        <img id="licenseFrontImage" src="" alt="License Front" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--border-radius);">
+                        <p style="text-align: center; color: var(--text-light); margin-top: 0.5rem;">Front Side</p>
+                    </div>
+                    <div style="flex: 1;">
+                        <img id="licenseBackImage" src="" alt="License Back" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--border-radius);">
+                        <p style="text-align: center; color: var(--text-light); margin-top: 0.5rem;">Back Side</p>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div>
+                        <p class="stat-label">License Number</p>
+                        <p class="stat-value" id="licenseNumber">-</p>
+                    </div>
+                    <div>
+                        <p class="stat-label">State/Province</p>
+                        <p class="stat-value" id="licenseState">-</p>
+                    </div>
+                    <div>
+                        <p class="stat-label">Expiration Date</p>
+                        <p class="stat-value" id="licenseExpiry">-</p>
+                    </div>
+                    <div>
+                        <p class="stat-label">Submission Date</p>
+                        <p class="stat-value" id="licenseSubmitted">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button class="logout-btn" id="rejectLicenseBtn" style="color: #F44336;">
+                    <i class="fas fa-times"></i> Reject
+                </button>
+                <button class="logout-btn" id="approveLicenseBtn" style="background-color: var(--primary-green); color: white;">
+                    <i class="fas fa-check"></i> Approve
+                </button>
             </div>
         </div>
     </div>
-
-    <!-- Admin Dashboard -->
-    <div id="adminDashboard">
-        <div class="dashboard-header">
-            <h1>Admin Dashboard</h1>
-            <button id="logoutBtn">Logout</button>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Total Users</div>
-                <div class="stat-value">0</div>
+    
+    <!-- Car Approval Modal -->
+    <div class="modal" id="carModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Car Listing Approval</h3>
+                <button class="close-modal">&times;</button>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Total Cars</div>
-                <div class="stat-value">0</div>
+            <div class="modal-body">
+                <div class="user-cell" style="margin-bottom: 1.5rem;">
+                    <img id="carOwnerAvatar" src="images/default-avatar.png" class="user-avatar">
+                    <div class="user-info">
+                        <span class="user-name" id="carOwnerName">Loading...</span>
+                        <span class="user-email" id="carOwnerEmail">Loading...</span>
+                    </div>
+                </div>
+                
+                <div id="carImagesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <!-- Car images will be inserted here -->
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div>
+                        <h4>Car Details</h4>
+                        <div style="margin-top: 1rem;">
+                            <p class="stat-label">Make & Model</p>
+                            <p class="stat-value" id="carMakeModel">-</p>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <p class="stat-label">Year</p>
+                            <p class="stat-value" id="carYear">-</p>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <p class="stat-label">Color</p>
+                            <p class="stat-value" id="carColor">-</p>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <p class="stat-label">License Plate</p>
+                            <p class="stat-value" id="carLicensePlate">-</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4>Rental Information</h4>
+                        <div style="margin-top: 1rem;">
+                            <p class="stat-label">Price per Day</p>
+                            <p class="stat-value" id="carPrice">-</p>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <p class="stat-label">Fuel Type</p>
+                            <p class="stat-value" id="carFuelType">-</p>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <p class="stat-label">Fuel Efficiency</p>
+                            <p class="stat-value" id="carFuelEfficiency">-</p>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <p class="stat-label">Location</p>
+                            <p class="stat-value" id="carLocation">-</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Active Bookings</div>
-                <div class="stat-value">0</div>
+            <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button class="logout-btn" id="rejectCarBtn" style="color: #F44336;">
+                    <i class="fas fa-times"></i> Reject
+                </button>
+                <button class="logout-btn" id="approveCarBtn" style="background-color: var(--primary-green); color: white;">
+                    <i class="fas fa-check"></i> Approve
+                </button>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Pending Approvals</div>
-                <div class="stat-value">0</div>
-            </div>
-        </div>
-
-        <div class="table-section">
-            <h2>Pending Approvals</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Type</th>
-                        <th>Date Submitted</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Will be populated by JavaScript -->
-                </tbody>
-            </table>
-        </div>
-
-        <div class="table-section">
-            <h2>Recent Users</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Role</th>
-                        <th>Join Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Will be populated by JavaScript -->
-                </tbody>
-            </table>
         </div>
     </div>
 
@@ -261,6 +706,7 @@
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js";
 
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAMU2y175sXjHkxAv6SF88-E9FCjaR2kJc",
             authDomain: "geocarrental-9a4de.firebaseapp.com",
@@ -271,299 +717,1022 @@
             measurementId: "G-LJEF344295"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         // DOM Elements
-        const authCheckContainer = document.getElementById('authCheckContainer');
-        const adminDashboard = document.getElementById('adminDashboard');
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
         const logoutBtn = document.getElementById('logoutBtn');
+        
+        // Section Links
+        const dashboardLink = document.getElementById('dashboardLink');
+        const usersLink = document.getElementById('usersLink');
+        const carsLink = document.getElementById('carsLink');
+        const bookingsLink = document.getElementById('bookingsLink');
+        const approvalsLink = document.getElementById('approvalsLink');
+        
+        // Sections
+        const dashboardSection = document.getElementById('dashboardSection');
+        const usersSection = document.getElementById('usersSection');
+        const carsSection = document.getElementById('carsSection');
+        const bookingsSection = document.getElementById('bookingsSection');
+        const approvalsSection = document.getElementById('approvalsSection');
+        
+        // Stats Elements
+        const totalUsers = document.getElementById('totalUsers');
+        const totalCars = document.getElementById('totalCars');
+        const activeBookings = document.getElementById('activeBookings');
+        const pendingApprovals = document.getElementById('pendingApprovals');
+        
+        // Tables
+        const recentActivityTable = document.getElementById('recentActivityTable');
+        const usersTable = document.getElementById('usersTable');
+        const carsTable = document.getElementById('carsTable');
+        const bookingsTable = document.getElementById('bookingsTable');
+        const approvalsTable = document.getElementById('approvalsTable');
+        
+        // Modals
+        const licenseModal = document.getElementById('licenseModal');
+        const carModal = document.getElementById('carModal');
+        
+        // Close buttons
+        const closeModalButtons = document.querySelectorAll('.close-modal');
+        
+        // Global variables
+        let currentLicenseId = null;
+        let currentCarId = null;
 
-        // Check admin status
-        onAuthStateChanged(auth, async (user) => {
-            if (user && user.email === 'admin@geo.com') {
-                // Verify admin role in Firestore
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists() && userDoc.data().role === 'admin') {
-                    authCheckContainer.style.display = 'none';
-                    adminDashboard.style.display = 'block';
-                    initializeDashboard();
-                } else {
-                    await signOut(auth);
-                    window.location.href = "index.html";
-                }
-            } else {
-                window.location.href = "index.html";
-            }
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            checkAdminStatus();
         });
 
-        // Initialize dashboard
-        async function initializeDashboard() {
-            try {
-                await loadStats();
-                await loadPendingApprovals();
-                await loadRecentUsers();
-                setupEventListeners();
-            } catch (error) {
-                console.error("Dashboard init error:", error);
-                showNotification("Failed to load dashboard data", false);
-            }
-        }
-
-        // Load statistics
-        async function loadStats() {
-            const [
-                usersSnapshot, 
-                carsSnapshot, 
-                bookingsSnapshot,
-                pendingLicensesSnapshot,
-                pendingCarsSnapshot
-            ] = await Promise.all([
-                getDocs(collection(db, "users")),
-                getDocs(query(collection(db, "cars"), where("approved", "==", true))),
-                getDocs(query(collection(db, "bookings"), where("status", "==", "active"))),
-                getDocs(query(collection(db, "users"), 
-                    where("licenseSubmitted", "==", true), 
-                    where("licenseVerified", "==", false))),
-                getDocs(query(collection(db, "cars"), where("approved", "==", false)))
-            ]);
-
-            document.querySelectorAll('.stat-value')[0].textContent = usersSnapshot.size;
-            document.querySelectorAll('.stat-value')[1].textContent = carsSnapshot.size;
-            document.querySelectorAll('.stat-value')[2].textContent = bookingsSnapshot.size;
-            document.querySelectorAll('.stat-value')[3].textContent = 
-                pendingLicensesSnapshot.size + pendingCarsSnapshot.size;
-        }
-
-        // Load pending approvals
-        async function loadPendingApprovals() {
-            const tbody = document.querySelector('.table-section tbody');
-            tbody.innerHTML = '';
-
-            const [pendingLicenses, pendingCars] = await Promise.all([
-                getDocs(query(collection(db, "users"), 
-                    where("licenseSubmitted", "==", true), 
-                    where("licenseVerified", "==", false))),
-                getDocs(query(collection(db, "cars"), where("approved", "==", false)))
-            ]);
-
-            // Process licenses
-            pendingLicenses.forEach(doc => {
-                const data = doc.data();
-                tbody.appendChild(createApprovalRow({
-                    id: doc.id,
-                    type: 'license',
-                    user: data,
-                    date: data.licenseSubmittedAt?.toDate() || new Date()
-                }));
+        // Check if user is admin
+        function checkAdminStatus() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // Verify admin role in Firestore
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists() && userDoc.data().role === 'admin') {
+                        initializeDashboard();
+                    } else {
+                        // Not an admin, redirect to home
+                        window.location.href = "index.html";
+                    }
+                } else {
+                    // Not logged in, redirect to home
+                    window.location.href = "index.html";
+                }
             });
-
-            // Process cars
-            pendingCars.forEach(async doc => {
-                const carData = doc.data();
-                const ownerDoc = await getDoc(doc(db, "users", carData.ownerId));
-                tbody.appendChild(createApprovalRow({
-                    id: doc.id,
-                    type: 'car',
-                    user: ownerDoc.data(),
-                    car: carData,
-                    date: carData.createdAt?.toDate() || new Date()
-                }));
-            });
-
-            if (pendingLicenses.size === 0 && pendingCars.size === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center">No pending approvals</td></tr>`;
-            }
-        }
-
-        // Create approval row
-        function createApprovalRow(data) {
-            const row = document.createElement('tr');
-            const dateStr = data.date.toLocaleDateString();
-            
-            row.innerHTML = `
-                <td>
-                    <div class="user-cell">
-                        <img src="${data.user.profilePic || 'images/default-avatar.png'}" class="table-avatar">
-                        <div>${data.user.name || 'No name'}<br>${data.user.email}</div>
-                    </div>
-                </td>
-                <td>${data.type === 'license' ? 'Driver License' : 'Car Listing'}</td>
-                <td>${dateStr}</td>
-                <td><span class="status-badge pending">Pending</span></td>
-                <td>
-                    <button class="table-btn primary" onclick="view${data.type === 'license' ? 'License' : 'Car'}Approval('${data.id}')">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="table-btn success" onclick="approve${data.type === 'license' ? 'License' : 'Car'}('${data.id}')">
-                        <i class="fas fa-check"></i>
-                    </button>
-                    <button class="table-btn danger" onclick="reject${data.type === 'license' ? 'License' : 'Car'}('${data.id}')">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </td>
-            `;
-            return row;
-        }
-
-        // Load recent users
-        async function loadRecentUsers() {
-            const tbody = document.querySelectorAll('.table-section tbody')[1];
-            tbody.innerHTML = '';
-
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-            
-            const usersSnapshot = await getDocs(query(
-                collection(db, "users"),
-                where("createdAt", ">=", oneWeekAgo),
-                where("email", "!=", "admin@geo.com")
-            ));
-
-            usersSnapshot.forEach(doc => {
-                const data = doc.data();
-                tbody.appendChild(createUserRow(doc.id, data));
-            });
-
-            if (usersSnapshot.size === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center">No recent users</td></tr>`;
-            }
-        }
-
-        // Create user row
-        function createUserRow(id, data) {
-            const row = document.createElement('tr');
-            const dateStr = data.createdAt?.toDate().toLocaleDateString() || 'Unknown';
-            
-            row.innerHTML = `
-                <td>
-                    <div class="user-cell">
-                        <img src="${data.profilePic || 'images/default-avatar.png'}" class="table-avatar">
-                        <div>${data.name || 'No name'}<br>${data.email}</div>
-                    </div>
-                </td>
-                <td>${data.role || 'renter'}</td>
-                <td>${dateStr}</td>
-                <td><span class="status-badge active">Active</span></td>
-                <td>
-                    <button class="table-btn primary" onclick="viewUserDetails('${id}')">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="table-btn" onclick="editUser('${id}')">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                </td>
-            `;
-            return row;
         }
 
         // Setup event listeners
         function setupEventListeners() {
+            // Mobile menu toggle
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                menuToggle.innerHTML = navLinks.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
+
+            // Navigation links
+            dashboardLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('dashboard');
+            });
+
+            usersLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('users');
+            });
+
+            carsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('cars');
+            });
+
+            bookingsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('bookings');
+            });
+
+            approvalsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('approvals');
+            });
+
+            // Logout button
             logoutBtn.addEventListener('click', async () => {
                 try {
                     await signOut(auth);
                     window.location.href = "index.html";
                 } catch (error) {
                     console.error("Logout error:", error);
-                    showNotification("Logout failed", false);
+                    showNotification("Failed to logout", false);
+                }
+            });
+
+            // Close modals
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                });
+            });
+
+            // Modal approval buttons
+            document.getElementById('approveLicenseBtn').addEventListener('click', approveLicense);
+            document.getElementById('rejectLicenseBtn').addEventListener('click', rejectLicense);
+            document.getElementById('approveCarBtn').addEventListener('click', approveCar);
+            document.getElementById('rejectCarBtn').addEventListener('click', rejectCar);
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
                 }
             });
         }
 
-        // Approval functions
-        async function approveLicense(userId) {
+        // Show specific section
+        function showSection(section) {
+            // Hide all sections
+            dashboardSection.style.display = 'none';
+            usersSection.style.display = 'none';
+            carsSection.style.display = 'none';
+            bookingsSection.style.display = 'none';
+            approvalsSection.style.display = 'none';
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section and set active link
+            switch(section) {
+                case 'dashboard':
+                    dashboardSection.style.display = 'block';
+                    dashboardLink.classList.add('active');
+                    loadDashboard();
+                    break;
+                case 'users':
+                    usersSection.style.display = 'block';
+                    usersLink.classList.add('active');
+                    loadUsersTable();
+                    break;
+                case 'cars':
+                    carsSection.style.display = 'block';
+                    carsLink.classList.add('active');
+                    loadCarsTable();
+                    break;
+                case 'bookings':
+                    bookingsSection.style.display = 'block';
+                    bookingsLink.classList.add('active');
+                    loadBookingsTable();
+                    break;
+                case 'approvals':
+                    approvalsSection.style.display = 'block';
+                    approvalsLink.classList.add('active');
+                    loadApprovalsTable();
+                    break;
+            }
+        }
+
+        // Load dashboard
+        async function loadDashboard() {
+            try {
+                const [
+                    usersSnapshot, 
+                    carsSnapshot, 
+                    bookingsSnapshot,
+                    pendingApprovalsSnapshot
+                ] = await Promise.all([
+                    getDocs(collection(db, "users")),
+                    getDocs(collection(db, "cars")),
+                    getDocs(query(collection(db, "bookings"), where("status", "==", "active"))),
+                    getDocs(query(collection(db, "users"), 
+                        where("licenseSubmitted", "==", true), 
+                        where("licenseVerified", "==", false)))
+                ]);
+
+                totalUsers.textContent = usersSnapshot.size;
+                totalCars.textContent = carsSnapshot.size;
+                activeBookings.textContent = bookingsSnapshot.size;
+                pendingApprovals.textContent = pendingApprovalsSnapshot.size;
+
+                await loadRecentActivity();
+            } catch (error) {
+                console.error("Error loading dashboard:", error);
+                showNotification("Failed to load dashboard data", false);
+            }
+        }
+
+        // Load recent activity
+        async function loadRecentActivity() {
+            try {
+                recentActivityTable.innerHTML = '';
+                
+                // Get the 5 most recent bookings as activity
+                const bookingsQuery = query(
+                    collection(db, "bookings"),
+                    orderBy("createdAt", "desc"),
+                    limit(5)
+                );
+                
+                const bookingsSnapshot = await getDocs(bookingsQuery);
+                
+                if (bookingsSnapshot.empty) {
+                    recentActivityTable.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem;">
+                                <div class="empty-state">
+                                    <i class="fas fa-calendar-alt empty-icon"></i>
+                                    <div class="empty-text">No recent activity</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Get user details for each booking
+                const activities = await Promise.all(bookingsSnapshot.docs.map(async doc => {
+                    const booking = doc.data();
+                    const userDoc = await getDoc(doc(db, "users", booking.userId));
+                    return {
+                        user: userDoc.data(),
+                        action: "Created booking",
+                        date: booking.createdAt?.toDate() || new Date(),
+                        status: booking.status || "active"
+                    };
+                }));
+                
+                activities.forEach(activity => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="user-cell">
+                                <img src="${activity.user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar">
+                                <div class="user-info">
+                                    <span class="user-name">${activity.user.name || 'No name'}</span>
+                                    <span class="user-email">${activity.user.email}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${activity.action}</td>
+                        <td>${activity.date.toLocaleDateString()}</td>
+                        <td><span class="status-badge ${activity.status}">${activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}</span></td>
+                    `;
+                    
+                    recentActivityTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error loading recent activity:", error);
+                recentActivityTable.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem;">
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-triangle empty-icon"></i>
+                                <div class="empty-text">Failed to load activity</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load users table
+        async function loadUsersTable() {
+            try {
+                usersTable.innerHTML = '';
+                
+                const usersSnapshot = await getDocs(collection(db, "users"));
+                
+                if (usersSnapshot.empty) {
+                    usersTable.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">
+                                <div class="empty-state">
+                                    <i class="fas fa-users empty-icon"></i>
+                                    <div class="empty-text">No users found</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="user-cell">
+                                <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar">
+                                <div class="user-info">
+                                    <span class="user-name">${user.name || 'No name'}</span>
+                                    <span class="user-email">${user.email}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${user.role || 'renter'}</td>
+                        <td>${user.createdAt?.toDate().toLocaleDateString() || 'Unknown'}</td>
+                        <td>
+                            <span class="status-badge ${user.licenseVerified ? 'approved' : user.licenseSubmitted ? 'pending' : 'rejected'}">
+                                ${user.licenseVerified ? 'Verified' : user.licenseSubmitted ? 'Pending' : 'Not Submitted'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="action-btn view" onclick="viewUserDetails('${doc.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    usersTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error loading users:", error);
+                usersTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem;">
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-triangle empty-icon"></i>
+                                <div class="empty-text">Failed to load users</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load cars table
+        async function loadCarsTable() {
+            try {
+                carsTable.innerHTML = '';
+                
+                const carsSnapshot = await getDocs(collection(db, "cars"));
+                
+                if (carsSnapshot.empty) {
+                    carsTable.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">
+                                <div class="empty-state">
+                                    <i class="fas fa-car empty-icon"></i>
+                                    <div class="empty-text">No cars found</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Get owner details for each car
+                const carsWithOwners = await Promise.all(carsSnapshot.docs.map(async doc => {
+                    const car = doc.data();
+                    const ownerDoc = await getDoc(doc(db, "users", car.ownerId));
+                    return {
+                        id: doc.id,
+                        car: car,
+                        owner: ownerDoc.data()
+                    };
+                }));
+                
+                carsWithOwners.forEach(item => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="user-cell">
+                                <img src="${item.car.images?.[0] || 'images/default-car.jpg'}" class="user-avatar" style="border-radius: 4px;">
+                                <div class="user-info">
+                                    <span class="user-name">${item.car.year || ''} ${item.car.make || ''} ${item.car.model || ''}</span>
+                                    <span class="user-email">${item.car.color || ''}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="user-info">
+                                <span class="user-name">${item.owner?.name || 'Unknown'}</span>
+                                <span class="user-email">${item.owner?.email || ''}</span>
+                            </div>
+                        </td>
+                        <td>R${item.car.pricePerDay?.toFixed(2) || '0.00'}/day</td>
+                        <td>
+                            <span class="status-badge ${item.car.approved ? (item.car.isAvailable ? 'approved' : 'rejected') : 'pending'}">
+                                ${item.car.approved ? (item.car.isAvailable ? 'Available' : 'Unavailable') : 'Pending'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="action-btn view" onclick="viewCarDetails('${item.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            ${!item.car.approved ? `
+                            <button class="action-btn approve" onclick="approveCar('${item.id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="action-btn reject" onclick="rejectCar('${item.id}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            ` : ''}
+                        </td>
+                    `;
+                    
+                    carsTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error loading cars:", error);
+                carsTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem;">
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-triangle empty-icon"></i>
+                                <div class="empty-text">Failed to load cars</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load bookings table
+        async function loadBookingsTable() {
+            try {
+                bookingsTable.innerHTML = '';
+                
+                const bookingsQuery = query(
+                    collection(db, "bookings"),
+                    orderBy("createdAt", "desc")
+                );
+                const bookingsSnapshot = await getDocs(bookingsQuery);
+                
+                if (bookingsSnapshot.empty) {
+                    bookingsTable.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">
+                                <div class="empty-state">
+                                    <i class="fas fa-calendar-alt empty-icon"></i>
+                                    <div class="empty-text">No bookings found</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Get user and car details for each booking
+                const bookingsWithDetails = await Promise.all(bookingsSnapshot.docs.map(async doc => {
+                    const booking = doc.data();
+                    const userDoc = await getDoc(doc(db, "users", booking.userId));
+                    const carDoc = booking.carId ? await getDoc(doc(db, "cars", booking.carId)) : null;
+                    return {
+                        id: doc.id,
+                        booking: booking,
+                        user: userDoc.data(),
+                        car: carDoc?.data()
+                    };
+                }));
+                
+                bookingsWithDetails.forEach(item => {
+                    const row = document.createElement('tr');
+                    const startDate = item.booking.startDate?.toDate() || new Date();
+                    const endDate = item.booking.endDate?.toDate() || new Date();
+                    const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) || 1;
+                    const totalPrice = days * (item.car?.pricePerDay || 0);
+                    
+                    row.innerHTML = `
+                        <td>${item.id.substring(0, 8)}</td>
+                        <td>
+                            <div class="user-info">
+                                <span class="user-name">${item.user?.name || 'Unknown'}</span>
+                                <span class="user-email">${item.user?.email || ''}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="user-info">
+                                <span class="user-name">${item.car?.year || ''} ${item.car?.make || ''} ${item.car?.model || ''}</span>
+                                <span class="user-email">${item.car?.licensePlate || ''}</span>
+                            </div>
+                        </td>
+                        <td>${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</td>
+                        <td>R${totalPrice.toFixed(2)}</td>
+                        <td>
+                            <span class="status-badge ${item.booking.status || 'active'}">
+                                ${item.booking.status ? item.booking.status.charAt(0).toUpperCase() + item.booking.status.slice(1) : 'Active'}
+                            </span>
+                        </td>
+                    `;
+                    
+                    bookingsTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error loading bookings:", error);
+                bookingsTable.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem;">
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-triangle empty-icon"></i>
+                                <div class="empty-text">Failed to load bookings</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load approvals table
+        async function loadApprovalsTable() {
+            try {
+                approvalsTable.innerHTML = '';
+                
+                const [pendingLicenses, pendingCars] = await Promise.all([
+                    getDocs(query(collection(db, "users"), 
+                        where("licenseSubmitted", "==", true), 
+                        where("licenseVerified", "==", false))),
+                    getDocs(query(collection(db, "cars"), where("approved", "==", false)))
+                ]);
+                
+                if (pendingLicenses.empty && pendingCars.empty) {
+                    approvalsTable.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">
+                                <div class="empty-state">
+                                    <i class="fas fa-check-circle empty-icon"></i>
+                                    <div class="empty-text">No pending approvals</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Process license approvals
+                pendingLicenses.forEach(doc => {
+                    const user = doc.data();
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>Driver License</td>
+                        <td>
+                            <div class="user-cell">
+                                <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar">
+                                <div class="user-info">
+                                    <span class="user-name">${user.name || 'No name'}</span>
+                                    <span class="user-email">${user.email}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${user.licenseSubmittedAt?.toDate().toLocaleDateString() || 'Unknown'}</td>
+                        <td><span class="status-badge pending">Pending</span></td>
+                        <td>
+                            <button class="action-btn view" onclick="viewLicenseApproval('${doc.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn approve" onclick="approveLicense('${doc.id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="action-btn reject" onclick="rejectLicense('${doc.id}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    approvalsTable.appendChild(row);
+                });
+                
+                // Process car approvals
+                pendingCars.forEach(async doc => {
+                    const car = doc.data();
+                    const ownerDoc = await getDoc(doc(db, "users", car.ownerId));
+                    const owner = ownerDoc.data();
+                    
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>Car Listing</td>
+                        <td>
+                            <div class="user-cell">
+                                <img src="${owner.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar">
+                                <div class="user-info">
+                                    <span class="user-name">${owner.name || 'No name'}</span>
+                                    <span class="user-email">${owner.email}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${car.createdAt?.toDate().toLocaleDateString() || 'Unknown'}</td>
+                        <td><span class="status-badge pending">Pending</span></td>
+                        <td>
+                            <button class="action-btn view" onclick="viewCarApproval('${doc.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn approve" onclick="approveCar('${doc.id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="action-btn reject" onclick="rejectCar('${doc.id}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    approvalsTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error loading approvals:", error);
+                approvalsTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem;">
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-triangle empty-icon"></i>
+                                <div class="empty-text">Failed to load approvals</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // View license approval details
+        async function viewLicenseApproval(userId) {
+            try {
+                currentLicenseId = userId;
+                const userDoc = await getDoc(doc(db, "users", userId));
+                const user = userDoc.data();
+                
+                // Update modal content
+                document.getElementById('licenseUserName').textContent = user.name || 'No name';
+                document.getElementById('licenseUserEmail').textContent = user.email;
+                document.getElementById('licenseUserAvatar').src = user.profilePicBase64 || 'images/default-avatar.png';
+                document.getElementById('licenseNumber').textContent = user.licenseNumber || 'Not provided';
+                document.getElementById('licenseState').textContent = user.licenseState || 'Not provided';
+                document.getElementById('licenseExpiry').textContent = user.licenseExpiry?.toDate().toLocaleDateString() || 'Not provided';
+                document.getElementById('licenseSubmitted').textContent = user.licenseSubmittedAt?.toDate().toLocaleDateString() || 'Unknown';
+                
+                // Set license images
+                document.getElementById('licenseFrontImage').src = user.licenseFrontBase64 || 'images/default-license-front.jpg';
+                document.getElementById('licenseBackImage').src = user.licenseBackBase64 || 'images/default-license-back.jpg';
+                
+                // Show modal
+                licenseModal.style.display = 'block';
+            } catch (error) {
+                console.error("Error loading license details:", error);
+                showNotification("Failed to load license details", false);
+            }
+        }
+
+        // View car approval details
+        async function viewCarApproval(carId) {
+            try {
+                currentCarId = carId;
+                const carDoc = await getDoc(doc(db, "cars", carId));
+                const car = carDoc.data();
+                const ownerDoc = await getDoc(doc(db, "users", car.ownerId));
+                const owner = ownerDoc.data();
+                
+                // Update modal content
+                document.getElementById('carOwnerName').textContent = owner.name || 'No name';
+                document.getElementById('carOwnerEmail').textContent = owner.email;
+                document.getElementById('carOwnerAvatar').src = owner.profilePicBase64 || 'images/default-avatar.png';
+                document.getElementById('carMakeModel').textContent = `${car.year || ''} ${car.make || ''} ${car.model || ''}`;
+                document.getElementById('carYear').textContent = car.year || 'Not provided';
+                document.getElementById('carColor').textContent = car.color || 'Not provided';
+                document.getElementById('carLicensePlate').textContent = car.licensePlate || 'Not provided';
+                document.getElementById('carPrice').textContent = `R${car.pricePerDay?.toFixed(2) || '0.00'}`;
+                document.getElementById('carFuelType').textContent = car.fuelType || 'Not provided';
+                document.getElementById('carFuelEfficiency').textContent = car.fuelEfficiency === 0 ? 'Electric' : car.fuelEfficiency ? `${car.fuelEfficiency}L/10km` : 'Not provided';
+                document.getElementById('carLocation').textContent = car.address || 'Location not specified';
+                
+                // Update car images
+                const container = document.getElementById('carImagesContainer');
+                container.innerHTML = '';
+                
+                if (car.images && car.images.length > 0) {
+                    car.images.forEach((image, index) => {
+                        const imgDiv = document.createElement('div');
+                        imgDiv.innerHTML = `<img src="${image}" alt="Car image ${index + 1}" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);">`;
+                        container.appendChild(imgDiv);
+                    });
+                } else {
+                    container.innerHTML = '<p style="color: var(--text-light); text-align: center;">No images available</p>';
+                }
+                
+                // Show modal
+                carModal.style.display = 'block';
+            } catch (error) {
+                console.error("Error loading car details:", error);
+                showNotification("Failed to load car details", false);
+            }
+        }
+
+        // Approve license
+        async function approveLicense(userId = currentLicenseId) {
             try {
                 await updateDoc(doc(db, "users", userId), {
                     licenseVerified: true,
                     licenseSubmitted: false,
                     updatedAt: serverTimestamp()
                 });
-                showNotification("License approved");
-                await Promise.all([loadStats(), loadPendingApprovals()]);
+                
+                showNotification("License approved successfully");
+                licenseModal.style.display = 'none';
+                await Promise.all([loadStats(), loadApprovalsTable(), loadUsersTable()]);
             } catch (error) {
-                console.error("Approve license error:", error);
-                showNotification("Approval failed", false);
+                console.error("Error approving license:", error);
+                showNotification("Failed to approve license", false);
             }
         }
 
-        async function rejectLicense(userId) {
+        // Reject license
+        async function rejectLicense(userId = currentLicenseId) {
             try {
                 await updateDoc(doc(db, "users", userId), {
                     licenseVerified: false,
                     licenseSubmitted: false,
                     updatedAt: serverTimestamp()
                 });
+                
                 showNotification("License rejected");
-                await Promise.all([loadStats(), loadPendingApprovals()]);
+                licenseModal.style.display = 'none';
+                await Promise.all([loadStats(), loadApprovalsTable(), loadUsersTable()]);
             } catch (error) {
-                console.error("Reject license error:", error);
-                showNotification("Rejection failed", false);
+                console.error("Error rejecting license:", error);
+                showNotification("Failed to reject license", false);
             }
         }
 
-        async function approveCar(carId) {
+        // Approve car
+        async function approveCar(carId = currentCarId) {
             try {
                 await updateDoc(doc(db, "cars", carId), {
                     approved: true,
+                    isAvailable: true,
                     updatedAt: serverTimestamp()
                 });
-                showNotification("Car approved");
-                await Promise.all([loadStats(), loadPendingApprovals()]);
+                
+                showNotification("Car approved successfully");
+                carModal.style.display = 'none';
+                await Promise.all([loadStats(), loadApprovalsTable(), loadCarsTable()]);
             } catch (error) {
-                console.error("Approve car error:", error);
-                showNotification("Approval failed", false);
+                console.error("Error approving car:", error);
+                showNotification("Failed to approve car", false);
             }
         }
 
-        async function rejectCar(carId) {
+        // Reject car
+        async function rejectCar(carId = currentCarId) {
             try {
                 await updateDoc(doc(db, "cars", carId), {
                     approved: false,
                     isAvailable: false,
                     updatedAt: serverTimestamp()
                 });
+                
                 showNotification("Car rejected");
-                await Promise.all([loadStats(), loadPendingApprovals()]);
+                carModal.style.display = 'none';
+                await Promise.all([loadStats(), loadApprovalsTable(), loadCarsTable()]);
             } catch (error) {
-                console.error("Reject car error:", error);
-                showNotification("Rejection failed", false);
+                console.error("Error rejecting car:", error);
+                showNotification("Failed to reject car", false);
             }
         }
 
-        // View functions
-        function viewLicenseApproval(userId) {
-            window.location.href = `license-approval.html?id=${userId}`;
+        // View user details
+        async function viewUserDetails(userId) {
+            try {
+                const userDoc = await getDoc(doc(db, "users", userId));
+                const user = userDoc.data();
+                
+                // Create a modal to show user details
+                const modalContent = `
+                    <div class="modal-header">
+                        <h3 class="modal-title">User Details</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="user-cell" style="margin-bottom: 1.5rem; justify-content: center;">
+                            <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" style="width: 80px; height: 80px;">
+                            <div class="user-info">
+                                <span class="user-name">${user.name || 'No name'}</span>
+                                <span class="user-email">${user.email}</span>
+                                <span class="status-badge active" style="margin-top: 0.5rem;">Active</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div>
+                                <h4>Personal Information</h4>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Full Name</p>
+                                    <p class="stat-value">${user.name || 'Not provided'}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Email</p>
+                                    <p class="stat-value">${user.email}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Phone</p>
+                                    <p class="stat-value">${user.phone || 'Not provided'}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Location</p>
+                                    <p class="stat-value">${user.location || 'Not provided'}</p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4>Account Information</h4>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Role</p>
+                                    <p class="stat-value">${user.role || 'renter'}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Joined Date</p>
+                                    <p class="stat-value">${user.createdAt?.toDate().toLocaleDateString() || 'Unknown'}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">License Status</p>
+                                    <p class="stat-value">${user.licenseVerified ? 'Verified' : user.licenseSubmitted ? 'Pending' : 'Not submitted'}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Payment Method</p>
+                                    <p class="stat-value">${user.paymentMethod ? `${user.paymentMethod.type} **** ${user.paymentMethod.last4}` : 'Not added'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Create and show modal
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.display = 'block';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        ${modalContent}
+                    </div>
+                `;
+                
+                // Add close functionality
+                modal.querySelector('.close-modal').addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+                
+                document.body.appendChild(modal);
+                
+                // Close when clicking outside
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading user details:", error);
+                showNotification("Failed to load user details", false);
+            }
         }
 
-        function viewCarApproval(carId) {
-            window.location.href = `car-approval.html?id=${carId}`;
+        // View car details
+        async function viewCarDetails(carId) {
+            try {
+                const carDoc = await getDoc(doc(db, "cars", carId));
+                const car = carDoc.data();
+                const ownerDoc = await getDoc(doc(db, "users", car.ownerId));
+                const owner = ownerDoc.data();
+                
+                // Create a modal to show car details
+                const modalContent = `
+                    <div class="modal-header">
+                        <h3 class="modal-title">Car Details</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="user-cell" style="margin-bottom: 1.5rem;">
+                            <img src="${owner.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar">
+                            <div class="user-info">
+                                <span class="user-name">${owner.name || 'No name'}</span>
+                                <span class="user-email">${owner.email}</span>
+                            </div>
+                        </div>
+                        
+                        <div id="carImagesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                            ${car.images && car.images.length > 0 ? 
+                                car.images.map(img => `<img src="${img}" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);">`).join('') : 
+                                '<p style="color: var(--text-light); text-align: center; grid-column: 1 / -1;">No images available</p>'
+                            }
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div>
+                                <h4>Car Details</h4>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Make & Model</p>
+                                    <p class="stat-value">${car.year || ''} ${car.make || ''} ${car.model || ''}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Year</p>
+                                    <p class="stat-value">${car.year || 'Not provided'}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Color</p>
+                                    <p class="stat-value">${car.color || 'Not provided'}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">License Plate</p>
+                                    <p class="stat-value">${car.licensePlate || 'Not provided'}</p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4>Rental Information</h4>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Price per Day</p>
+                                    <p class="stat-value">R${car.pricePerDay?.toFixed(2) || '0.00'}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Fuel Type</p>
+                                    <p class="stat-value">${car.fuelType || 'Not provided'}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Fuel Efficiency</p>
+                                    <p class="stat-value">${car.fuelEfficiency === 0 ? 'Electric' : car.fuelEfficiency ? `${car.fuelEfficiency}L/10km` : 'Not provided'}</p>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p class="stat-label">Location</p>
+                                    <p class="stat-value">${car.address || 'Not provided'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Create and show modal
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.display = 'block';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        ${modalContent}
+                    </div>
+                `;
+                
+                // Add close functionality
+                modal.querySelector('.close-modal').addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+                
+                document.body.appendChild(modal);
+                
+                // Close when clicking outside
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading car details:", error);
+                showNotification("Failed to load car details", false);
+            }
         }
 
-        function viewUserDetails(userId) {
-            window.location.href = `user-details.html?id=${userId}`;
-        }
-
-        // Notification function
+        // Show notification
         function showNotification(message, isSuccess = true) {
             const notification = document.createElement('div');
             notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
-            notification.textContent = message;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button class="close-notification">&times;</button>
+            `;
+            
             document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
+            
+            const timer = setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+            
+            notification.querySelector('.close-notification').addEventListener('click', () => {
+                clearTimeout(timer);
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            });
         }
 
         // Expose functions to window
+        window.viewLicenseApproval = viewLicenseApproval;
+        window.viewCarApproval = viewCarApproval;
+        window.viewUserDetails = viewUserDetails;
+        window.viewCarDetails = viewCarDetails;
         window.approveLicense = approveLicense;
         window.rejectLicense = rejectLicense;
         window.approveCar = approveCar;
         window.rejectCar = rejectCar;
-        window.viewLicenseApproval = viewLicenseApproval;
-        window.viewCarApproval = viewCarApproval;
-        window.viewUserDetails = viewUserDetails;
-        window.editUser = function(id) {
-            console.log("Edit user:", id);
-        };
     </script>
 </body>
 </html>
