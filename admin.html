@@ -342,6 +342,38 @@
             padding: 1.5rem;
         }
 
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .notification.success {
+            background-color: var(--primary-green);
+        }
+
+        .notification.error {
+            background-color: #F44336;
+        }
+
+        .close-notification {
+            background: none;
+            border: none;
+            color: white;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .menu-toggle {
@@ -703,7 +735,9 @@
             doc,
             getDoc,
             updateDoc,
-            serverTimestamp
+            serverTimestamp,
+            orderBy,
+            limit
         } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js";
 
         // Firebase configuration
@@ -790,6 +824,15 @@
             });
         }
 
+        // Initialize dashboard
+        function initializeDashboard() {
+            // Set default section
+            showSection('dashboard');
+            
+            // Load initial data
+            loadDashboard();
+        }
+
         // Setup event listeners
         function setupEventListeners() {
             // Mobile menu toggle
@@ -847,10 +890,10 @@
             });
 
             // Modal approval buttons
-            document.getElementById('approveLicenseBtn').addEventListener('click', approveLicense);
-            document.getElementById('rejectLicenseBtn').addEventListener('click', rejectLicense);
-            document.getElementById('approveCarBtn').addEventListener('click', approveCar);
-            document.getElementById('rejectCarBtn').addEventListener('click', rejectCar);
+            document.getElementById('approveLicenseBtn').addEventListener('click', () => approveLicense(currentLicenseId));
+            document.getElementById('rejectLicenseBtn').addEventListener('click', () => rejectLicense(currentLicenseId));
+            document.getElementById('approveCarBtn').addEventListener('click', () => approveCar(currentCarId));
+            document.getElementById('rejectCarBtn').addEventListener('click', () => rejectCar(currentCarId));
             
             // Close modal when clicking outside
             window.addEventListener('click', (e) => {
@@ -979,7 +1022,7 @@
                     row.innerHTML = `
                         <td>
                             <div class="user-cell">
-                                <img src="${activity.user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar">
+                                <img src="${activity.user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" onerror="this.src='images/default-avatar.png'">
                                 <div class="user-info">
                                     <span class="user-name">${activity.user.name || 'No name'}</span>
                                     <span class="user-email">${activity.user.email}</span>
@@ -1036,7 +1079,7 @@
                     row.innerHTML = `
                         <td>
                             <div class="user-cell">
-                                <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar">
+                                <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" onerror="this.src='images/default-avatar.png'">
                                 <div class="user-info">
                                     <span class="user-name">${user.name || 'No name'}</span>
                                     <span class="user-email">${user.email}</span>
@@ -1112,7 +1155,7 @@
                     row.innerHTML = `
                         <td>
                             <div class="user-cell">
-                                <img src="${item.car.images?.[0] || 'images/default-car.jpg'}" class="user-avatar" style="border-radius: 4px;">
+                                <img src="${item.car.images?.[0] || 'images/default-car.jpg'}" class="user-avatar" style="border-radius: 4px;" onerror="this.src='images/default-car.jpg'">
                                 <div class="user-info">
                                     <span class="user-name">${item.car.year || ''} ${item.car.make || ''} ${item.car.model || ''}</span>
                                     <span class="user-email">${item.car.color || ''}</span>
@@ -1283,7 +1326,7 @@
                         <td>Driver License</td>
                         <td>
                             <div class="user-cell">
-                                <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar">
+                                <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" onerror="this.src='images/default-avatar.png'">
                                 <div class="user-info">
                                     <span class="user-name">${user.name || 'No name'}</span>
                                     <span class="user-email">${user.email}</span>
@@ -1320,7 +1363,7 @@
                         <td>Car Listing</td>
                         <td>
                             <div class="user-cell">
-                                <img src="${owner.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar">
+                                <img src="${owner.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" onerror="this.src='images/default-avatar.png'">
                                 <div class="user-info">
                                     <span class="user-name">${owner.name || 'No name'}</span>
                                     <span class="user-email">${owner.email}</span>
@@ -1369,15 +1412,23 @@
                 // Update modal content
                 document.getElementById('licenseUserName').textContent = user.name || 'No name';
                 document.getElementById('licenseUserEmail').textContent = user.email;
-                document.getElementById('licenseUserAvatar').src = user.profilePicBase64 || 'images/default-avatar.png';
+                const avatarImg = document.getElementById('licenseUserAvatar');
+                avatarImg.src = user.profilePicBase64 || 'images/default-avatar.png';
+                avatarImg.onerror = "this.src='images/default-avatar.png'";
+                
                 document.getElementById('licenseNumber').textContent = user.licenseNumber || 'Not provided';
                 document.getElementById('licenseState').textContent = user.licenseState || 'Not provided';
                 document.getElementById('licenseExpiry').textContent = user.licenseExpiry?.toDate().toLocaleDateString() || 'Not provided';
                 document.getElementById('licenseSubmitted').textContent = user.licenseSubmittedAt?.toDate().toLocaleDateString() || 'Unknown';
                 
                 // Set license images
-                document.getElementById('licenseFrontImage').src = user.licenseFrontBase64 || 'images/default-license-front.jpg';
-                document.getElementById('licenseBackImage').src = user.licenseBackBase64 || 'images/default-license-back.jpg';
+                const frontImg = document.getElementById('licenseFrontImage');
+                frontImg.src = user.licenseFrontBase64 || 'images/default-license-front.jpg';
+                frontImg.onerror = "this.src='images/default-license-front.jpg'";
+                
+                const backImg = document.getElementById('licenseBackImage');
+                backImg.src = user.licenseBackBase64 || 'images/default-license-back.jpg';
+                backImg.onerror = "this.src='images/default-license-back.jpg'";
                 
                 // Show modal
                 licenseModal.style.display = 'block';
@@ -1399,7 +1450,10 @@
                 // Update modal content
                 document.getElementById('carOwnerName').textContent = owner.name || 'No name';
                 document.getElementById('carOwnerEmail').textContent = owner.email;
-                document.getElementById('carOwnerAvatar').src = owner.profilePicBase64 || 'images/default-avatar.png';
+                const avatarImg = document.getElementById('carOwnerAvatar');
+                avatarImg.src = owner.profilePicBase64 || 'images/default-avatar.png';
+                avatarImg.onerror = "this.src='images/default-avatar.png'";
+                
                 document.getElementById('carMakeModel').textContent = `${car.year || ''} ${car.make || ''} ${car.model || ''}`;
                 document.getElementById('carYear').textContent = car.year || 'Not provided';
                 document.getElementById('carColor').textContent = car.color || 'Not provided';
@@ -1416,7 +1470,12 @@
                 if (car.images && car.images.length > 0) {
                     car.images.forEach((image, index) => {
                         const imgDiv = document.createElement('div');
-                        imgDiv.innerHTML = `<img src="${image}" alt="Car image ${index + 1}" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);">`;
+                        const img = document.createElement('img');
+                        img.src = image;
+                        img.alt = `Car image ${index + 1}`;
+                        img.style = "width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);";
+                        img.onerror = "this.src='images/default-car.jpg'";
+                        imgDiv.appendChild(img);
                         container.appendChild(imgDiv);
                     });
                 } else {
@@ -1432,7 +1491,9 @@
         }
 
         // Approve license
-        async function approveLicense(userId = currentLicenseId) {
+        async function approveLicense(userId) {
+            if (!userId) return;
+            
             try {
                 await updateDoc(doc(db, "users", userId), {
                     licenseVerified: true,
@@ -1442,7 +1503,7 @@
                 
                 showNotification("License approved successfully");
                 licenseModal.style.display = 'none';
-                await Promise.all([loadStats(), loadApprovalsTable(), loadUsersTable()]);
+                await Promise.all([loadDashboard(), loadApprovalsTable(), loadUsersTable()]);
             } catch (error) {
                 console.error("Error approving license:", error);
                 showNotification("Failed to approve license", false);
@@ -1450,7 +1511,9 @@
         }
 
         // Reject license
-        async function rejectLicense(userId = currentLicenseId) {
+        async function rejectLicense(userId) {
+            if (!userId) return;
+            
             try {
                 await updateDoc(doc(db, "users", userId), {
                     licenseVerified: false,
@@ -1460,7 +1523,7 @@
                 
                 showNotification("License rejected");
                 licenseModal.style.display = 'none';
-                await Promise.all([loadStats(), loadApprovalsTable(), loadUsersTable()]);
+                await Promise.all([loadDashboard(), loadApprovalsTable(), loadUsersTable()]);
             } catch (error) {
                 console.error("Error rejecting license:", error);
                 showNotification("Failed to reject license", false);
@@ -1468,7 +1531,9 @@
         }
 
         // Approve car
-        async function approveCar(carId = currentCarId) {
+        async function approveCar(carId) {
+            if (!carId) return;
+            
             try {
                 await updateDoc(doc(db, "cars", carId), {
                     approved: true,
@@ -1478,7 +1543,7 @@
                 
                 showNotification("Car approved successfully");
                 carModal.style.display = 'none';
-                await Promise.all([loadStats(), loadApprovalsTable(), loadCarsTable()]);
+                await Promise.all([loadDashboard(), loadApprovalsTable(), loadCarsTable()]);
             } catch (error) {
                 console.error("Error approving car:", error);
                 showNotification("Failed to approve car", false);
@@ -1486,7 +1551,9 @@
         }
 
         // Reject car
-        async function rejectCar(carId = currentCarId) {
+        async function rejectCar(carId) {
+            if (!carId) return;
+            
             try {
                 await updateDoc(doc(db, "cars", carId), {
                     approved: false,
@@ -1496,7 +1563,7 @@
                 
                 showNotification("Car rejected");
                 carModal.style.display = 'none';
-                await Promise.all([loadStats(), loadApprovalsTable(), loadCarsTable()]);
+                await Promise.all([loadDashboard(), loadApprovalsTable(), loadCarsTable()]);
             } catch (error) {
                 console.error("Error rejecting car:", error);
                 showNotification("Failed to reject car", false);
@@ -1517,7 +1584,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="user-cell" style="margin-bottom: 1.5rem; justify-content: center;">
-                            <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" style="width: 80px; height: 80px;">
+                            <img src="${user.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" style="width: 80px; height: 80px;" onerror="this.src='images/default-avatar.png'">
                             <div class="user-info">
                                 <span class="user-name">${user.name || 'No name'}</span>
                                 <span class="user-email">${user.email}</span>
@@ -1614,7 +1681,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="user-cell" style="margin-bottom: 1.5rem;">
-                            <img src="${owner.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar">
+                            <img src="${owner.profilePicBase64 || 'images/default-avatar.png'}" class="user-avatar" onerror="this.src='images/default-avatar.png'">
                             <div class="user-info">
                                 <span class="user-name">${owner.name || 'No name'}</span>
                                 <span class="user-email">${owner.email}</span>
@@ -1623,7 +1690,7 @@
                         
                         <div id="carImagesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                             ${car.images && car.images.length > 0 ? 
-                                car.images.map(img => `<img src="${img}" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);">`).join('') : 
+                                car.images.map(img => `<img src="${img}" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);" onerror="this.src='images/default-car.jpg'">`).join('') : 
                                 '<p style="color: var(--text-light); text-align: center; grid-column: 1 / -1;">No images available</p>'
                             }
                         </div>
@@ -1713,13 +1780,15 @@
             document.body.appendChild(notification);
             
             const timer = setTimeout(() => {
-                notification.classList.add('fade-out');
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(20px)';
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
             
             notification.querySelector('.close-notification').addEventListener('click', () => {
                 clearTimeout(timer);
-                notification.classList.add('fade-out');
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(20px)';
                 setTimeout(() => notification.remove(), 300);
             });
         }
