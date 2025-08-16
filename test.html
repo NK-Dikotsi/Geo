@@ -1,65 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin User Setup</title>
+    <title>Admin Setup</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-functions.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        button {
-            background-color: #2962FF;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #1a4fd8;
-        }
-        #status {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 4px;
-            white-space: pre-wrap;
-        }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        button { background: #2962FF; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+        #status { margin-top: 20px; padding: 15px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
     </style>
 </head>
 <body>
-    <h1>Admin User Setup</h1>
-    <p>This will ensure an admin user exists with email "admin@geo.com" and set/update their Firestore record.</p>
-    
-    <button id="setupAdminBtn">Setup Admin User</button>
+    <h1>Admin Account Setup</h1>
+    <button id="setupAdmin">Setup Admin User</button>
     <div id="status"></div>
 
     <script>
-        // Your Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAMU2y175sXjHkxAv6SF88-E9FCjaR2kJc",
             authDomain: "geocarrental-9a4de.firebaseapp.com",
@@ -70,102 +30,63 @@
             measurementId: "G-LJEF344295"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        const functions = firebase.functions();
 
-        // If using Cloud Functions for custom claims
-        const setAdminRole = functions.httpsCallable('setAdminRole');
-
-        document.getElementById('setupAdminBtn').addEventListener('click', async function() {
-            const statusDiv = document.getElementById('status');
-            statusDiv.textContent = "Starting admin setup...";
-            statusDiv.className = "info";
-
+        document.getElementById('setupAdmin').addEventListener('click', async () => {
+            const statusEl = document.getElementById('status');
+            statusEl.className = 'info';
+            statusEl.innerHTML = 'Starting admin setup...';
+            
             try {
                 const email = "admin@geo.com";
                 const password = "admin@geo.com";
-                let user = null;
-                let actionTaken = [];
+                let user;
+                const actions = [];
 
-                // Try to create the auth user (will fail if exists)
+                // 1. Handle authentication
                 try {
-                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                    user = userCredential.user;
-                    actionTaken.push("✅ Created new auth user");
-                } catch (authError) {
-                    if (authError.code === 'auth/email-already-in-use') {
-                        // User exists - sign in to get the user object
-                        const signInCredential = await auth.signInWithEmailAndPassword(email, password);
-                        user = signInCredential.user;
-                        actionTaken.push("ℹ️ User already exists in auth - signed in");
-                    } else {
-                        throw authError;
-                    }
+                    user = (await auth.createUserWithEmailAndPassword(email, password)).user;
+                    actions.push('✅ Created new auth user');
+                } catch (error) {
+                    if (error.code === 'auth/email-already-in-use') {
+                        user = (await auth.signInWithEmailAndPassword(email, password)).user;
+                        actions.push('ℹ️ Using existing auth user');
+                    } else throw error;
                 }
 
-                // Ensure Firestore record exists with admin privileges
-                const userRef = db.collection("users").doc(user.uid);
-                const userDoc = await userRef.get();
-                
-                const adminData = {
-                    userId: user.uid,
+                // 2. Set Firestore admin record
+                await db.collection('users').doc(user.uid).set({
                     email: email,
                     name: "Admin User",
-                    phone: "",
-                    role: "admin", // Special admin role
-                    profilePic: "",
-                    address: "",
-                    licenseVerified: true,
+                    role: "admin",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
+                }, { merge: true });
+                actions.push('✅ Updated Firestore with admin role');
 
-                if (!userDoc.exists) {
-                    // Create new record
-                    adminData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    await userRef.set(adminData);
-                    actionTaken.push("✅ Created new Firestore admin record");
-                } else {
-                    // Update existing record
-                    await userRef.update(adminData);
-                    actionTaken.push("✅ Updated existing Firestore record with admin privileges");
-                }
-
-                // Attempt to set custom claims (requires Cloud Function)
-                try {
-                    const result = await setAdminRole({ userId: user.uid });
-                    actionTaken.push("✅ Set admin custom claims");
-                    console.log("Custom claims set:", result.data);
-                } catch (claimsError) {
-                    actionTaken.push("⚠️ Could not set custom claims (check Cloud Function)");
-                    console.error("Error setting custom claims:", claimsError);
-                }
-
-                // Sign out (cleanup)
+                // 3. Complete
                 await auth.signOut();
-                actionTaken.push("🔒 Signed out for security");
+                actions.push('🔒 Signed out for security');
 
-                // Display results
-                statusDiv.textContent = "Admin setup complete!\n\n" + 
-                    actionTaken.join("\n") + 
-                    "\n\nAdmin email: " + email + 
-                    "\nPassword: " + password +
-                    "\nUser ID: " + user.uid;
-                statusDiv.className = "success";
+                statusEl.className = 'success';
+                statusEl.innerHTML = `
+                    <strong>Admin setup complete!</strong>
+                    <ul>${actions.map(a => `<li>${a}</li>`).join('')}</ul>
+                    <p>Email: <code>${email}</code></p>
+                    <p>Password: <code>${password}</code></p>
+                    <p>User ID: <code>${user.uid}</code></p>
+                `;
                 
             } catch (error) {
-                let errorMessage = "❌ Error during admin setup:\n\n";
-                errorMessage += error.message;
-                
-                if (error.code) {
-                    errorMessage += "\n\nError code: " + error.code;
-                }
-                
-                statusDiv.textContent = errorMessage;
-                statusDiv.className = "error";
-                console.error("Error during admin setup:", error);
+                statusEl.className = 'error';
+                statusEl.innerHTML = `
+                    <strong>Error during setup:</strong>
+                    <p>${error.message}</p>
+                    ${error.code ? `<p>Code: ${error.code}</p>` : ''}
+                `;
+                console.error(error);
             }
         });
     </script>
