@@ -3,669 +3,711 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Account - GeoCarRental</title>
+    <title>My Account - MetroShifttitle>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-blue: #2962FF;
-            --primary-green: #00C853;
-            --accent-yellow: #FFD600;
-            --accent-orange: #FFAB40;
-            --text-dark: #212121;
-            --text-light: #757575;
-            --bg-white: #FFFFFF;
-            --bg-black: #121212;
-            --border-radius: 8px;
-            --transition: all 0.3s ease;
-        }
-    
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-    
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-dark);
-            line-height: 1.6;
-            background-color: whitesmoke;
-        }
-    
-        .navbar {
-            background-color: var(--bg-white);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            height: 80px;
-        }
+    :root {
+        --primary-blue: #2962FF;
+        --primary-green: #00C853;
+        --accent-yellow: #FFD600;
+        --accent-orange: #FFAB40;
+        --text-dark: #212121;
+        --text-light: #757575;
+        --bg-white: #FFFFFF;
+        --bg-black: #121212;
+        --border-radius: 8px;
+        --transition: all 0.3s ease;
+    }
 
-        .navbar-logo-container {
-            height: 80px;
-            display: flex;
-            align-items: center;
-            margin-right: auto;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        .navbar-logo {
-            height: 160px;
-            width: auto;
-            max-height: 100%;
-            object-fit: contain;
+    body {
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-dark);
+        line-height: 1.6;
+        background-color: whitesmoke;
+    }
+
+    .navbar {
+        background-color: var(--bg-white);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        height: 80px;
+    }
+
+    .navbar-logo-container {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        margin-right: auto;
+    }
+
+    .navbar-logo {
+        height: 160px;
+        width: auto;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .auth-button {
+        text-decoration: none;
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        transition: var(--transition);
+    }
+
+    .auth-button:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .auth-button.my-rides {
+        color: #212121;
+    }
+
+    .host-button {
+        text-decoration: none;
+        color: white;
+        background-color: #2962ff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        border: 1px solid #2962ff;
+        transition: var(--transition);
+    }
+
+    .host-button:hover {
+        background-color: #1a4fd8;
+        border-color: #1a4fd8;
+    }
+
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-dark);
+    }
+
+    /* Account Container */
+    .account-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 5%;
+    }
+    
+    .account-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .account-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.5rem;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .account-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .avatar-edit {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: var(--primary-blue);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .account-info {
+        flex: 1;
+        min-width: 250px;
+    }
+    
+    .account-info h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .account-info p {
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-completion {
+        width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .completion-bar {
+        height: 8px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .completion-progress {
+        height: 100%;
+        background: var(--primary-blue);
+        width: 0%;
+        transition: width 0.5s ease;
+    }
+    
+    .completion-text {
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+
+    .account-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .account-avatar img:hover {
+        opacity: 0.9;
+    }
+    
+    .completion-text strong {
+        color: var(--primary-blue);
+    }
+    
+    /* Account Sections */
+    .account-section {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .account-section h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .section-edit {
+        font-size: 0.9rem;
+        color: var(--primary-blue);
+        cursor: pointer;
+        font-weight: 500;
+    }
+    
+    .section-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+    
+    .info-group {
+        min-width: 200px;
+    }
+    
+    .info-label {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-bottom: 0.25rem;
+    }
+    
+    .info-value {
+        font-weight: 500;
+    }
+    
+    .empty-value {
+        color: var(--text-light);
+        font-style: italic;
+    }
+    
+    /* Edit Forms */
+    .edit-form {
+        display: none;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-group input, 
+    .form-group select, 
+    .form-group textarea {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+    }
+    
+    .form-group input:focus, 
+    .form-group select:focus, 
+    .form-group textarea:focus {
+        border-color: var(--primary-blue);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(41, 98, 255, 0.2);
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .save-btn, .cancel-btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .save-btn {
+        background-color: var(--primary-blue);
+        color: white;
+        border: none;
+    }
+    
+    .save-btn:hover {
+        background-color: #1a4fd8;
+    }
+    
+    .cancel-btn {
+        background: none;
+        border: 1px solid #ddd;
+    }
+    
+    .cancel-btn:hover {
+        background: #f5f5f5;
+    }
+    
+    /* Profile Photo Upload */
+    #profilePhotoInput {
+        display: none;
+    }
+    
+    /* Cars Around You Section */
+    .cars-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .car-card {
+        background: white;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: var(--transition);
+    }
+    
+    .car-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    
+    .car-image {
+        height: 180px;
+        width: 100%;
+        object-fit: cover;
+    }
+    
+    .car-details {
+        padding: 1.2rem;
+    }
+    
+    .car-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .car-price {
+        color: var(--primary-blue);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .car-features {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .car-feature {
+        display: flex;
+        align-items: center;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    .car-feature i {
+        margin-right: 0.3rem;
+        font-size: 0.9rem;
+    }
+    
+    .car-location {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        margin-top: 0.5rem;
+    }
+    
+    .car-location i {
+        margin-right: 0.5rem;
+        color: var(--primary-blue);
+    }
+    
+    .no-cars {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .no-cars-video {
+        max-width: 400px;
+        margin-bottom: 1rem;
+        border-radius: var(--border-radius);
+    }
+    
+    .no-cars p {
+        color: var(--text-light);
+        margin-bottom: 1rem;
+    }
+    
+    .explore-btn {
+        padding: 0.8rem 1.5rem;
+        background-color: var(--primary-blue);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+    
+    .explore-btn:hover {
+        background-color: #1a4fd8;
+    }
+    
+    /* Image Modal */
+    .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        overflow: auto;
+        animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-content {
+        display: block;
+        margin: auto;
+        max-width: 90%;
+        max-height: 90%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 4px;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: white;
+        font-size: 35px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 1002;
+    }
+
+    .close-modal:hover {
+        color: #ccc;
+    }
+    
+    /* Loading State */
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Notification Styles - UPDATED */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 60px 20px 15px 20px;
+        border-radius: 8px;
+        color: white;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        max-width: 400px;
+        z-index: 9999;
+        transform: translateX(120%);
+        transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        min-height: 120px;
+        text-align: center;
+    }
+    
+    .notification.show {
+        transform: translateX(0);
+    }
+    
+    .notification.success {
+        background-color: #2962FF;
+    }
+    
+    .notification.error {
+        background-color: #F44336;
+    }
+    
+    .notification.fade-out {
+        transform: translateX(120%);
+    }
+    
+    .notification-logo {
+        position: absolute;
+        top: 15px;
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+    }
+    
+    .notification-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    .close-notification {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        margin-left: 15px;
+        padding: 0;
+        opacity: 0.8;
+        transition: opacity 0.2s ease;
+        flex-shrink: 0;
+    }
+    
+    .close-notification:hover {
+        opacity: 1;
+    }
+    
+    .notification-message {
+        flex-grow: 1;
+        text-align: left;
+    }
+    
+    @media (max-width: 768px) {
+        .menu-toggle {
+            display: block;
         }
 
         .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .auth-button {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.6rem 1.2rem;
-            border-radius: 50px;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            background-color: var(--bg-white);
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            gap: 1rem;
+            transform: translateY(-150%);
             transition: var(--transition);
+            z-index: 999;
         }
 
-        .auth-button:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+        .nav-links.active {
+            transform: translateY(0);
         }
 
-        .auth-button.my-rides {
-            color: #212121;
+        .host-button, .auth-button, .logout-btn {
+            border: none;
+            padding: 0.5rem 0;
+            width: 100%;
+            text-align: left;
         }
 
         .host-button {
-            text-decoration: none;
-            color: white;
-            background-color: #2962ff;
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.6rem 1.2rem;
-            border-radius: 50px;
-            border: 1px solid #2962ff;
-            transition: var(--transition);
-        }
-
-        .host-button:hover {
-            background-color: #1a4fd8;
-            border-color: #1a4fd8;
-        }
-
-        /* Mobile Menu Toggle */
-        .menu-toggle {
-            display: none;
-            background: none;
+            background-color: transparent;
+            color: var(--primary-blue);
             border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-dark);
         }
-    
-        /* Account Container */
-        .account-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 5%;
-        }
-        
-        .account-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-        
+
         .account-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1.5rem;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .account-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .avatar-edit {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background: var(--primary-blue);
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .account-info {
-            flex: 1;
-            min-width: 250px;
+            width: 80px;
+            height: 80px;
+            margin-right: 1rem;
         }
         
         .account-info h1 {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
         }
         
-        .account-info p {
-            color: var(--text-light);
-            margin-bottom: 0.5rem;
-        }
-        
-        .profile-completion {
-            width: 100%;
-            margin-top: 1rem;
-        }
-        
-        .completion-bar {
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
-            overflow: hidden;
-        }
-        
-        .completion-progress {
-            height: 100%;
-            background: var(--primary-blue);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-        
-        .completion-text {
-            font-size: 0.85rem;
-            color: var(--text-light);
-        }
-
-        .account-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .account-avatar img:hover {
-            opacity: 0.9;
-        }
-        
-        .completion-text strong {
-            color: var(--primary-blue);
-        }
-        
-        /* Account Sections */
         .account-section {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        
-        .account-section h2 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .section-edit {
-            font-size: 0.9rem;
-            color: var(--primary-blue);
-            cursor: pointer;
-            font-weight: 500;
+            padding: 1.5rem;
         }
         
         .section-content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-        
-        .info-group {
-            min-width: 200px;
-        }
-        
-        .info-label {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-bottom: 0.25rem;
-        }
-        
-        .info-value {
-            font-weight: 500;
-        }
-        
-        .empty-value {
-            color: var(--text-light);
-            font-style: italic;
-        }
-        
-        /* Edit Forms */
-        .edit-form {
-            display: none;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #eee;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-        
-        .form-group input, 
-        .form-group select, 
-        .form-group textarea {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-        }
-        
-        .form-group input:focus, 
-        .form-group select:focus, 
-        .form-group textarea:focus {
-            border-color: var(--primary-blue);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(41, 98, 255, 0.2);
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .save-btn, .cancel-btn {
-            padding: 0.8rem 1.5rem;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .save-btn {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-        }
-        
-        .save-btn:hover {
-            background-color: #1a4fd8;
-        }
-        
-        .cancel-btn {
-            background: none;
-            border: 1px solid #ddd;
-        }
-        
-        .cancel-btn:hover {
-            background: #f5f5f5;
-        }
-        
-        /* Profile Photo Upload */
-        #profilePhotoInput {
-            display: none;
-        }
-        
-        /* Cars Around You Section */
-        .cars-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
         }
         
-        .car-card {
-            background: white;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: var(--transition);
-        }
-        
-        .car-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-        }
-        
-        .car-image {
-            height: 180px;
-            width: 100%;
-            object-fit: cover;
-        }
-        
-        .car-details {
-            padding: 1.2rem;
-        }
-        
-        .car-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .car-price {
-            color: var(--primary-blue);
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        
-        .car-features {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .car-feature {
-            display: flex;
-            align-items: center;
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-        
-        .car-feature i {
-            margin-right: 0.3rem;
-            font-size: 0.9rem;
-        }
-        
-        .car-location {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            margin-top: 0.5rem;
-        }
-        
-        .car-location i {
-            margin-right: 0.5rem;
-            color: var(--primary-blue);
-        }
-        
-        .no-cars {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            text-align: center;
-        }
-        
-        .no-cars-video {
-            max-width: 400px;
-            margin-bottom: 1rem;
-            border-radius: var(--border-radius);
-        }
-        
-        .no-cars p {
-            color: var(--text-light);
-            margin-bottom: 1rem;
-        }
-        
-        .explore-btn {
-            padding: 0.8rem 1.5rem;
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        
-        .explore-btn:hover {
-            background-color: #1a4fd8;
-        }
-        
-        /* Image Modal */
-        .image-modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            overflow: auto;
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            display: block;
-            margin: auto;
-            max-width: 90%;
-            max-height: 90%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 4px;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 35px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1002;
-        }
-
-        .close-modal:hover {
-            color: #ccc;
-        }
-        
-        /* Loading State */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Notification */
+        /* Notification adjustments for mobile */
         .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            max-width: 350px;
-            z-index: 9999;
-            transform: translateX(0);
-            transition: all 0.3s ease;
+            right: 10px;
+            left: 10px;
+            max-width: none;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .account-avatar {
+            width: 70px;
+            height: 70px;
         }
         
-        .notification.success {
-            background-color: #4CAF50;
+        .account-info h1 {
+            font-size: 1.3rem;
         }
         
-        .notification.error {
-            background-color: #F44336;
+        .account-section h2 {
+            font-size: 1.1rem;
         }
         
-        .notification.fade-out {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        
-        .close-notification {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            margin-left: 15px;
-            padding: 0;
-        }
-        
-        @media (max-width: 768px) {
-            .menu-toggle {
-                display: block;
-            }
-
-            .nav-links {
-                position: fixed;
-                top: 80px;
-                left: 0;
-                width: 100%;
-                background-color: var(--bg-white);
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 1rem 5%;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                gap: 1rem;
-                transform: translateY(-150%);
-                transition: var(--transition);
-                z-index: 999;
-            }
-
-            .nav-links.active {
-                transform: translateY(0);
-            }
-
-            .host-button, .auth-button, .logout-btn {
-                border: none;
-                padding: 0.5rem 0;
-                width: 100%;
-                text-align: left;
-            }
-
-            .host-button {
-                background-color: transparent;
-                color: var(--primary-blue);
-                border: none;
-            }
-
-            .account-avatar {
-                width: 80px;
-                height: 80px;
-                margin-right: 1rem;
-            }
-            
-            .account-info h1 {
-                font-size: 1.5rem;
-            }
-            
-            .account-section {
-                padding: 1.5rem;
-            }
-            
-            .section-content {
-                gap: 1.5rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .account-avatar {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .account-info h1 {
-                font-size: 1.3rem;
-            }
-            
-            .account-section h2 {
-                font-size: 1.1rem;
-            }
-            
-            .nav-links {
-                width: 100%;
-            }
-        }
-        
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.6rem 1.2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .logout-btn:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        /* Overlay for mobile menu */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .nav-links {
             width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
         }
+    }
+    
+    .logout-btn {
+        background: none;
+        border: none;
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
 
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-    </style>
+    .logout-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    /* Overlay for mobile menu */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+    }
+
+    .overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+</style>
 </head>
 <body>
     <!-- Navbar -->
@@ -968,28 +1010,56 @@
         const cancelPayment = document.getElementById('cancelPayment');
 
         // Notification system
-        function showNotification(message, isSuccess = true) {
-            const notification = document.createElement('div');
-            notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
-            notification.innerHTML = `
-                <span>${message}</span>
-                <button class="close-notification">&times;</button>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            const timer = setTimeout(() => {
-                notification.classList.add('fade-out');
-                setTimeout(() => notification.remove(), 300);
-            }, 2000);
-            
-            notification.querySelector('.close-notification').addEventListener('click', () => {
-                clearTimeout(timer);
-                notification.classList.add('fade-out');
-                setTimeout(() => notification.remove(), 300);
-            });
-        }
-
+     // Notification system
+function showNotification(message, isSuccess = true) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
+    
+    // Create logo image
+    const logo = document.createElement('img');
+    logo.src = 'images/logowhite.png';
+    logo.className = 'notification-logo';
+    logo.alt = 'MetroShift Logo';
+    
+    // Create content container
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'notification-content';
+    
+    // Create message span
+    const messageSpan = document.createElement('span');
+    messageSpan.className = 'notification-message';
+    messageSpan.textContent = message;
+    
+    // Create close button
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-notification';
+    closeButton.innerHTML = '&times;';
+    
+    // Assemble the notification
+    contentDiv.appendChild(messageSpan);
+    contentDiv.appendChild(closeButton);
+    
+    notification.appendChild(logo);
+    notification.appendChild(contentDiv);
+    
+    document.body.appendChild(notification);
+    
+    // Trigger the animation
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    const timer = setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 400);
+    }, 4000);
+    
+    closeButton.addEventListener('click', () => {
+        clearTimeout(timer);
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 400);
+    });
+}
         // Image compression and Base64 conversion function
         function compressImageToBase64(file, maxWidth = 400, quality = 0.6, maxSizeKB = 100) {
             return new Promise((resolve, reject) => {
